@@ -1,0 +1,8 @@
+exports.schema = {
+	"ScheduleByDates" : {
+
+	},
+	"ScheduleByGenerator" : {
+		
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"folders": [
+		{"path": "."
+		, "folder_exclude_patterns": [".idea" ]
+		, "file_exclude_patterns": ["*sublime-workspace"]
+	}
+
+	]
+}
