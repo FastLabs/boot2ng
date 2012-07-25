@@ -1,7 +1,7 @@
 {
 	"folders": [
 		{"path": "."
-		, "folder_exclude_patterns": [".idea" ]
+		, "folder_exclude_patterns": [".idea", "node_modules"]
 		, "file_exclude_patterns": ["*sublime-workspace"]
 	}
 

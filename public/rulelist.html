@@ -1,0 +1,56 @@
+<div ng-controller='commandController'>
+    <h1>Rule Definitions</h1>
+
+
+
+    <form class='form-horizontal' ng-submit='updateRule()'>
+        <fieldset class='control-group'>
+            <input class='input-xlarge console span8' type='text' ng-model='text'> </input>
+        </fieldset>
+    </form>
+    <div style='{{hasRule()}}'>
+        <div>
+            <span class='label label-important'>Name:</span> <span style='font-size:14px; font-weight:bold;'> {{currentRule.name}} </span>
+        </div>
+        <div>
+            <span class='label label-info'> Attributes</span>
+            <ul>
+                <li ng-repeat='(key, value) in currentRule.attributes'>
+                    {{key}} : {{value}}
+                </li>
+            </ul>
+        </div>
+        <span class='label label-success'>IF</span>
+        <ul>
+            <li ng-repeat='condition in currentRule.conditions'>
+                {{condition}}
+            </li>
+        </ul>
+        <span class='label label-success'>THEN </span>
+        <ul>
+            <li ng-repeat='action in currentRule.actions'>
+                {{action}}
+            </li>
+        </ul>
+        <span class='label label-info'>Comments:</span>
+
+        <div class='well'>
+            {{currentRule.comment}}
+        </div>
+    </div>
+    <!-- display the rule-->
+    <table class='table condensed'>
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat='rule in rules'>
+            <td>.</td>
+            <td>{{rule.name}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

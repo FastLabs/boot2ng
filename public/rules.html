@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <title>rule collection toolkit</title>
+    <script src="lib/angular-1.0.1.js" type="text/javascript"></script>
+    <script type="text/javascript" src='collector.js'></script>
+    <script type="text/javascript" src="rules.js"></script>
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="/stylesheets/bootstrap-responsive.css">
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-right: 20px;
+            padding-left: 20px;
+            padding-bottom: 20px;
+        }
+
+        .console {
+            font-size: 18px;
+            font-family: Courier;
+        }
+    </style>
+</head>
+
+<body ng-app='collector'>
+<div class='navbar navbar-fixed-top'>
+    <div class='navbar-inner'>
+        <div class='container'>
+            <a class='brand'>Collector</a>
+
+            <div class='nav-collapse'>
+                <ul class='nav'>
+                    <li class='active'><a href='#'>Rules</a></li>
+                    <li><a href='#'>Model</a></li>
+                    <li><a href='#'>Queries</a></li>
+                    <li><a href='#'>Data</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-view>
+
+</div>
+</body>
+
+</html>
