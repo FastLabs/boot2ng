@@ -1,22 +1,24 @@
-<div ng-controller='commandController'>
-    <h1>Rule Definitions</h1>
-
-
-
-    <form class='form-horizontal' ng-submit='updateRule()'>
+<div ng-controller='ruleController'>
+    <h2>Rule Definitions</h2>
+    <form class='form-horizontal span10' ng-submit='updateRule()'>
         <fieldset class='control-group'>
-            <input class='input-xlarge console span8' type='text' ng-model='text'> </input>
+            <input class='input-xlarge console span9' type='text' ng-model='text'> </input>
+            <div class='btn-group modebar'>
+                <a class='btn'  ng-click='enterInputMode()' ng-class='commandBox.isSelected("enter")'> <i class="icon-bookmark"></i></a>
+                <a class='btn' ng-click='enterSearchMode()' ng-class='commandBox.isSelected("search")'> <i class="icon-search"></i></a>
+            </div>
         </fieldset>
     </form>
-    <div style='{{hasRule()}}'>
-        <div>
+    <div class="ruleContainer" ng-show='isInputMode()' >
+        <div style='margin-bottom: 2px;'>
             <span class='label label-important'>Name:</span> <span style='font-size:14px; font-weight:bold;'> {{currentRule.name}} </span>
         </div>
         <div>
             <span class='label label-info'> Attributes</span>
             <ul>
                 <li class='removable' ng-repeat='(key, value) in currentRule.attributes'>
-                    <div class="removable"> {{key}} : {{value}} <i class='icon-remove'></i></div>
+                    <div class="removable"> {{key}} : {{value}}
+                        <a ng-click='removeAttribute(key)'><i class='icon-remove'></i></a></div>
                 </li>
             </ul>
         </div>
@@ -33,43 +35,27 @@
             </li>
         </ul>
         <span class='label label-info'>Comments:</span>
+        <div style="margin-top: 8px">
 
-        <div class='well'>
+
+        <div class='well span8'  style="clear:left;">
             {{currentRule.comment}}
         </div>
+        </div>
     </div>
-    <!-- display the rule-->
-    <div>
-        <ul>
-            <li ng-repeat='rule in rules'>
-                <div>
-                    <div> <span>{{rule.name}}</span>
-                        <span>
+    <!-- display the rule list-->
+    <div class='row-fluid' ng-show='isSearchMode()'>
+        <div class='span5'>
+            <ul class='rules'>
+                <li class='thumbnail removable' ng-repeat='rule in rules | filter:text'>
+                    {{rule.name}}
+                    <a href="/rules/remove/{{rule.attributes.id}}">
                         <i class="icon-eye-open"></i>
-                        <i class="icon-edit"></i>
-                        <i class="icon-remove"></i>
-                    </span></div>
-                </div>
-            </li>
-        </ul>
+                    </a>
+                    <i class="icon-edit"></i>
+                    <a ng-click="removeArtifact(rule)"> <i class="icon-remove"></i></a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <!--<table class='table condensed'>
-        <thead>
-        <tr>
-            <th>id</th>
-            <th>name</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat='rule in rules'>
-            <td>.</td>
-            <td>{{rule.name}}</td>
-            <td>
-                <button class="btn btn-primary">Edit</button>
-                <button class="btn btn-primary" >Details</button>
-                <button class="btn btn-danger" >Delete</button>
-            </td>
-        </tr>
-        </tbody>
-    </table>-->
 </div>

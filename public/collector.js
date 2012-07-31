@@ -1,33 +1,30 @@
-angular.module('collector', ['rules', 'artifactRepo'])
-    .config(function ($routeProvider) {
-        $routeProvider.when('/', {controller:commandController, templateUrl:'rulelist.html'});
-        $routeProvider.when('/:context', {controller:commandController, templateUrl:'rulelist.html'});
-    });
 //Defines the rule context
-angular.module('rulesContext', [])
+'use strict'
+angular.module('rulesContext', ['artifact','utils'])
     .config(function () {
 
-    }).factory('rule', function () {
+    }).factory('rule', function (artifact, parser) {
         var getRules = function () {
             return [
                 {
-                    name:'check the account number'
+                    name:'check the account number',
+                    attributes: {id: 'Rule2'}
+
                 }
                 ,
                 {
-                    name:'check the issuer bin'
+                    name:'check the issuer bin',
+                    attributes: {id: 'Rule1'}
                 }
             ];
+        };
+        var saveRule = function ($scope) {
+            artifact.addArtifact($scope.rules, $scope.currentRule);
+            $scope.currentRule = undefined;
         };
 
         var commandsMap = {
             "save":saveRule
-        };
-
-        var saveRule = function (rule) {
-            console.log('->save ' + rule.name);
-            addRule(rule);
-            $scope.currentRule = undefined;
         };
 
         var dispatchCommand = function (command, ruleContext) {
@@ -35,18 +32,8 @@ angular.module('rulesContext', [])
             command(ruleContext);
         };
 
-        var splitAttribute = function (value) {
-            if (value !== undefined) {
-                var separator = value.indexOf(':');
-                var attributeName = value.substring(0, separator).trim();
-                var attributeValue = value.substring(separator + 1, value.length);
-
-                return {
-                    'name':attributeName,
-                    'value':attributeValue
-                }
-
-            }
+        var registerAttribute = function (context, attribute) {
+            context.attributes[attribute.name] = attribute.value;
         };
 
         var updateScope = function ($scope) {
@@ -64,9 +51,9 @@ angular.module('rulesContext', [])
                         } else if (startElement === '?') {
                             $scope.currentRule.conditions.push(value);
                         } else if (startElement === '$') {
-                            dispatchCommand(value, $scope.currentRule);
+                            dispatchCommand(value, $scope);
                         } else if (startElement === '@') {
-                            var separated = splitAttribute(value);
+                            var separated = parser.splitAttribute(value);
                             if (separated !== undefined) {
                                 $scope.currentRule.attributes [separated.name] = separated.value;
                             }
@@ -82,9 +69,17 @@ angular.module('rulesContext', [])
 
         return {
             getData: getRules,
-            updateScope: updateScope
+            updateScope: updateScope,
+            removeArtifact: artifact.removeArtifact
         }
     });
+
+angular.module('collector', ['rules', 'rulesContext'])
+    .config(function ($routeProvider) {
+        $routeProvider.when('/', {controller:ruleController, templateUrl:'rulelist.html'});
+        $routeProvider.when('/:context', {controller:ruleController, templateUrl:'rulelist.html'});
+    });
+
 //Defines the entity model context
 angular.module('entityContext', [])
     .config(function () {
@@ -93,11 +88,11 @@ angular.module('entityContext', [])
         var getEntities = function () {
             return [
                 {
-                    name:'first rule'
+                    name:'first entity'
                 }
                 ,
                 {
-                    name:'second rule'
+                    name:'second entity'
                 }
             ];
         };
@@ -107,34 +102,6 @@ angular.module('entityContext', [])
         }
     });
 
-angular.module('artifactRepo', ['rulesContext', 'entityContext'])
-    .config(function ($provide) {
-
-        $provide.factory('artifactRepoService', function ($injector) {
-            var addArtifact = function (artifactCollection, currentArtifact) {
-                artifactCollection.push(currentArtifact);
-            };
-
-            var getArtifacts = function (contextName) {
-                var extractor = $injector.get(contextName);
-                return extractor.getData();
-            };
-
-            var updateScope = function (contextName, $scope) {
-                var updater = $injector.get(contextName);
-                updater.updateScope($scope);
-            }
-
-
-            return {
-                addArtifact: addArtifact,
-                getArtifacts: getArtifacts,
-                updateScope: updateScope
-            }
-        });
-    });
-
-//TODO: move this in rule context
 function Rule() {
     this.actions = [];
     this.name = 'simple rule';
@@ -142,25 +109,45 @@ function Rule() {
     this.attributes = {};
 }
 
-function commandController($scope, $routeParams, artifactRepoService) {
-    $scope.rules = artifactRepoService.getArtifacts($routeParams.context);
+function GroupBox () {
+    var selectedItem = '';
 
-    var addRule = function (artifact) {
-        if (artifact !== undefined) {
-            artifactRepoService.addArtifact($scope.rules, artifact);
-
-        }
+    this.isSelected = function (item) {
+        return this.selectedItem === item?'active':'';
     };
 
-    $scope.hasRule = function () {
-        if ($scope.currentRule === undefined) {
+    this.selectItem = function (item) {
+        console.log(item);
+        this.selectedItem = item;
+    };
+}
 
-            return 'display:none';
-        }
-        return 'dislplay:block';
+function ruleController($scope, rule) {
+    $scope.rules = rule.getData();
+    $scope.commandBox = new GroupBox();
+    $scope.commandBox.selectItem('search');
+
+    $scope.enterSearchMode = function () {
+        $scope.commandBox.selectItem('search');
+    };
+
+    $scope.enterInputMode = function() {
+        $scope.commandBox.selectItem('enter');
+    };
+
+    $scope.removeArtifact = function(artifact) {
+      rule.removeArtifact($scope.rules, artifact);
+    };
+
+    $scope.isInputMode = function () {
+        return $scope.commandBox.isSelected("enter");
+    };
+
+    $scope.isSearchMode = function () {
+        return $scope.commandBox.isSelected("search");
     }
 
     $scope.updateRule = function () {
-        artifactRepoService.updateScope($routeParams.context, $scope);
+        rule.updateScope( $scope);
     }
 }

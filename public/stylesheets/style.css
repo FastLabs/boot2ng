@@ -5,12 +5,26 @@ body {
 .console {
     font-size: 18px;
     font-family: Courier;
+    display: inline;
+}
+.modebar {
+    display: inline;
+    float: right;
+    clear: right;
 }
 a {
   color: #00B7FF;
 }
+ul {
+    list-style-type: none;
+}
 
-
+.rules li {
+    clear: both;
+    height: 40px;
+    padding-top: 15px;
+    margin-bottom: 10px;
+}
 
 .removable {
     cursor: pointer;
@@ -22,4 +36,8 @@ a {
 
 .removable:hover [class^="icon-"] {
     display: inline-block;
+}
+
+.ruleContainer {
+    clear:left;
 }

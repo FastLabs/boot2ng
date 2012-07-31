@@ -1,14 +1,29 @@
 <!doctype html>
-<html>
+<html xmlns:ng="http://angularjs.org">
 <head>
     <title>rule collection toolkit</title>
     <script src="lib/angular-1.0.1.js" type="text/javascript"></script>
     <script type="text/javascript" src='collector.js'></script>
     <script type="text/javascript" src="rules.js"></script>
+    <script type="text/javascript" src="./javascripts/artifact.js"></script>
+    <script type="text/javascript" src="./javascripts/utils.js"></script>
+
     <link rel="stylesheet" href="/stylesheets/bootstrap.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
 
-    <link rel="stylesheet" href="/stylesheets/bootstrap-responsive.css">
+    <!--<link rel="stylesheet" href="/stylesheets/bootstrap-responsive.css">-->
+    <!--[if lte IE 8]>
+    <script>
+        document.createElement('ng-include');
+        document.createElement('ng-pluralize');
+        document.createElement('ng-view');
+
+        // Optionally these for CSS
+        document.createElement('ng:include');
+        document.createElement('ng:pluralize');
+        document.createElement('ng:view');
+    </script>
+    <![endif]-->
 </head>
 
 <body ng-app='collector'>
