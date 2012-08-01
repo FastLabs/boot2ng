@@ -1,0 +1,9 @@
+start
+  = Text+
+Text
+  = Characters
+Characters
+  = text: [a-z]+ {
+  	console.log('--' + text);
+  	return text.join("");
+  }
