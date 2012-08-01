@@ -1,6 +1,6 @@
 //Defines the rule context
 'use strict'
-angular.module('rulesContext', ['artifact','utils'])
+angular.module('rulesContext', ['artifact', 'utils'])
     .config(function () {
 
     }).factory('rule', function (artifact, parser) {
@@ -8,18 +8,28 @@ angular.module('rulesContext', ['artifact','utils'])
             return [
                 {
                     name:'check the account number',
-                    attributes: {id: 'Rule2'}
+                    attributes:{id:'Rule2'},
+                    conditions:[],
+                    actions:[]
 
                 }
                 ,
                 {
                     name:'check the issuer bin',
-                    attributes: {id: 'Rule1'}
+                    attributes:{id:'Rule1'},
+                    conditions:[],
+                    actions:[]
+                },
+                {
+                    name:'check the issuer bin1',
+                    attributes:{id:'Rule3'},
+                    conditions:[],
+                    actions:[]
                 }
             ];
         };
         var saveRule = function ($scope) {
-            artifact.addArtifact($scope.rules, $scope.currentRule);
+            $scope.rules.addValue($scope.currentRule);
             $scope.currentRule = undefined;
         };
 
@@ -47,15 +57,15 @@ angular.module('rulesContext', ['artifact','utils'])
                     var value = $scope.text.substring(1, $scope.text.length);
                     if (value !== undefined && value.length > 0) {
                         if (startElement === '!') {
-                            $scope.currentRule.actions.push(value);
+                            $scope.currentRule.addAction(value);
                         } else if (startElement === '?') {
-                            $scope.currentRule.conditions.push(value);
+                            $scope.currentRule.addCondition(value);
                         } else if (startElement === '$') {
                             dispatchCommand(value, $scope);
                         } else if (startElement === '@') {
                             var separated = parser.splitAttribute(value);
                             if (separated !== undefined) {
-                                $scope.currentRule.attributes [separated.name] = separated.value;
+                                $scope.currentRule.addAttribute(separated.name, separated.value)
                             }
                         } else {
                             $scope.currentRule.comment = $scope.text;
@@ -68,9 +78,9 @@ angular.module('rulesContext', ['artifact','utils'])
         };
 
         return {
-            getData: getRules,
-            updateScope: updateScope,
-            removeArtifact: artifact.removeArtifact
+            getData:getRules,
+            updateScope:updateScope,
+            removeArtifact:artifact.removeArtifact
         }
     });
 
@@ -109,11 +119,35 @@ function Rule() {
     this.attributes = {};
 }
 
-function GroupBox () {
+function RuleBase () {
+    var modified = false;
+    this.dirty = false;
+    this.addCondition = function(condition) {
+        modified = true;
+        this.conditions.push(condition);
+    }
+
+    this.addAction = function (action) {
+        modified = true;
+        this.actions.push(action);
+    }
+
+    this.addAttribute = function (attrName, attrValue) {
+        modified = true;
+        this.attributes [attrName] = attrValue;
+    }
+
+    this.isModified = function() {
+        return modified;
+    }
+}
+Rule.prototype = new RuleBase();
+
+function GroupBox() {
     var selectedItem = '';
 
     this.isSelected = function (item) {
-        return this.selectedItem === item?'active':'';
+        return this.selectedItem === item ? 'active' : '';
     };
 
     this.selectItem = function (item) {
@@ -122,8 +156,46 @@ function GroupBox () {
     };
 }
 
+function CollectionRepository (initial) {
+    var values = [];
+    if(initial) {
+        values = initial;
+    }
+
+    this.addValue = function(value) {
+        console.log('add new value to repository');
+        for(var i in values) {
+            var current = values[i]
+            if(current.dirty === true) {
+                if(current.id === value.id) {
+                   values.splice(i, 1);
+                }
+            }
+        }
+        values.push(value);
+    };
+
+    this.removeValue = function(value) {
+       if(value) {
+           var artifactId = value.attributes.id
+           for(var i in values) {
+               if(values[i].attributes.id === artifactId) {
+                   values.splice(i, 1);
+               }
+           }
+       }
+    };
+
+    //if used in UI binding cache the value so this function
+    //will be called once
+    this.values = function() {
+        return values;
+    }
+
+}
+
 function ruleController($scope, rule) {
-    $scope.rules = rule.getData();
+    $scope.rules = new CollectionRepository(rule.getData());
     $scope.commandBox = new GroupBox();
     $scope.commandBox.selectItem('search');
 
@@ -131,12 +203,12 @@ function ruleController($scope, rule) {
         $scope.commandBox.selectItem('search');
     };
 
-    $scope.enterInputMode = function() {
+    $scope.enterInputMode = function () {
         $scope.commandBox.selectItem('enter');
     };
 
-    $scope.removeArtifact = function(artifact) {
-      rule.removeArtifact($scope.rules, artifact);
+    $scope.removeArtifact = function (artifact) {
+        $scope.rules.removeValue(artifact);
     };
 
     $scope.isInputMode = function () {
@@ -147,7 +219,15 @@ function ruleController($scope, rule) {
         return $scope.commandBox.isSelected("search");
     }
 
+    $scope.updateArtifact = function (rule) {
+        $scope.enterInputMode();
+        var ruleClone = angular.copy(rule);
+        rule.dirty = true;
+        $scope.currentRule = ruleClone;
+
+    };
+
     $scope.updateRule = function () {
-        rule.updateScope( $scope);
+        rule.updateScope($scope);
     }
 }

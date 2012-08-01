@@ -11,6 +11,8 @@ angular.module('artifact', []).config(
         };
         //remove the artifact from the collection
         //at the moment it requires a mandatory attribute id
+
+        //TODO: remove this the logic is moved to Collection repository
         var removeArtifact = function (collection, artifact) {
             console.log('atempt removing the artifact');
             if(collection  && artifact ) {

@@ -1,15 +1,18 @@
 <div ng-controller='ruleController'>
     <h2>Rule Definitions</h2>
+
     <form class='form-horizontal span10' ng-submit='updateRule()'>
         <fieldset class='control-group'>
             <input class='input-xlarge console span9' type='text' ng-model='text'> </input>
             <div class='btn-group modebar'>
-                <a class='btn'  ng-click='enterInputMode()' ng-class='commandBox.isSelected("enter")'> <i class="icon-bookmark"></i></a>
-                <a class='btn' ng-click='enterSearchMode()' ng-class='commandBox.isSelected("search")'> <i class="icon-search"></i></a>
+                <a class='btn' ng-click='enterInputMode()' ng-class='commandBox.isSelected("enter")'> <i
+                        class="icon-bookmark"></i></a>
+                <a class='btn' ng-click='enterSearchMode()' ng-class='commandBox.isSelected("search")'> <i
+                        class="icon-search"></i></a>
             </div>
         </fieldset>
     </form>
-    <div class="ruleContainer" ng-show='isInputMode()' >
+    <div class="ruleContainer" ng-show='isInputMode()'>
         <div style='margin-bottom: 2px;'>
             <span class='label label-important'>Name:</span> <span style='font-size:14px; font-weight:bold;'> {{currentRule.name}} </span>
         </div>
@@ -35,24 +38,27 @@
             </li>
         </ul>
         <span class='label label-info'>Comments:</span>
+
         <div style="margin-top: 8px">
 
 
-        <div class='well span8'  style="clear:left;">
-            {{currentRule.comment}}
-        </div>
+            <div class='well span8' style="clear:left;">
+                {{currentRule.comment}}
+            </div>
         </div>
     </div>
     <!-- display the rule list-->
     <div class='row-fluid' ng-show='isSearchMode()'>
         <div class='span5'>
-            <ul class='rules'>
-                <li class='thumbnail removable' ng-repeat='rule in rules | filter:text'>
+            <ul class='rules' ng-init='repoRules = rules.values()'>
+                <li class='thumbnail removable' ng-repeat='rule in repoRules | filter:text'>
                     {{rule.name}}
                     <a href="/rules/remove/{{rule.attributes.id}}">
                         <i class="icon-eye-open"></i>
                     </a>
-                    <i class="icon-edit"></i>
+                    <a ng-click="updateArtifact(rule)">
+                        <i class="icon-edit"></i>
+                    </a>
                     <a ng-click="removeArtifact(rule)"> <i class="icon-remove"></i></a>
                 </li>
             </ul>
