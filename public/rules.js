@@ -10,7 +10,6 @@ angular.module('rules', [], function() {
 
 function Rule() {
     this.actions = [];
-    this.name = 'simple rule';
     this.conditions = [];
     this.attributes = {};
     this.comments = [];
@@ -152,7 +151,7 @@ angular.module('rulesContext', ['artifact', 'utils'])
                         } else if(startElement === '-'){
                             $scope.currentRule.addComment(value);
                         } else {
-                            $scope.currentRule.comment = $scope.text;
+                            $scope.currentRule.name = $scope.text;
                         }
                     }
 
@@ -161,9 +160,16 @@ angular.module('rulesContext', ['artifact', 'utils'])
             $scope.text = '';
         };
 
+        var newInstance = function() {
+            var newInstance = new Rule();
+            return newInstance;
+        }
         return {
-            getData:getRules,
-            updateScope:updateScope,
-            removeArtifact:artifact.removeArtifact
+            getData: getRules,
+            updateScope: updateScope,
+            removeArtifact: artifact.removeArtifact,
+            newInstance: newInstance
+
+
         }
     });

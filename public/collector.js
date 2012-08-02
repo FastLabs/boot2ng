@@ -79,38 +79,35 @@ function CollectionRepository (initial) {
     }
 }
 
-function listController ($scope, rule ) {
-    $scope.rules = new CollectionRepository(rule.getData());
-
-    $scope.updateArtifact = function(artifact) {
-        var ruleClone = angular.copy(artifact);
-        artifact.dirty = true;
-        $scope.editRule = ruleClone;
-        $scope.$emit('edit', 'hello world');
-    };
-
+function listController ($scope) {
     $scope.removeArtifact = function (artifact) {
         $scope.rules.removeValue(artifact);
     };
 }
 
-function appController($scope){
+function appController($scope, rule) {
+    $scope.rules = new CollectionRepository(rule.getData());
 
-    $scope.$on('edit', function(value) {
-        console.log("" + value.targetScope.editRule.attributes.id);
-        $scope.currentRule = value.targetScope.editRule;
-        value.stopPropagation();
-    });
+
+    $scope.updateArtifact = function(artifact) {
+        var clone = angular.copy(artifact);
+        artifact.dirty = true;
+        $scope.currentRule = clone;
+    };
+
+    $scope.addRule = function() {
+        $scope.rules.addValue($scope.currentRule);
+        $scope.currentRule = undefined;
+    }
+
+    $scope.newRule = function() {
+        $scope.currentRule = rule.newInstance();
+    }
 
 }
 
-function ruleController($scope, rule, updateContext) {
+function ruleController($scope, rule) {
 
-    $scope.updateArtifact = function (rule) {
-        var ruleClone = angular.copy(rule);
-        rule.dirty = true;
-        $scope.currentRule = ruleClone;
-    };
     $scope.commentsDetailBtnVisible = false;
     $scope.limit = 1;
     $scope.commentsDetailBtn = 'More';
@@ -124,8 +121,6 @@ function ruleController($scope, rule, updateContext) {
           $scope.commentsDetailBtn = 'More';
       }
     };
-
-
 
     $scope.updateRule = function () {
         rule.updateScope($scope);
