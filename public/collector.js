@@ -1,93 +1,9 @@
 //Defines the rule context
 'use strict'
-angular.module('rulesContext', ['artifact', 'utils'])
-    .config(function () {
-
-    }).factory('rule', function (artifact, parser) {
-        var getRules = function () {
-            return [
-                {
-                    name:'check the account number',
-                    attributes:{id:'Rule2'},
-                    conditions:[],
-                    actions:[]
-
-                }
-                ,
-                {
-                    name:'check the issuer bin',
-                    attributes:{id:'Rule1'},
-                    conditions:[],
-                    actions:[]
-                },
-                {
-                    name:'check the issuer bin1',
-                    attributes:{id:'Rule3'},
-                    conditions:[],
-                    actions:[]
-                }
-            ];
-        };
-        var saveRule = function ($scope) {
-            $scope.rules.addValue($scope.currentRule);
-            $scope.currentRule = undefined;
-        };
-
-        var commandsMap = {
-            "save":saveRule
-        };
-
-        var dispatchCommand = function (command, ruleContext) {
-            var command = commandsMap[command];
-            command(ruleContext);
-        };
-
-        var registerAttribute = function (context, attribute) {
-            context.attributes[attribute.name] = attribute.value;
-        };
-
-        var updateScope = function ($scope) {
-            if ($scope.currentRule === undefined) {
-                $scope.currentRule = new Rule();
-                $scope.currentRule.name = $scope.text;
-                console.log('new rule created');
-            } else {
-                if ($scope.text !== undefined) {
-                    var startElement = $scope.text.charAt(0);
-                    var value = $scope.text.substring(1, $scope.text.length);
-                    if (value !== undefined && value.length > 0) {
-                        if (startElement === '!') {
-                            $scope.currentRule.addAction(value);
-                        } else if (startElement === '?') {
-                            $scope.currentRule.addCondition(value);
-                        } else if (startElement === '$') {
-                            dispatchCommand(value, $scope);
-                        } else if (startElement === '@') {
-                            var separated = parser.splitAttribute(value);
-                            if (separated !== undefined) {
-                                $scope.currentRule.addAttribute(separated.name, separated.value)
-                            }
-                        } else {
-                            $scope.currentRule.comment = $scope.text;
-                        }
-                    }
-
-                }
-            }
-            $scope.text = '';
-        };
-
-        return {
-            getData:getRules,
-            updateScope:updateScope,
-            removeArtifact:artifact.removeArtifact
-        }
-    });
-
 angular.module('collector', ['hopModule', 'rules', 'rulesContext'])
     .config(function ($routeProvider) {
-        $routeProvider.when('/', {controller:ruleController, templateUrl:'rulelist.html'});
-        $routeProvider.when('/:context', {controller:ruleController, templateUrl:'rulelist.html'});
+        $routeProvider.when('/', { templateUrl:'rulelist.html'});
+        $routeProvider.when('/:context', { templateUrl:'rulelist.html'});
     });
 
 //Defines the entity model context
@@ -111,51 +27,6 @@ angular.module('entityContext', [])
             getData:getEntities
         }
     });
-
-function Rule() {
-    this.actions = [];
-    this.name = 'simple rule';
-    this.conditions = [];
-    this.attributes = {};
-}
-
-function RuleBase () {
-    var modified = false;
-    this.dirty = false;
-    this.addCondition = function(condition) {
-        modified = true;
-        this.conditions.push(condition);
-    }
-
-    this.addAction = function (action) {
-        modified = true;
-        this.actions.push(action);
-    }
-    this.removeCondition = function (condition) {
-        if(this.conditions && condition) {
-            for(var i in this.conditions) {
-                if(this.conditions[i] === condition) {
-                    this.conditions.splice(i,1);
-                }
-            }
-        }
-    }
-
-    this.addAttribute = function (attrName, attrValue) {
-        modified = true;
-        this.attributes [attrName] = attrValue;
-    }
-
-    this.removeAttribute = function (attrName) {
-        modified = true;
-        delete this.attributes[attrName];
-    }
-
-    this.isModified = function() {
-        return modified;
-    }
-}
-Rule.prototype = new RuleBase();
 
 function GroupBox() {
     var selectedItem = '';
@@ -187,6 +58,7 @@ function CollectionRepository (initial) {
             }
         }
         values.push(value);
+        value.setModified(false);//TODO: understand how this will affect server side synchronization
     };
 
     this.removeValue = function(value) {
@@ -205,42 +77,55 @@ function CollectionRepository (initial) {
     this.values = function() {
         return values;
     }
-
 }
 
-function ruleController($scope, rule) {
+function listController ($scope, rule ) {
     $scope.rules = new CollectionRepository(rule.getData());
-    $scope.title = '123';
-    $scope.commandBox = new GroupBox();
-    $scope.commandBox.selectItem('search');
 
-    $scope.enterSearchMode = function () {
-        $scope.commandBox.selectItem('search');
-    };
-
-    $scope.enterInputMode = function () {
-        $scope.commandBox.selectItem('enter');
+    $scope.updateArtifact = function(artifact) {
+        var ruleClone = angular.copy(artifact);
+        artifact.dirty = true;
+        $scope.editRule = ruleClone;
+        $scope.$emit('edit', 'hello world');
     };
 
     $scope.removeArtifact = function (artifact) {
         $scope.rules.removeValue(artifact);
     };
+}
 
-    $scope.isInputMode = function () {
-        return $scope.commandBox.isSelected("enter");
-    };
+function appController($scope){
 
-    $scope.isSearchMode = function () {
-        return $scope.commandBox.isSelected("search");
-    }
+    $scope.$on('edit', function(value) {
+        console.log("" + value.targetScope.editRule.attributes.id);
+        $scope.currentRule = value.targetScope.editRule;
+        value.stopPropagation();
+    });
+
+}
+
+function ruleController($scope, rule, updateContext) {
 
     $scope.updateArtifact = function (rule) {
-        $scope.enterInputMode();
         var ruleClone = angular.copy(rule);
         rule.dirty = true;
         $scope.currentRule = ruleClone;
-
     };
+    $scope.commentsDetailBtnVisible = false;
+    $scope.limit = 1;
+    $scope.commentsDetailBtn = 'More';
+
+    $scope.showAllComments = function() {
+      if($scope.limit == 1) {
+        $scope.limit = $scope.currentRule.comments.length;
+        $scope.commentsDetailBtn = 'Less';
+      } else {
+          $scope.limit = 1;
+          $scope.commentsDetailBtn = 'More';
+      }
+    };
+
+
 
     $scope.updateRule = function () {
         rule.updateScope($scope);

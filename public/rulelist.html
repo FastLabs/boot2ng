@@ -1,23 +1,22 @@
-<div ng-controller='ruleController'>
-    <h2>Rule Definitions</h2>
-
-    <form class='form-horizontal span10' ng-submit='updateRule()'>
+<div class="span8" ng-controller='ruleController'>
+    <form class='form-horizontal span8' ng-submit='updateRule()'>
         <fieldset class='control-group'>
-            <input class='input-xlarge console span9' type='text' ng-model='text'> </input>
-            <div class='btn-group modebar'>
-                <a class='btn' ng-click='enterInputMode()' ng-class='commandBox.isSelected("enter")'> <i
-                        class="icon-bookmark"></i></a>
-                <a class='btn' ng-click='enterSearchMode()' ng-class='commandBox.isSelected("search")'> <i
-                        class="icon-search"></i></a>
+            <input class='input-xlarge console span8' type='text' ng-model='text'> </input>
+            <div>
+                <a class="btn btn-mini">new</a>
+                <a class="btn btn-mini btn-primary">save</a>
             </div>
-            <div class='hop' hop-title='{{title}}'></div>
         </fieldset>
     </form>
-    <div class="ruleContainer" ng-show='isInputMode()'>
-        <div style='margin-bottom: 2px;'>
-            <span class='label label-important'>Name:</span> <span style='font-size:14px; font-weight:bold;'> {{currentRule.name}} </span>
+    <div>
+
+        <div class="span6" style='clear: both;'>
+            <span class='label label-important'>Name:</span>
+            <ul ng-show='currentRule'>
+                <li style="margin-bottom: 4px;" class="span6 alert alert-error">{{currentRule.name}}</li>
+            </ul>
         </div>
-        <div>
+        <div class="span6" style="clear: both;">
             <span class='label label-info'> Attributes</span>
             <ul>
                 <li class='removable' ng-repeat='(key, value) in currentRule.attributes'>
@@ -26,44 +25,57 @@
                 </li>
             </ul>
         </div>
-        <span class='label label-success'>IF</span>
-        <ul>
-            <li class='removable' ng-repeat='condition in currentRule.conditions'>
-                {{condition}}
-                <a ng-click='currentRule.removeCondition(condition)'><i class='icon-remove'></i></a>
-            </li>
-        </ul>
-        <span class='label label-success'>THEN </span>
-        <ul>
-            <li ng-repeat='action in currentRule.actions'>
-                {{action}}
-            </li>
-        </ul>
-        <div> 
-            <span class='label label-info'>Comments:</span> 
-            <a > <i class='icon-remove'></i> </a>
-        </div>
-        <div style="margin-top: 8px">
-            <div class='well span8' style="clear:left;">
-                {{currentRule.comment}}
-            </div>
-        </div>
-    </div>
-    <!-- display the rule list-->
-    <div class='row-fluid' ng-show='isSearchMode()'>
-        <div class='span5'>
-            <ul class='rules' ng-init='repoRules = rules.values()'>
-                <li class='thumbnail removable' ng-repeat='rule in repoRules | filter:text'>
-                    {{rule.name}}
-                    <a href="/rules/remove/{{rule.attributes.id}}">
-                        <i class="icon-eye-open"></i>
-                    </a>
-                    <a ng-click="updateArtifact(rule)">
-                        <i class="icon-edit"></i>
-                    </a>
-                    <a ng-click="removeArtifact(rule)"> <i class="icon-remove"></i></a>
+        <div class="span6" style="clear:both;">
+            <span class='label label-success'>IF</span>
+            <ul>
+                <li class='alert removable alert-success span6' ng-repeat='condition in currentRule.conditions'>
+                    {{condition}}
+                    <a ng-click='currentRule.removeCondition(condition)'><i class='icon-remove'></i></a>
                 </li>
             </ul>
         </div>
+        <div class="span6" style="clear:both;">
+            <span class='label label-success'>THEN </span>
+            <ul>
+                <li ng-repeat='action in currentRule.actions'>
+                    {{action}}
+                </li>
+            </ul>
+        </div>
+        <div class="span6" style="clear:both;">
+            <span class='label label-info'>Comments:</span>
+
+            <div style="margin-top: 8px">
+                <ul>
+
+                    <li class='alert removable alert-info span6' style="position:relative;"
+                        ng-repeat='comment in currentRule.comments | limitTo:limit'>
+                        {{comment}}
+                        <div style=" height: 14px; position: absolute; top:4px; right: 4px;">
+                            <a> <i class="icon-remove"></i></a>
+                            <a> <i class="icon-edit"></i></a>
+                        </div>
+                    </li>
+                </ul>
+                <a class="btn btn-mini" ng-show='currentRule.comments.length >1' ng-click='showAllComments()'>{{commentsDetailBtn}}</a>
+            </div>
+        </div>
     </div>
+
+</div>
+<div class="span4" style="position:absolute; right:0px;" ng-controller='listController'>
+    <input style="margin-left: 23px;" type="text" ng-model='searchQuery'>
+    <ul class='rules' ng-init='repoRules = rules.values()'>
+        <li class='thumbnail removable' ng-repeat='rule in repoRules | filter:searchQuery'>
+            {{rule.name}}
+            <a href="/rules/remove/{{rule.attributes.id}}">
+                <i class="icon-eye-open"></i>
+            </a>
+            <a ng-click="updateArtifact(rule)">
+                <i class="icon-edit"></i>
+            </a>
+            <a ng-click="removeArtifact(rule)"> <i class="icon-remove"></i></a>
+        </li>
+    </ul>
+
 </div>
