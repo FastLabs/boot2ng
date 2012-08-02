@@ -10,6 +10,7 @@
                 <a class='btn' ng-click='enterSearchMode()' ng-class='commandBox.isSelected("search")'> <i
                         class="icon-search"></i></a>
             </div>
+            <div class='hop' hop-title='{{title}}'></div>
         </fieldset>
     </form>
     <div class="ruleContainer" ng-show='isInputMode()'>
@@ -21,14 +22,15 @@
             <ul>
                 <li class='removable' ng-repeat='(key, value) in currentRule.attributes'>
                     <div class="removable"> {{key}} : {{value}}
-                        <a ng-click='removeAttribute(key)'><i class='icon-remove'></i></a></div>
+                        <a ng-click='currentRule.removeAttribute(key)'><i class='icon-remove'></i></a></div>
                 </li>
             </ul>
         </div>
         <span class='label label-success'>IF</span>
         <ul>
-            <li ng-repeat='condition in currentRule.conditions'>
+            <li class='removable' ng-repeat='condition in currentRule.conditions'>
                 {{condition}}
+                <a ng-click='currentRule.removeCondition(condition)'><i class='icon-remove'></i></a>
             </li>
         </ul>
         <span class='label label-success'>THEN </span>
@@ -37,11 +39,11 @@
                 {{action}}
             </li>
         </ul>
-        <span class='label label-info'>Comments:</span>
-
+        <div> 
+            <span class='label label-info'>Comments:</span> 
+            <a > <i class='icon-remove'></i> </a>
+        </div>
         <div style="margin-top: 8px">
-
-
             <div class='well span8' style="clear:left;">
                 {{currentRule.comment}}
             </div>

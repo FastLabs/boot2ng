@@ -20,3 +20,17 @@ angular.module('utils', []).config(
         };
 
     });
+angular.module('hopModule', [])
+.directive('hop', function() {
+    return {
+        restrict: 'C',
+        replace: true,
+        
+        scope: {title: '@hopTitle'},
+        template: '<span>hello tag {{title}}</span>',
+        link: function(scope, element, attrs) {
+            console.log('linking');
+        }
+    }
+});
+

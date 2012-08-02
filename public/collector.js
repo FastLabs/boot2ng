@@ -84,7 +84,7 @@ angular.module('rulesContext', ['artifact', 'utils'])
         }
     });
 
-angular.module('collector', ['rules', 'rulesContext'])
+angular.module('collector', ['hopModule', 'rules', 'rulesContext'])
     .config(function ($routeProvider) {
         $routeProvider.when('/', {controller:ruleController, templateUrl:'rulelist.html'});
         $routeProvider.when('/:context', {controller:ruleController, templateUrl:'rulelist.html'});
@@ -131,10 +131,24 @@ function RuleBase () {
         modified = true;
         this.actions.push(action);
     }
+    this.removeCondition = function (condition) {
+        if(this.conditions && condition) {
+            for(var i in this.conditions) {
+                if(this.conditions[i] === condition) {
+                    this.conditions.splice(i,1);
+                }
+            }
+        }
+    }
 
     this.addAttribute = function (attrName, attrValue) {
         modified = true;
         this.attributes [attrName] = attrValue;
+    }
+
+    this.removeAttribute = function (attrName) {
+        modified = true;
+        delete this.attributes[attrName];
     }
 
     this.isModified = function() {
@@ -196,6 +210,7 @@ function CollectionRepository (initial) {
 
 function ruleController($scope, rule) {
     $scope.rules = new CollectionRepository(rule.getData());
+    $scope.title = '123';
     $scope.commandBox = new GroupBox();
     $scope.commandBox.selectItem('search');
 
