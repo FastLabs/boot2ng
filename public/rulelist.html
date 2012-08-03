@@ -1,16 +1,40 @@
-<div class="span8" ng-controller='ruleController'>
+<div class="span8 well" ng-controller='ruleController'>
     <form class='form-horizontal span8' ng-submit='updateRule()'>
         <fieldset class='control-group'>
-            <input class='input-xlarge console span8' type='text' ng-model='text'> </input>
+            <div class="btn-toolbar">
+                <a class="btn btn-small btn-primary" ng-click='newRule()'>New Rule</a>
+                <a ng-show='currentRule && currentRule.isModified()' ng-click='addRule()'
+                   class="btn btn-small btn-success">Save Rule</a>
+            </div>
+            <div class='input-prepend'>
+                <input class='input-xlarge console span7' type='text' ng-model='text'> </input>
+            </div>
             <div class='btn-toolbar'>
 
-                    <a class="btn btn-small" ng-click='newRule()'>new</a>
-                    <a ng-show='currentRule && currentRule.isModified()' ng-click='addRule()' class="btn btn-small btn-success">add</a>
+                <div ng-init='attrCommand="@"' class="btn-group" style="display: inline;" ng-show='currentRule'>
+                    <a class="btn btn-small btn-info"
+                       ng-class='activeForMode(attrCommand)'
+                       ng-click='switchRuleMode(attrCommand)'
+                       style="font-family: Courier New; font-weight: bold;  font-size: 14px;">{{attrCommand}}</a>
 
+                    <a ng-init='commentCommand="-"' class="btn btn-small btn-info"
+                       ng-class='activeForMode(commentCommand)'
+                       ng-click='switchRuleMode(commentCommand)'
+                       style="font-family: Courier New; font-weight: bold; font-size: 14px;">{{commentCommand}}</a>
+
+                    <a ng-init='conditionCommand="?"' class="btn btn-small btn-success"
+                       style="font-family: Courier New; font-weight: bold;  font-size: 14px;"
+                            ng-click='switchRuleMode(conditionCommand)'
+                            ng-class='activeForMode(conditionCommand)'>{{conditionCommand}}</a>
+                    <a ng-init='actionMode="!"' class="btn btn-small btn-success"
+                       ng-click='switchRuleMode(actionMode)'
+                       ng-class='activeForMode(actionMode)'
+                       style="font-family: Courier New; font-weight: bold;  font-size: 14px;">!</a>
+                </div>
             </div>
         </fieldset>
     </form>
-    <div ng-show='currentRule'>
+    <div ng-show='currentRule'  style="bottom: 0px;">
         <div class="span6" style='clear: both;'>
             <span class='label label-important'>Name:</span>
             <ul ng-show='currentRule'>

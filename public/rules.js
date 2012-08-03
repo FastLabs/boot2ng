@@ -69,30 +69,47 @@ function RuleBase () {
     }
 }
 Rule.prototype = new RuleBase();
-var demoRules =  [
-    {
-        name:'check the account number',
-        attributes:{id:'Rule2'},
-        conditions:['transaction is ok'],
-        actions:[]
-
+function CollectionRepository(initial) {
+    var values = [];
+    if (initial) {
+        values = initial;
     }
-    ,
-    {
-        name:'check the issuer bin',
-        attributes:{id:'Rule1'},
-        conditions:[],
-        actions:[]
-    },
-    {
-        name:'check the issuer bin1',
-        attributes:{id:'Rule3'},
-        conditions:[],
-        actions:[]
-    }
-];
 
-angular.module('rulesContext', ['artifact', 'utils'])
+    this.addValue = function (value) {
+        console.log('add new value to repository');
+        for (var i in values) {
+            var current = values[i]
+            if (current.dirty === true) {
+                if (current.id === value.id) {
+                    values.splice(i, 1);
+                }
+            }
+        }
+        values.push(value);
+        value.setModified(false);//TODO: understand how this will affect server side synchronization
+    };
+
+    this.removeValue = function (value) {
+        if (value) {
+            var artifactId = value.attributes.id
+            for (var i in values) {
+                if (values[i].attributes.id === artifactId) {
+                    values.splice(i, 1);
+                }
+            }
+        }
+    };
+
+    //if used in UI binding cache the value so this function
+    //will be called once
+    this.values = function () {
+        return values;
+    }
+};
+
+
+
+angular.module('rulesContext', ['artifact', 'utils', 'ngResource'])
     .config(function () {
 
     }).factory('rule', function (artifact, parser) {
@@ -169,7 +186,18 @@ angular.module('rulesContext', ['artifact', 'utils'])
             updateScope: updateScope,
             removeArtifact: artifact.removeArtifact,
             newInstance: newInstance
-
-
         }
+    }).factory('rulesRepo', function($resource) {
+        var repository = new CollectionRepository();
+        var resource = $resource('/api/rules');
+        console.log('-- factory');
+        var proto = new RuleBase();
+        var rules = resource.query(function() {
+            for(var i in rules ) {
+                var rule = rules[i];
+                rule.__proto__ = proto;
+                repository.addValue(rule);
+            }
+        } );
+        return {repository: repository};
     });

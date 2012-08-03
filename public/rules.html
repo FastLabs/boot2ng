@@ -3,6 +3,7 @@
 <head>
     <title>Rule Collection Toolkit</title>
     <script src="lib/angular-1.0.1.js" type="text/javascript"></script>
+    <script src="lib/angular-resource-1.0.1.js" type="text/javascript"></script>
     <script type="text/javascript" src='collector.js'></script>
     <script type="text/javascript" src="rules.js"></script>
     <script type="text/javascript" src="./javascripts/artifact.js"></script>
@@ -30,7 +31,7 @@
 <div class='navbar navbar-fixed-top'>
     <div class='navbar-inner'>
         <div class='container'>
-            <a class='brand'>Collector</a>
+            <a class='brand pull-left'>Rule Collector</a>
 
             <div class='nav-collapse'>
                 <ul class='nav'>
@@ -40,9 +41,11 @@
                     <li><a href='#'>Data</a></li>
                 </ul>
                 <form class="navbar-search pull-right" action="">
-                    <input type="text" class="search-query span2" placeholder="User">
-                    <input type="text" class="search-query span2" placeholder="Password">
-                    <button style="margin:0px;" class='btn btn-small btn-primary'> Sign In</button>
+
+                        <input type="text" class="search-query span2" placeholder="User">
+                        <input type="text" class="search-query span2" placeholder="Password">
+                        <button class='btn btn-primary'> Sign In</button>
+
                 </form>
             </div>
         </div>

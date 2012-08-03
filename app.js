@@ -33,6 +33,7 @@ app.configure('production', function(){
 //app.get('/', routes.index);
 console.log('->' + JSON.stringify(api))
 app.get('/api/structures', api.structures);
+app.get('/api/rules', api.rules);
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
