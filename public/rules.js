@@ -195,8 +195,14 @@ angular.module('rulesContext', ['artifact', 'utils', 'ngResource'])
         var rules = resource.query(function() {
             for(var i in rules ) {
                 var rule = rules[i];
-                rule.__proto__ = proto;
-                repository.addValue(rule);
+                var instance = new Rule();
+                instance.actions = rule.actions;
+                instance.conditions = rule.conditions;
+                instance.name = rule.name;
+                instance.atrributes = rule.atrributes;
+                instance.comments = rule.comments;
+                //__proto__ didn't work in ie9
+                repository.addValue(instance);
             }
         } );
         return {repository: repository};
