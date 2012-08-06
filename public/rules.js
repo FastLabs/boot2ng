@@ -1,74 +1,100 @@
-angular.module('rules', [], function() {
-    console.log('rules module created');
-})
-    .factory('hello', function() {
-        return function(text) {
-            console.log('->' + text);
+
+angular.module('comments', ['context']).factory('comment', function (editable) {
+        var Comment = function(text, author) {
+            this.text = text;
+            this.author = author;
+            this.date = new Date();
         };
-    })
-    .value('updateContext', {hello : 'Hello World'});
 
-function Rule() {
-    this.actions = [];
-    this.conditions = [];
-    this.attributes = {};
-    this.comments = [];
-}
-
-function RuleBase () {
-    var modified = false;
-    this.dirty = false;
-    this.addCondition = function(condition) {
-        modified = true;
-        this.conditions.push(condition);
+        var EditCommentContext = function (original) {
+            this.text = original.text;
+            this.applyChanges = function() {
+                console.log('update the comment scope');
+            }
+        };
+        EditCommentContext.prototype = new editable.EditableBase();
+       // Comment.prototype = new editable.EditableBase();
+        return {
+            newInstance : function(text, author) {
+                return new Comment(text, author);
+            },
+            newEditContext: function (context) {
+                return new EditCommentContext(context);
+            }
+        };
     }
+);
 
-    this.addAction = function (action) {
-        modified = true;
-        this.actions.push(action);
-    }
-    this.removeCondition = function (condition) {
-        if(this.conditions && condition) {
-            for(var i in this.conditions) {
-                if(this.conditions[i] === condition) {
-                    this.conditions.splice(i,1);
+angular.module('rules', ['comments'])
+    .factory('ruleFactory', function(editable, comment) {
+        var RuleBase = function () {
+            var modified = false;
+            this.dirty = false;
+            this.addCondition = function(condition) {
+                modified = true;
+                this.conditions.push(condition);
+            };
+
+            this.addAction = function (action) {
+                modified = true;
+                this.actions.push(action);
+            };
+            this.removeCondition = function (condition) {
+                if(this.conditions && condition) {
+                    for(var i in this.conditions) {
+                        if(this.conditions[i] === condition) {
+                            this.conditions.splice(i,1);
+                        }
+                    }
                 }
+            };
+            this.lastComment = function () {
+                var commentCount = this.comments.length();
+                if(commentCount > 0) {
+                    return this.comments[commentCount - 1];
+                }
+            };
+            this.addComment = function(text) {
+                if(!this.comments) {
+                    this.comments = [];
+                }
+                var commentStructure = comment.newInstance(text, 'oleg')
+                this.comments.unshift(commentStructure);
+            };
+
+            this.addAttribute = function (attrName, attrValue) {
+                modified = true;
+                this.attributes [attrName] = attrValue;
+            };
+
+            this.removeAttribute = function (attrName) {
+                modified = true;
+                delete this.attributes[attrName];
+            };
+
+            this.isModified = function() {
+                return modified;
+            };
+            this.setModified = function(value) {
+                modified = value;
+            };
+        };
+        //TODO: investigate this
+        //RuleBase.prototype = editable.EditableBase;
+        var Rule =  function() {
+            this.actions = [];
+            this.conditions = [];
+            this.attributes = {};
+            this.comments = [];
+        };
+        Rule.prototype = new RuleBase();
+        return {
+            newInstance : function () {
+                return new Rule();
             }
         }
-    }
+    });
 
-    this.lastComment = function () {
-        var commentCount = this.comments.length();
-        if(commentCount > 0) {
-            return this.comments[commentCount - 1];
-        }
-    };
-    this.addComment = function(comment) {
-        if(!this.comments) {
-            this.comments = [];
-        }
-
-        this.comments.unshift(comment);
-    };
-
-    this.addAttribute = function (attrName, attrValue) {
-        modified = true;
-        this.attributes [attrName] = attrValue;
-    };
-
-    this.removeAttribute = function (attrName) {
-        modified = true;
-        delete this.attributes[attrName];
-    };
-
-    this.isModified = function() {
-        return modified;
-    };
-    this.setModified = function(value) {
-        modified = value;
-    }
-}
-Rule.prototype = new RuleBase();
 function CollectionRepository(initial) {
     var values = [];
     if (initial) {
@@ -76,7 +102,6 @@ function CollectionRepository(initial) {
     }
 
     this.addValue = function (value) {
-        console.log('add new value to repository');
         for (var i in values) {
             var current = values[i]
             if (current.dirty === true) {
@@ -109,93 +134,64 @@ function CollectionRepository(initial) {
 
 
 
-angular.module('rulesContext', ['artifact', 'utils', 'ngResource'])
+angular.module('rulesContext', ['artifact', 'utils', 'ngResource', 'rules'])
     .config(function () {
 
-    }).factory('rule', function (artifact, parser) {
-        var getRules = function () {
-            var result = [];
-           for(var i in demoRules) {
-               var rule = new Rule();
-               var ruleData = demoRules[i];
-               rule.actions =  ruleData.actions;
-               rule.attributes = ruleData.attributes;
-               rule.name = ruleData.name;
-               rule.comments = ruleData.comments;
-               rule.conditions = ruleData.conditions;
-               result.push(rule);
-           }
-            return result;
-        };
-        var saveRule = function ($scope) {
-            $scope.rules.addValue($scope.currentRule);
-            $scope.currentRule = undefined;
-        };
-
-        var commandsMap = {
-            "save":saveRule
-        };
-
+    })
+    .value('saveCmd', function (rule){
+        console.log('save ' + rule.name);
+    })
+    .factory('ruleContext', function (artifact, parser, ruleFactory, editable) {
+        var injector = angular.injector(['rulesContext']);
         var dispatchCommand = function (command, ruleContext) {
-            var command = commandsMap[command];
-            command(ruleContext);
+            var cmd = injector.get(command + 'Cmd');
+            injector.invoke(cmd, this, {rule: ruleContext});
         };
-
-        var registerAttribute = function (context, attribute) {
-            context.attributes[attribute.name] = attribute.value;
-        };
-
-        var updateScope = function ($scope) {
-            if ($scope.currentRule === undefined) {
-                $scope.currentRule = new Rule();
-                $scope.currentRule.name = $scope.text;
-            } else {
-                if ($scope.text !== undefined) {
-                    var startElement = $scope.text.charAt(0);
-                    var value = $scope.text.substring(1, $scope.text.length);
+        var updateScope = function () {
+                if (this.text !== undefined) {
+                    var startElement = this.text.charAt(0);
+                    var value = this.text.substring(1, this.text.length);
                     if (value !== undefined && value.length > 0) {
                         if (startElement === '!') {
-                            $scope.currentRule.addAction(value);
+                            this.context.addAction(value);
                         } else if (startElement === '?') {
-                            $scope.currentRule.addCondition(value);
+                            this.context.addCondition(value);
                         } else if (startElement === '$') {
-                            dispatchCommand(value, $scope);
+                            dispatchCommand(value, this.context);
                         } else if (startElement === '@') {
                             var separated = parser.splitAttribute(value);
                             if (separated !== undefined) {
-                                $scope.currentRule.addAttribute(separated.name, separated.value)
+                                this.context.addAttribute(separated.name, separated.value)
                             }
                         } else if(startElement === '-'){
-                            $scope.currentRule.addComment(value);
+                            this.context.addComment(value);
                         } else {
-                            $scope.currentRule.name = $scope.text;
+                            this.context.name = this.text;
                         }
                     }
-
                 }
-            }
-            $scope.text = '';
+            this.text = '';
         };
+        var EditRuleContext = function (context) {
+            this.context = context;
+            this.applyChanges = updateScope;
 
-        var newInstance = function() {
-            var newInstance = new Rule();
-            return newInstance;
         }
+        EditRuleContext.prototype = new editable.EditableBase();
         return {
-            getData: getRules,
+            newEditScope: function (rule) {
+                return new EditRuleContext(rule);
+            },
             updateScope: updateScope,
-            removeArtifact: artifact.removeArtifact,
-            newInstance: newInstance
+            removeArtifact: artifact.removeArtifact
         }
-    }).factory('rulesRepo', function($resource) {
+    }).factory('rulesRepo', function($resource, ruleFactory) {
         var repository = new CollectionRepository();
         var resource = $resource('/api/rules');
-        console.log('-- factory');
-        var proto = new RuleBase();
         var rules = resource.query(function() {
             for(var i in rules ) {
                 var rule = rules[i];
-                var instance = new Rule();
+                var instance = ruleFactory.newInstance();
                 instance.actions = rule.actions;
                 instance.conditions = rule.conditions;
                 instance.name = rule.name;

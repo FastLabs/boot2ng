@@ -59,11 +59,19 @@ function client(greet) {
 //--------------------------------------------------
 
 angular.module('myApp', [], function() {
-    console.log('my app bootstrapped');
+    console.log('my app boot    strapped');
 });
 
 function firstController($scope) {
     console.log('controller initialized');
     $scope.hello = 'Hello from controller';
-
 }
+
+angular.module('fact', []).factory('factory', function() {
+    console.log('fact module initialised');
+    return {hello: function (){
+        console.log('hello');
+    }}
+}).value('val', {
+        val: 'abc'
+    });

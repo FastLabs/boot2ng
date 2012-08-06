@@ -28,34 +28,21 @@ angular.module('entityContext', [])
         }
     });
 
-function GroupBox() {
-    var selectedItem = '';
-
-    this.isSelected = function (item) {
-        return this.selectedItem === item ? 'active' : '';
-    };
-
-    this.selectItem = function (item) {
-        console.log(item);
-        this.selectedItem = item;
-    };
-}
-
-
 function listController($scope) {
     $scope.removeArtifact = function (artifact) {
         $scope.rules.removeValue(artifact);
     };
 }
 
-function appController($scope, rule, rulesRepo) {
+function appController($scope, ruleFactory, rulesRepo, ruleContext) {
     $scope.rules = rulesRepo.repository;
 
-
+    //TODO: probably is a good idea to get rid of currentRule instance
     $scope.updateArtifact = function (artifact) {
         var clone = angular.copy(artifact);
         artifact.dirty = true;
         $scope.currentRule = clone;
+        $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
     };
 
     $scope.addRule = function () {
@@ -64,13 +51,13 @@ function appController($scope, rule, rulesRepo) {
     }
 
     $scope.newRule = function () {
-        $scope.currentRule = rule.newInstance();
+        $scope.currentRule = ruleFactory.newInstance();
+        $scope.currentContext = ruleContext.newEditScope($scope.currentRule)
     }
 
 }
 
-function ruleController($scope, rule) {
-
+function ruleController($scope, ruleContext, comment) {
     $scope.commentsDetailBtnVisible = false;
     $scope.limit = 1;
     $scope.commentsDetailBtn = 'More';
@@ -92,13 +79,14 @@ function ruleController($scope, rule) {
             $scope.mode = newMode;
         }
     };
+
+    $scope.editComment = function (updateable) {
+       $scope.currentContext = comment.newEditContext(updateable);
+    };
+
     $scope.activeForMode = function (mode) {
         if ($scope.mode === mode) {
             return 'active';
         }
     };
-
-    $scope.updateRule = function () {
-        rule.updateScope($scope);
-    }
 }

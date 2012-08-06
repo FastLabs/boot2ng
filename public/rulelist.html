@@ -1,13 +1,13 @@
 <div class="span8 well" ng-controller='ruleController'>
-    <form class='form-horizontal span8' ng-submit='updateRule()'>
+    <form class='form-horizontal span8' ng-submit='currentContext.applyChanges()'>
         <fieldset class='control-group'>
             <div class="btn-toolbar">
                 <a class="btn btn-small btn-primary" ng-click='newRule()'>New Rule</a>
                 <a ng-show='currentRule && currentRule.isModified()' ng-click='addRule()'
                    class="btn btn-small btn-success">Save Rule</a>
             </div>
-            <div class='input-prepend'>
-                <input class='input-xlarge console span7' type='text' ng-model='text'> </input>
+            <div class='input-prepend' ng-show='currentContext'>
+                <input class='input-xlarge console span7' type='text' ng-model='currentContext.text'> </input>
             </div>
             <div class='btn-toolbar'>
 
@@ -75,10 +75,10 @@
 
                     <li class='alert removable alert-info span6' style="position:relative;"
                         ng-repeat='comment in currentRule.comments | limitTo:limit'>
-                        {{comment}}
+                        {{comment.text}}
                         <div style=" height: 14px; position: absolute; top:4px; right: 4px;">
                             <a> <i class="icon-remove"></i></a>
-                            <a> <i class="icon-edit"></i></a>
+                            <a ng-click='editComment(comment)'> <i class="icon-edit"></i></a>
                         </div>
                     </li>
                 </ul>
