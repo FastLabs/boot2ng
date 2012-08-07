@@ -7,7 +7,7 @@
                    class="btn btn-small btn-success">Save Rule</a>
             </div>
             <div class='input-prepend' ng-show='currentContext'>
-                <input key-press='{13: backSpace()}' class='input-xlarge console span7' type='text' ng-model='currentContext.text'> </input>
+                <input key-press='{27: "discardContext($event)"}' class='input-xlarge console span7' type='text' ng-model='currentContext.text'> </input>
                 <a ng-click='applyEditContext()'>
                     <i class="icon-ok" ng-show='currentContext.text && currentContext.text.length >0'></i>
                 </a>
@@ -59,9 +59,12 @@
         <div class="span6" style="clear:both;">
             <span class='label label-success'>IF</span>
             <ul>
-                <li class='alert removable alert-success span6' ng-repeat='condition in currentRule.conditions'>
+                <li class='alert removable alert-success span6' ng-repeat='condition in currentRule.conditions' style="position: relative;">
                     {{condition}}
-                    <a ng-click='currentRule.removeCondition(condition)'><i class='icon-remove'></i></a>
+                    <div style=" height: 14px; position: absolute; top:4px; right: 4px;">
+                        <a  ng-click='currentRule.removeCondition(condition)'> <i class="icon-remove"></i></a>
+                        <a ng-click='editCondition(comment)'> <i class="icon-edit"></i></a>
+                    </div>
                 </li>
             </ul>
         </div>
@@ -75,10 +78,8 @@
         </div>
         <div class="span6" style="clear:both;">
             <span class='label label-info'>Comments:</span>
-
             <div style="margin-top: 8px">
                 <ul>
-
                     <li class='alert removable alert-info span6' style="position:relative;"
                         ng-repeat='comment in currentRule.comments | limitTo:limit'>
                         {{comment.text}}

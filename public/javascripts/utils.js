@@ -33,15 +33,30 @@ angular.module('hop.directives', [])
             }
         }
     })
-    .directive('keyPress', function () {
+    .directive('keyPress',['$parse', function ($parse) {
         return {
             link:function (scope, element, attrs) {
-                console.log( attrs);
+                var keyPressAttribute;
+               try {
+                   keyPressAttribute = scope.$eval(attrs.keyPress);
+                } catch(error) {
+                    console.log('error parsing the attributes');
+                }
+                var eventMap = {};
+                angular.forEach(keyPressAttribute, function(v, k){
+                    eventMap[k] = $parse(v);
+                });
 
-                element.bind('keydown', function () {
-                    console.log('press');
-                })
+                element.bind('keydown', function (event) {
+                    var expression = eventMap[event.keyCode];
+                   // console.log(expression);
+                    if(expression) {
+                        scope.$apply(function(){
+                            expression(scope, {'$event': event});
+                        });
+                    }
+                });
             }
         };
-    });
+    }]);
 

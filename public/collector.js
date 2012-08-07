@@ -48,12 +48,14 @@ function appController($scope, ruleFactory, rulesRepo, ruleContext) {
     $scope.addRule = function () {
         $scope.rules.addValue($scope.currentRule);
         $scope.currentRule = undefined;
-    }
+    };
 
     $scope.newRule = function () {
         $scope.currentRule = ruleFactory.newInstance();
-        $scope.currentContext = ruleContext.newEditScope($scope.currentRule)
-    }
+        $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
+    };
+
+
 
 }
 
@@ -84,6 +86,10 @@ function ruleController($scope, ruleContext, comment) {
        $scope.currentContext = comment.newEditContext(updateable);
     };
 
+    $scope.editCondition = function() {
+
+    };
+
     $scope.activeForMode = function (mode) {
         if ($scope.mode === mode) {
             return 'active';
@@ -94,7 +100,8 @@ function ruleController($scope, ruleContext, comment) {
         $scope.currentContext.applyChanges();
     };
 
-    $scope.discardEditContext = function() {
-
+    $scope.discardContext = function() {
+        console.log('discard edit context');
+        $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
     };
 }
