@@ -1,5 +1,5 @@
 <div class="span8 well" ng-controller='ruleController'>
-    <form class='form-horizontal span8' ng-submit='currentContext.applyChanges()'>
+    <form class='form-horizontal span8' ng-submit='applyEditContext()'>
         <fieldset class='control-group'>
             <div class="btn-toolbar">
                 <a class="btn btn-small btn-primary" ng-click='newRule()'>New Rule</a>
@@ -7,7 +7,13 @@
                    class="btn btn-small btn-success">Save Rule</a>
             </div>
             <div class='input-prepend' ng-show='currentContext'>
-                <input class='input-xlarge console span7' type='text' ng-model='currentContext.text'> </input>
+                <input key-press='{13: backSpace()}' class='input-xlarge console span7' type='text' ng-model='currentContext.text'> </input>
+                <a ng-click='applyEditContext()'>
+                    <i class="icon-ok" ng-show='currentContext.text && currentContext.text.length >0'></i>
+                </a>
+                <a ng-click='discardEditContext()'>
+                    <i class="icon-remove" ng-show='currentContext.text && currentContext.text.length >0'></i>
+                </a>
             </div>
             <div class='btn-toolbar'>
 

@@ -20,17 +20,28 @@ angular.module('utils', []).config(
         };
 
     });
-angular.module('hopModule', [])
-.directive('hop', function() {
-    return {
-        restrict: 'C',
-        replace: true,
-        
-        scope: {title: '@hopTitle'},
-        template: '<span>hello tag {{title}}</span>',
-        link: function(scope, element, attrs) {
-            console.log('linking');
+angular.module('hop.directives', [])
+    .directive('hop', function () {
+        return {
+            restrict:'C',
+            replace:true,
+
+            scope:{title:'@hopTitle'},
+            template:'<span>hello tag {{title}}</span>',
+            link:function (scope, element, attrs) {
+                console.log('linking');
+            }
         }
-    }
-});
+    })
+    .directive('keyPress', function () {
+        return {
+            link:function (scope, element, attrs) {
+                console.log( attrs);
+
+                element.bind('keydown', function () {
+                    console.log('press');
+                })
+            }
+        };
+    });
 

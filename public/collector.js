@@ -1,6 +1,6 @@
 //Defines the rule context
 'use strict'
-angular.module('collector', ['hopModule', 'rules', 'rulesContext'])
+angular.module('collector', ['hop.directives', 'rules', 'rulesContext'])
     .config(function ($routeProvider) {
         $routeProvider.when('/', { templateUrl:'rulelist.html'});
         $routeProvider.when('/:context', { templateUrl:'rulelist.html'});
@@ -88,5 +88,13 @@ function ruleController($scope, ruleContext, comment) {
         if ($scope.mode === mode) {
             return 'active';
         }
+    };
+
+    $scope.applyEditContext = function() {
+        $scope.currentContext.applyChanges();
+    };
+
+    $scope.discardEditContext = function() {
+
     };
 }

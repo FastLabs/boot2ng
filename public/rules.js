@@ -8,7 +8,9 @@ angular.module('comments', ['context']).factory('comment', function (editable) {
 
         var EditCommentContext = function (original) {
             this.text = original.text;
+
             this.applyChanges = function() {
+                original.text = this.text;
                 console.log('update the comment scope');
             }
         };
