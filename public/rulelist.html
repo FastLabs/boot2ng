@@ -43,15 +43,20 @@
     <div ng-show='currentRule'  style="bottom: 0px;">
         <div class="span6" style='clear: both;'>
             <span class='label label-important'>Name:</span>
-            <ul ng-show='currentRule'>
-                <li style="margin-bottom: 4px;" class="span6 alert alert-error">{{currentRule.name}}</li>
+            <ul ng-show='currentRule.name'>
+                <li style="margin-bottom: 4px; position: relative;" class="span6 alert alert-error removable">
+                    {{currentRule.name}}
+                    <div style=" height: 14px; position: absolute; top:4px; right: 4px;">
+                        <a ng-click='editTitle()'> <i class="icon-edit"></i></a>
+                    </div>
+                </li>
             </ul>
         </div>
         <div class="span6" style="clear: both;">
             <span class='label label-info'> Attributes</span>
             <ul>
                 <li class='removable' ng-repeat='(key, value) in currentRule.attributes'>
-                    <div class="removable"> {{key}} : {{value}}
+                    <div class="removable"> <h5>{{key}} : {{value}} </h5>
                         <a ng-click='currentRule.removeAttribute(key)'><i class='icon-remove'></i></a></div>
                 </li>
             </ul>

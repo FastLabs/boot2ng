@@ -92,14 +92,13 @@ function ruleController($scope, ruleContext, comment, condition, action) {
             $scope.mode = newMode;
         }
     };
+    $scope.editTitle = function() {
+        $scope.currentContext = ruleContext.newEditScope($scope.currentRule, $scope.currentRule.name)
+    }
 
     $scope.editComment = function (updateable) {
         $scope.currentContext = comment.newEditContext(updateable);
     };
-
-   /* $scope.removeComment = function(deleteable) {
-        $scope.currentRule.removeComment(deleteable);
-    };*/
 
     $scope.editCondition = function (selected) {
         $scope.currentContext = condition.newEditContext(selected);

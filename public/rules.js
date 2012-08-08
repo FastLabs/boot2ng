@@ -7,10 +7,7 @@ angular.module('comments', ['context']).factory('comment', function (editable) {
 
         var EditCommentContext = function (original) {
             this.text = original.text;
-            this.applyChanges = function () {
-                original.text = this.text;
-                console.log('update the comment scope');
-            }
+            this.original = original;
         };
         EditCommentContext.prototype = new editable.EditableBase();
         return {
@@ -30,9 +27,7 @@ angular.module('conditions', ['context']).factory('condition', function (editabl
     };
     var EditConditionContext = function (original) {
         this.text = original.text;
-        this.applyChanges = function () {
-            original.text = this.text;
-        }
+        this.original = original;
     };
     EditConditionContext.prototype = new editable.EditableBase();
     return {
@@ -51,10 +46,7 @@ angular.module('actions', ['context']).factory('action', function (editable) {
     };
     var EditActionContext = function(original) {
         this.text = original.text;
-
-        this.applyChanges = function() {
-            original.text = this.text;
-        };
+        this.original = original;
     };
     EditActionContext.prototype = new editable.EditableBase();
     return {
@@ -87,8 +79,7 @@ angular.module('rules', ['comments', 'conditions', 'actions', 'user'])
                         }
                     }
                 }
-            }
-
+            };
             this.removeCondition = function (condition) {
                 removeFromArray(this.conditions, condition);
             };
@@ -228,17 +219,18 @@ angular.module('rulesContext', ['artifact', 'utils', 'ngResource', 'rules'])
                     }
                 }
             }
-            this.text = '';
+            //this.text = '';
         };
-        var EditRuleContext = function (context) {
+        var EditRuleContext = function (context, ruleName) {
             this.context = context;
+            this.text = ruleName;
             this.applyChanges = updateScope;
 
         }
         EditRuleContext.prototype = new editable.EditableBase();
         return {
-            newEditScope:function (rule) {
-                return new EditRuleContext(rule);
+            newEditScope:function (rule, ruleName) {
+                return new EditRuleContext(rule, ruleName);
             },
             updateScope:updateScope,
             removeArtifact:artifact.removeArtifact
