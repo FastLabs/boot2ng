@@ -7,14 +7,12 @@ angular.module('comments', ['context']).factory('comment', function (editable) {
 
         var EditCommentContext = function (original) {
             this.text = original.text;
-
             this.applyChanges = function () {
                 original.text = this.text;
                 console.log('update the comment scope');
             }
         };
         EditCommentContext.prototype = new editable.EditableBase();
-        // Comment.prototype = new editable.EditableBase();
         return {
             newInstance:function (text, author) {
                 return new Comment(text, author);
@@ -69,8 +67,8 @@ angular.module('actions', ['context']).factory('action', function (editable) {
     }
 });
 
-angular.module('rules', ['comments', 'conditions', 'actions'])
-    .factory('ruleFactory', function (editable, comment, condition, action) {
+angular.module('rules', ['comments', 'conditions', 'actions', 'user'])
+    .factory('ruleFactory', function (editable, comment, condition, action, userInfo) {
         var RuleBase = function () {
             var modified = false;
             this.dirty = false;
@@ -104,8 +102,13 @@ angular.module('rules', ['comments', 'conditions', 'actions'])
                 if (!this.comments) {
                     this.comments = [];
                 }
-                var commentStructure = comment.newInstance(text, 'oleg')
+                var user = userInfo.getCurrentUser();
+                var commentStructure = comment.newInstance(text, user.initials)
                 this.comments.unshift(commentStructure);
+            };
+
+            this.removeComment = function() {
+
             };
 
             this.addAttribute = function (attrName, attrValue) {

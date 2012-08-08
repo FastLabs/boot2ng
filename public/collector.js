@@ -34,11 +34,31 @@ function listController($scope) {
     };
 }
 
-function appController($scope, rulesRepo, ruleContext) {
+function appController($scope, ruleFactory, rulesRepo, ruleContext) {
     $scope.rules = rulesRepo.repository;
+
+    $scope.newRule = function () {
+        $scope.currentRule = ruleFactory.newInstance();
+        //$scope.currentContext = ruleContext.newEditScope($scope.currentRule);
+    };
+
+    //TODO: probably is a good idea to get rid of currentRule instance
+    $scope.updateArtifact = function (artifact) {
+        var clone = angular.copy(artifact);
+        artifact.dirty = true;
+        $scope.currentRule = clone;
+        console.log('update rule');
+      //  $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
+    };
+
+    $scope.addRule = function () {
+        $scope.rules.addValue($scope.currentRule);
+        $scope.currentRule = undefined;
+
+    };
 }
 
-function ruleController($scope, ruleFactory, ruleContext, comment, condition, action) {
+function ruleController($scope, ruleContext, comment, condition, action) {
     $scope.commentsDetailBtnVisible = false;
     $scope.limit = 1;
     $scope.commentsDetailBtn = 'More';
@@ -47,24 +67,13 @@ function ruleController($scope, ruleFactory, ruleContext, comment, condition, ac
         $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
     };
 
-    $scope.addRule = function () {
-        $scope.rules.addValue($scope.currentRule);
-        $scope.currentRule = undefined;
-        $scope.currentContext = undefined;
-    };
-
-    $scope.newRule = function () {
-        $scope.currentRule = ruleFactory.newInstance();
-        $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
-    };
-
-    //TODO: probably is a good idea to get rid of currentRule instance
-    $scope.updateArtifact = function (artifact) {
-        var clone = angular.copy(artifact);
-        artifact.dirty = true;
-        $scope.currentRule = clone;
-        $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
-    };
+    $scope.$watch('currentRule', function(newRule, oldRule) {
+        if(newRule) {
+            $scope.currentContext = ruleContext.newEditScope(newRule);
+        } else {
+            $scope.currentContext = undefined;
+        }
+    });
 
     $scope.showAllComments = function () {
         if ($scope.limit == 1) {
@@ -88,6 +97,10 @@ function ruleController($scope, ruleFactory, ruleContext, comment, condition, ac
         $scope.currentContext = comment.newEditContext(updateable);
     };
 
+    $scope.deleteComment = function(deleteable) {
+        $scope.currentRule.removeComment(deleteable);
+    };
+
     $scope.editCondition = function (selected) {
         $scope.currentContext = condition.newEditContext(selected);
     };
@@ -104,6 +117,7 @@ function ruleController($scope, ruleFactory, ruleContext, comment, condition, ac
 
     $scope.applyEditContext = function () {
         $scope.currentContext.applyChanges();
+        $scope.currentRule.setModified(true);
         resetEditContext();
     };
 

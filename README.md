@@ -1,4 +1,4 @@
 boot2ng
 =======
 
-AngularJs experiments
+Exeperimenting on a combile DSL user interface.
