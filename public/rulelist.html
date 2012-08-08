@@ -60,10 +60,10 @@
             <span class='label label-success'>IF</span>
             <ul>
                 <li class='alert removable alert-success span6' ng-repeat='condition in currentRule.conditions' style="position: relative;">
-                    {{condition}}
+                    {{condition.text}}
                     <div style=" height: 14px; position: absolute; top:4px; right: 4px;">
                         <a  ng-click='currentRule.removeCondition(condition)'> <i class="icon-remove"></i></a>
-                        <a ng-click='editCondition(comment)'> <i class="icon-edit"></i></a>
+                        <a ng-click='editCondition(condition)'> <i class="icon-edit"></i></a>
                     </div>
                 </li>
             </ul>
@@ -71,8 +71,12 @@
         <div class="span6" style="clear:both;">
             <span class='label label-success'>THEN </span>
             <ul>
-                <li class="alert removable alert-success span6" ng-repeat='action in currentRule.actions'>
-                    {{action}}
+                <li class="alert removable alert-success span6" ng-repeat='action in currentRule.actions' style='position:relative;'>
+                    {{action.text}}
+                    <div style=" height: 14px; position: absolute; top:4px; right: 4px;">
+                        <a  ng-click='currentRule.removeAction(action)'> <i class="icon-remove"></i></a>
+                        <a ng-click='editAction(action)'> <i class="icon-edit"></i></a>
+                    </div>
                 </li>
             </ul>
         </div>

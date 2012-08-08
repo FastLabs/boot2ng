@@ -34,8 +34,29 @@ function listController($scope) {
     };
 }
 
-function appController($scope, ruleFactory, rulesRepo, ruleContext) {
+function appController($scope, rulesRepo, ruleContext) {
     $scope.rules = rulesRepo.repository;
+}
+
+function ruleController($scope, ruleFactory, ruleContext, comment, condition, action) {
+    $scope.commentsDetailBtnVisible = false;
+    $scope.limit = 1;
+    $scope.commentsDetailBtn = 'More';
+
+    var resetEditContext = function () {
+        $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
+    };
+
+    $scope.addRule = function () {
+        $scope.rules.addValue($scope.currentRule);
+        $scope.currentRule = undefined;
+        $scope.currentContext = undefined;
+    };
+
+    $scope.newRule = function () {
+        $scope.currentRule = ruleFactory.newInstance();
+        $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
+    };
 
     //TODO: probably is a good idea to get rid of currentRule instance
     $scope.updateArtifact = function (artifact) {
@@ -44,25 +65,6 @@ function appController($scope, ruleFactory, rulesRepo, ruleContext) {
         $scope.currentRule = clone;
         $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
     };
-
-    $scope.addRule = function () {
-        $scope.rules.addValue($scope.currentRule);
-        $scope.currentRule = undefined;
-    };
-
-    $scope.newRule = function () {
-        $scope.currentRule = ruleFactory.newInstance();
-        $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
-    };
-
-
-
-}
-
-function ruleController($scope, ruleContext, comment) {
-    $scope.commentsDetailBtnVisible = false;
-    $scope.limit = 1;
-    $scope.commentsDetailBtn = 'More';
 
     $scope.showAllComments = function () {
         if ($scope.limit == 1) {
@@ -83,12 +85,16 @@ function ruleController($scope, ruleContext, comment) {
     };
 
     $scope.editComment = function (updateable) {
-       $scope.currentContext = comment.newEditContext(updateable);
+        $scope.currentContext = comment.newEditContext(updateable);
     };
 
-    $scope.editCondition = function() {
-
+    $scope.editCondition = function (selected) {
+        $scope.currentContext = condition.newEditContext(selected);
     };
+
+    $scope.editAction = function(selected) {
+      $scope.currentContext = action.newEditContext(selected);
+    }
 
     $scope.activeForMode = function (mode) {
         if ($scope.mode === mode) {
@@ -96,12 +102,12 @@ function ruleController($scope, ruleContext, comment) {
         }
     };
 
-    $scope.applyEditContext = function() {
+    $scope.applyEditContext = function () {
         $scope.currentContext.applyChanges();
+        resetEditContext();
     };
 
-    $scope.discardContext = function() {
-        console.log('discard edit context');
-        $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
+    $scope.discardContext = function () {
+        resetEditContext();
     };
 }
