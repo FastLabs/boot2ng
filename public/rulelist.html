@@ -89,7 +89,7 @@
                         <h5 class="alert-heading">by {{comment.author}} on: {{comment.date| date:'fullDate'}}</h5>
                         {{comment.text}}
                         <div style=" height: 14px; position: absolute; top:4px; right: 4px;">
-                            <a ng-click='removeComment(comment)'> <i class="icon-remove"></i></a>
+                            <a ng-click='currentRule.removeComment(comment)'> <i class="icon-remove"></i></a>
                             <a ng-click='editComment(comment)'> <i class="icon-edit"></i></a>
                         </div>
                     </li>

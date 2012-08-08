@@ -79,19 +79,29 @@ angular.module('rules', ['comments', 'conditions', 'actions', 'user'])
                 this.conditions.push(condInst);
             };
 
+            var removeFromArray = function (collection, value) {
+                if (collection && value) {
+                    for (var i in collection) {
+                        if (collection[i] === value) {
+                            collection.splice(i, 1);
+                        }
+                    }
+                }
+            }
+
+            this.removeCondition = function (condition) {
+                removeFromArray(this.conditions, condition);
+            };
+
             this.addAction = function (text) {
                 modified = true;
                 this.actions.push(action.newInstance(text));
             };
-            this.removeCondition = function (condition) {
-                if (this.conditions && condition) {
-                    for (var i in this.conditions) {
-                        if (this.conditions[i] === condition) {
-                            this.conditions.splice(i, 1);
-                        }
-                    }
-                }
+
+            this.removeAction = function(deleteable) {
+                removeFromArray(this.actions, deleteable);
             };
+
             this.lastComment = function () {
                 var commentCount = this.comments.length();
                 if (commentCount > 0) {
@@ -107,8 +117,8 @@ angular.module('rules', ['comments', 'conditions', 'actions', 'user'])
                 this.comments.unshift(commentStructure);
             };
 
-            this.removeComment = function() {
-
+            this.removeComment = function(deleteable) {
+               removeFromArray(this.comments, deleteable)
             };
 
             this.addAttribute = function (attrName, attrValue) {
