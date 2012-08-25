@@ -72,3 +72,9 @@ angular.module('user', []).factory('userInfo', function() {
     };
 });
 
+function barController($scope) {
+    $scope.login = function () {
+        console.log('try to authenticate'+ $scope.user  + ' ' + $scope.password);
+    }
+}
+
