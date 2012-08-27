@@ -6,7 +6,7 @@
                 <a ng-show='currentRule && currentRule.isModified()' ng-click='addRule()'
                    class="btn btn-small btn-success">Save Rule</a>
             </div>
-            <div class='input-prepend' ng-show='currentContext'>
+            <div  ng-show='currentContext'>
                 <input key-press='{27: "discardContext($event)"}' class='input-xlarge console span7' type='text' ng-model='currentContext.text'> </input>
                 <a ng-click='applyEditContext()'>
                     <i class="icon-ok" ng-show='currentContext.text && currentContext.text.length >0'></i>
