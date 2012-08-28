@@ -1,9 +1,76 @@
+{
+ console.log('parser initialization');
+
+  McCategoryCodes = {
+    BIL: 'Bi-Lateral Settlement',
+    DOM: 'Domestic'
+  };
+
+  ViCategoryCode = {
+    DMB: 'UK Domestic',
+    DMN: 'Non UK Domestic'
+  };
+
+  function getMasterCardCategoryCode(id) {
+    return {code: id, description: McCategoryCodes[id]};
+  }
+
+  function getVisaCategoryCode(id) {
+    return {code: id, description: ViCategoryCode[id]};
+  }
+}
+
 start
-  = Text+
-Text
-  = Characters
+  = content: FileContent {
+    console.log(getMasterCardCategoryCode('BIL'));
+    return content;
+  }
+
+FileContent
+  = (Comment)* record: (Record)* {
+    return record;
+  }
+
+Record
+  = scheme: 'MC' categoryCode: McCategoryCode SchemeType ProcessingSequence EndOfLine {
+      return scheme + '->' + categoryCode.description;
+  }
+  / scheme: 'VI' categoryCode: ViCategoryCode SchemeType ProcessingSequence EndOfLine {
+    return scheme + '->' + categoryCode.description;
+  }
+
+DetailRecord
+  = ()
+QualificationRecord
+  =()
+McCategoryCode
+  = code: 'BIL' {return  getMasterCardCategoryCode(code);}
+   / code: 'DOM' {return  getMasterCardCategoryCode(code);}
+
+ViCategoryCode
+  = code: 'DMB' {return  getVisaCategoryCode(code);}
+   / code: 'DMN' {return  getVisaCategoryCode(code);}
+
+SchemeType
+  = code: 'C' {return {code: code, description: 'Cash'};}
+   / code: 'F' {return {code: code, description: 'Funding'};}
+   / code: 'P' {return {code: code, description: 'Purchase'};}
+
+ProcessingSequence
+  = seq: [0-9][0-9][0-9][0-9] {
+    console.log(seq);
+    return seq;
+  }
+
+Comment
+  = comment: ('**')(' ')+ details: Characters EndOfLine {
+    return comment + details;
+  }
+
+EndOfLine
+  = ('\r\n')* ('$')*
+
 Characters
-  = text: [a-z]+ {
-  	console.log('--' + text);
+  = text: [a-z ]+ {
   	return text.join("");
   }

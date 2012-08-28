@@ -7,7 +7,7 @@ var express = require('express'),
     http = require('http');
 
 var app = express();
-
+api.loadRules();
 // Configuration
 
 app.configure(function () {
@@ -35,8 +35,11 @@ app.configure('production', function () {
 console.log('->' + JSON.stringify(api))
 app.get('/api/structures', api.structures);
 app.get('/api/rules', api.rules);
+
+app.post('/api/rule', api.saveRule);
+
 app.post('/login', function (req, res) {
-    console.log('authentication attempt');
+    console.log('authentication attempt'  );
 });
 
 http.createServer(app).listen(app.get('port'), function () {

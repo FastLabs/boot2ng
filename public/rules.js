@@ -145,52 +145,63 @@ angular.module('rules', ['comments', 'conditions', 'actions', 'user'])
         }
     });
 
-function CollectionRepository(initial) {
-    var values = [];
-    if (initial) {
-        values = initial;
-    }
-
-    this.addValue = function (value) {
-        for (var i in values) {
-            var current = values[i]
-            if (current.dirty === true) {
-                if (current.id === value.id) {
-                    values.splice(i, 1);
-                }
+angular.module('repository', ['ngResource'])
+    .factory('repository',function ($resource) {
+        var CollectionRepository = function (initial) {
+            var values = [];
+            if (initial) {
+                values = initial;
             }
-        }
-        values.push(value);
-        value.setModified(false);//TODO: understand how this will affect server side synchronization
-    };
+            var save = function (value) {
+                var RuleResource = $resource('/api/rule');
+                var x = new RuleResource({payload: value});
+                x.$save();
 
-    this.removeValue = function (value) {
-        if (value) {
-            var artifactId = value.attributes.id
-            for (var i in values) {
-                if (values[i].attributes.id === artifactId) {
-                    values.splice(i, 1);
+            };
+            this.addValue = function (value, sync) {
+                for (var i in values) {
+                    var current = values[i]
+                    if (current.dirty === true) {
+                        if (current.id === value.id) {
+                            values.splice(i, 1);
+                        }
+                    }
                 }
+                values.push(value);
+                value.setModified(false);//TODO: understand how this will affect server side synchronization
+                if(sync === true) {
+                    save(value);
+                }
+            };
+            this.removeValue = function (value) {
+                if (value) {
+                    var artifactId = value.attributes.id
+                    for (var i in values) {
+                        if (values[i].attributes.id === artifactId) {
+                            values.splice(i, 1);
+                        }
+                    }
+                }
+            };
+            //if used in UI binding cache the value so this function
+            //will be called once
+            this.values = function () {
+                return values;
             }
+        };
+        return {
+            Collection: CollectionRepository
         }
-    };
+    });
 
-    //if used in UI binding cache the value so this function
-    //will be called once
-    this.values = function () {
-        return values;
-    }
-};
-
-
-angular.module('rulesContext', ['artifact', 'utils', 'ngResource', 'rules'])
+angular.module('rulesContext', ['artifact', 'utils', 'ngResource', 'rules', 'repository'])
     .config(function () {
 
     })
     .value('saveCmd', function (rule) {
         console.log('save ' + rule.name);
     })
-    .factory('ruleContext',function (artifact, parser, ruleFactory, editable) {
+    .factory('ruleContext',function (artifact, parser, ruleFactory, editable, repository) {
         var injector = angular.injector(['rulesContext']);
         var dispatchCommand = function (command, ruleContext) {
             var cmd = injector.get(command + 'Cmd');
@@ -235,9 +246,10 @@ angular.module('rulesContext', ['artifact', 'utils', 'ngResource', 'rules'])
             updateScope:updateScope,
             removeArtifact:artifact.removeArtifact
         }
-    }).factory('rulesRepo', function ($resource, ruleFactory) {
-        var repository = new CollectionRepository();
+    }).factory('rulesRepo', function ($resource, ruleFactory, repository) {
+        var repository = new repository.Collection();
         var resource = $resource('/api/rules');
+        repository.$resource = $resource;
         var rules = resource.query(function () {
             for (var i in rules) {
                 var rule = rules[i];
@@ -248,7 +260,7 @@ angular.module('rulesContext', ['artifact', 'utils', 'ngResource', 'rules'])
                 instance.atrributes = rule.atrributes;
                 instance.comments = rule.comments;
                 //__proto__ didn't work in ie9
-                repository.addValue(instance);
+                repository.addValue(instance, false);
             }
         });
         return {repository:repository};

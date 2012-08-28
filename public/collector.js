@@ -52,7 +52,7 @@ function appController($scope, ruleFactory, rulesRepo, ruleContext) {
     };
 
     $scope.addRule = function () {
-        $scope.rules.addValue($scope.currentRule);
+        $scope.rules.addValue($scope.currentRule, true);
         $scope.currentRule = undefined;
 
     };

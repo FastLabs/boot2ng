@@ -1,41 +1,49 @@
-var data = require('../data/data.js').schema;
+var data = require('../data/data.js').schema,
+    fs = require('fs');
+
 
 var structs = function (req, res) {
 	console.log('request');
 	res.send(data);
 };
 
-var demoRules =  [
-    {
-        name:'check the account number',
-        attributes:{id:'Rule2'},
-        conditions:['transaction is ok'],
-        actions:[]
 
-    }
-    ,
-    {
-        name:'check the issuer bin',
-        attributes:{id:'Rule1'},
-        conditions:[],
-        actions:[]
-    },
-    {
-        name:'check the issuer bin1',
-        attributes:{id:'Rule3'},
-        conditions:[],
-        actions:[]
-    }
-];
+var rulesCollection;
+var loadRules = function() {
+    fs.readFile('./rules.json', function(err, data) {
+      if(err) {
+          console.log('Error loading data');
+      } else {
+          rulesCollection = JSON.parse(data);
+      }
+    });
+};
 
 var rules = function (req, res) {
     console.log('rule requested');
-    res.send(demoRules);
-}
+    res.send(rulesCollection);
+};
+
+var saveRule = function(req, res) {
+    rulesCollection.push(req.body.payload);
+    dumpRules();
+};
+
+var dumpRules = function() {
+    var data = JSON.stringify(rulesCollection);
+    fs.writeFile('./rules.json', data, function(err) {
+        if(err) {
+            console.log('Error saving to the rule repository');
+        } else {
+            console.log('data saved');
+        }
+    });
+};
 
 
 exports.api = {
-	abc: '234',
 	structures: structs,
-    rules: rules
+    rules: rules,
+    saveRule: saveRule,
+    loadRules: loadRules
 };

@@ -1,0 +1,52 @@
+** FILE UPDATED FOR PROJECT:                                                                      
+** Fix 1    - MCI P6 to be greater than $20                                                       
+** Fix 2    - Remove ECI values from Visa E-Comm - COMMENTED OUT                                  
+** Fix 3    - Add > 15 contacless rate for Visa GBR                                               
+** TTM1253  - Minor changes to Spain rates                                                        
+**                                                                                                
+** THIS FILE IS     TTMA.NBT769.#N.SWRDCINQ.D120731.V02                                         
+** PREVIOUS FILE IS TTMA.NBT769.#N.SWRDCINQ.D120723.V01                                           
+**                                                                                                
+**                                                                                                
+** ITEM NO.RANGES:  CATEGORY         CASH     FUNDING      PURCHASE                               
+**                   DOMESTIC      001 - 009   010 - 019    020 - 099                             
+**                   INTRA         100 - 109   110 - 119    120 - 199                             
+**                   INTER         200 - 209   210 - 219    220 - 299                             
+**    NON-EU INTRA / EXP DOM       300 - 329   330 - 339    340 - 799                             
+**                   CROSS BORDER  500 - 529   530 - 54p    550 - 799                             
+**                   SUB REGIONAL  800 - 829   830 - 849    850 - 999                             
+**                                                                                                
+** NB: DO NOT RENUMBER EXISTING ITEMS AS THIS AFFECTS POFFLE                                      
+**                                                                                                
+**     CR     = CREDIT CARD                                                                       
+**     CT     = CHIP TRANSACTION                                                                  
+**     DB     = DEBIT CARD                                                                        
+**     EA     = ELECTRONIC AUTHORISED                                                             
+**     EDC    = ELECTRONIC DATA CAPTURE                                                           
+**     EIRF   = ELECTRONIC INTERCHANGE REIMBURSEMENT FEE                                          
+**     EU     = EUROPEAN                                                                          
+**     NON-ER = NON ELECTRONIC RATE                                                               
+**                                                                                                
+MCDOMC0001DT00004004CASH CHIP (DOM)                     DC75 750000 0000000GBP0000      000000    
+MCDOMC0001QU01CPYPICHCLLO                                                                         
+MCDOMC0002DT00001001CASH (DOM)                          DC75 750000 0000000GBP0000      000000    
+MCDOMF0001DT00015015PAYMENT TRANS SWITCH    (DOM GBR)   DR59 590000 0000000GBP0000      000000    	
+MCDOMF0001QU01CSY313255                                                                           
+MCDOMF0002DT00012012MONEYSEND FUNDING TRANS (DOM)       BR75 750000 0000000EUR0000      000000    
+MCDOMF0002QU01MCY4829482965366537                                                                 
+MCDOMF0003DT00014014PAYMENT TRANS MAESTRO (DOM GBR)          230000 0000000   0000      000000    
+MCDOMF0003QU01BTY4826001                                                                          
+MCDOMF0003QU02DAYC239003MSI                                     Brand is Maestro                  
+MCDOMF0003QU03MCY6532653379957995                                                                 
+MCDOMF0004DT00010010PAYMENT TRANS CONSUMER (DOM)        DR20 200000 0000000EUR0000      000000    
+MCDOMF0004QU01CSN4079                                                                             
+MCDOMF0005DT00011011PAYMENT TRANS COMMERCIAL (DOM)      DR21 210000 0000000EUR0000      000000    
+MCDOMP0001DT00023023CHARITY (DOM GBR)                        C10000 0000000   0000      000000    
+MCDOMP0001QU01BTY4826001                                                                          
+MCDOMP0001QU02DAYC106106EXEMPT                                  Short name ends EXEMPT            
+MCDOMP0001QU03MCY83988398                                                                         
+MCDOMP0002DT00050050CHARITY (EUR DOM)                        CH0000 0000000   0000      000000    
+MCDOMP0002QU01DANC121506000000                                  MC Ass ID not '0'                 
+MCDOMP0002QU02MCY83988398                                                                         
+MCDOMP0002QU03REYMD                                                                               
+MCDOMP0003DT00089089MAESTRO PAYPASS CARD (DOM/GBR)           PC0000 0000000   0000      000000   
