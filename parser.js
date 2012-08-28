@@ -208,9 +208,9 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, scheme, categoryCode) {
-              return scheme + '->' + categoryCode.description;
-          })(pos0, result0[0], result0[1]);
+          result0 = (function(offset, scheme, categoryCode, seq) {
+              return scheme + '->' + categoryCode.description +'->' +seq;
+          })(pos0, result0[0], result0[1], result0[3]);
         }
         if (result0 === null) {
           pos = pos0;
@@ -258,9 +258,9 @@ module.exports = (function(){
             pos = pos1;
           }
           if (result0 !== null) {
-            result0 = (function(offset, scheme, categoryCode) {
-              return scheme + '->' + categoryCode.description;
-            })(pos0, result0[0], result0[1]);
+            result0 = (function(offset, scheme, categoryCode, seq) {
+              return scheme + '->' + categoryCode.description +'->' + seq;
+            })(pos0, result0[0], result0[1], result0[3]);
           }
           if (result0 === null) {
             pos = pos0;
@@ -492,10 +492,9 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, seq) {
-            console.log(seq);
-            return seq;
-          })(pos0, result0[0]);
+          result0 = (function(offset, seq1, seq2, seq3, seq4) {
+            return seq1+seq2+seq3+seq4;
+          })(pos0, result0[0], result0[1], result0[2], result0[3]);
         }
         if (result0 === null) {
           pos = pos0;
@@ -579,7 +578,7 @@ module.exports = (function(){
       }
       
       function parse_EndOfLine() {
-        var result0, result1, result2;
+        var result0, result1, result2, result3;
         var pos0;
         
         pos0 = pos;
@@ -629,7 +628,34 @@ module.exports = (function(){
             }
           }
           if (result1 !== null) {
-            result0 = [result0, result1];
+            result2 = [];
+            if (input.charCodeAt(pos) === 10) {
+              result3 = "\n";
+              pos++;
+            } else {
+              result3 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"\\n\"");
+              }
+            }
+            while (result3 !== null) {
+              result2.push(result3);
+              if (input.charCodeAt(pos) === 10) {
+                result3 = "\n";
+                pos++;
+              } else {
+                result3 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"\\n\"");
+                }
+              }
+            }
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = pos0;
+            }
           } else {
             result0 = null;
             pos = pos0;

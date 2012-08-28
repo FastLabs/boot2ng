@@ -32,11 +32,11 @@ FileContent
   }
 
 Record
-  = scheme: 'MC' categoryCode: McCategoryCode SchemeType ProcessingSequence EndOfLine {
-      return scheme + '->' + categoryCode.description;
+  = scheme: 'MC' categoryCode: McCategoryCode SchemeType seq: ProcessingSequence EndOfLine {
+      return scheme + '->' + categoryCode.description +'->' +seq;
   }
-  / scheme: 'VI' categoryCode: ViCategoryCode SchemeType ProcessingSequence EndOfLine {
-    return scheme + '->' + categoryCode.description;
+  / scheme: 'VI' categoryCode: ViCategoryCode SchemeType seq: ProcessingSequence EndOfLine {
+    return scheme + '->' + categoryCode.description +'->' + seq;
   }
 
 DetailRecord
@@ -57,9 +57,8 @@ SchemeType
    / code: 'P' {return {code: code, description: 'Purchase'};}
 
 ProcessingSequence
-  = seq: [0-9][0-9][0-9][0-9] {
-    console.log(seq);
-    return seq;
+  = seq1: [0-9] seq2:[0-9] seq3:[0-9] seq4:[0-9] {
+    return seq1+seq2+seq3+seq4;
   }
 
 Comment
@@ -68,7 +67,7 @@ Comment
   }
 
 EndOfLine
-  = ('\r\n')* ('$')*
+  = ('\r\n')* ('$')* ('\n')*
 
 Characters
   = text: [a-z ]+ {
