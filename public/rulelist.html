@@ -15,7 +15,7 @@
                     <i class="icon-remove" ng-show='currentContext.text && currentContext.text.length >0'></i>
                 </a>
             </div>
-            <div class='btn-toolbar'>
+            <!--<div class='btn-toolbar'>
 
                 <div ng-init='attrCommand="@"' class="btn-group" style="display: inline;" ng-show='currentRule'>
                     <a class="btn btn-small btn-info"
@@ -37,7 +37,7 @@
                        ng-class='activeForMode(actionMode)'
                        style="font-family: Courier New; font-weight: bold;  font-size: 14px;">!</a>
                 </div>
-            </div>
+            </div>-->
         </fieldset>
     </form>
     <div ng-show='currentRule'  style="bottom: 0px;">
@@ -110,9 +110,9 @@
     <ul class='rules' ng-init='repoRules = rules.values()'>
         <li class='thumbnail removable' ng-repeat='rule in repoRules | filter:searchQuery'>
             {{rule.name}}
-            <a href="/rules/remove/{{rule.attributes.id}}">
+           <!-- <a href="/rules/remove/{{rule.attributes.id}}">
                 <i class="icon-eye-open"></i>
-            </a>
+            </a>-->
             <a ng-click="updateArtifact(rule)">
                 <i class="icon-edit"></i>
             </a>

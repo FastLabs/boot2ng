@@ -28,11 +28,8 @@ app.configure('production', function () {
     app.use(express.errorHandler());
 });
 
-
 // Routes
-
 //app.get('/', routes.index);
-console.log('->' + JSON.stringify(api))
 app.get('/api/structures', api.structures);
 app.get('/api/rules', api.rules);
 

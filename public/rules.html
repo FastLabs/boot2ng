@@ -36,15 +36,14 @@
 
             <div class='nav-collapse'>
                 <ul class='nav'>
-                    <li class='active'><a href='#'>Rules</a></li>
-                    <li><a href='#'>Model</a></li>
-                    <li><a href='#'>Queries</a></li>
-                    <li><a href='#'>Data</a></li>
+                    <li class='active'><a href='#'>Validation</a></li>
+                    <li><a href='#'>Interchange</a></li>
                 </ul>
-                <form class="navbar-form pull-right" action="/login" method="post">
-                    <input type="text" class="span2" placeholder="User">
-                    <input type="text" class="span2" placeholder="Password">
-                    <button class='btn btn-small btn-primary' type="submit"> Sign In</button>
+                <!--action="/login" method="post"-->
+                <form class="navbar-form pull-right" ng-submit='changeUser()' >
+                    <input type="text" class="span2" placeholder="User" ng-model='user'>
+                    <!--<input type="text" class="span2" placeholder="Password">-->
+                    <button class='btn btn-small btn-primary' type="submit"> Apply</button>
                 </form>
             </div>
         </div>

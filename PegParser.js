@@ -10,5 +10,5 @@ fs.readFile('./rules.txt', function(err, data) {
 
 function process(toParse) {
     var x = parser.parse(toParse);
-    console.log(x);
+    //console.log(x);
 }

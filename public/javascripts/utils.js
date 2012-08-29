@@ -61,20 +61,24 @@ angular.module('hop.directives', [])
 }]);
 
 angular.module('user', []).factory('userInfo', function() {
+    var currentUser = {
+        initials: 'anonymous'
+    };
     return {
         getCurrentUser : function() {
-            return {
-                name: 'Oleg',
-                shortName: 'obulavitchi',
-                initials: 'ob'
-            }
+            return currentUser;
         }
     };
 });
 
-function barController($scope) {
+function barController($scope, userInfo) {
     $scope.login = function () {
         console.log('try to authenticate'+ $scope.user  + ' ' + $scope.password);
+    }
+
+    $scope.changeUser = function() {
+        userInfo.getCurrentUser().initials = $scope.user;
+        console.log($scope.user);
     }
 }
 

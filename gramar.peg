@@ -22,27 +22,61 @@
 
 start
   = content: FileContent {
-    console.log(getMasterCardCategoryCode('BIL'));
+    //console.log(getMasterCardCategoryCode('BIL'));
     return content;
   }
 
 FileContent
-  = (Comment)* record: (Record)* {
-    return record;
+  = (Comment)* block: (Block)* {
+    console.log(JSON.stringify(block) +"\n");
+    return block;
   }
 
-Record
-  = scheme: 'MC' categoryCode: McCategoryCode SchemeType seq: ProcessingSequence EndOfLine {
-      return scheme + '->' + categoryCode.description +'->' +seq;
+Block
+  = detail: DetailRecord qualification: (QualificationRecord)* {
+    if(qualification) {
+        detail.qualification = qualification;
+    }
+    return detail;
   }
-  / scheme: 'VI' categoryCode: ViCategoryCode SchemeType seq: ProcessingSequence EndOfLine {
-    return scheme + '->' + categoryCode.description +'->' + seq;
+Record
+  = prefix: MasterCardPrefix scheme: SchemeType seq: ProcessingSequence  {
+      prefix.scheme = scheme;
+      prefix.sequence = seq;
+      return prefix;
+  }
+  /  prefix: VisaPrefix scheme: SchemeType seq: ProcessingSequence EndOfLine {
+        prefix.scheme = scheme;
+        prefix.sequence = seq;
+        return prefix;
+  }
+
+MasterCardPrefix
+  = scheme: 'MC' categoryCode: McCategoryCode {
+    return {scheme: 'MasterCard', categoryCode: categoryCode }
+  }
+
+VisaPrefix
+  = scheme: 'VI' categoryCode: ViCategoryCode {
+    return {scheme: 'Visa', categoryCode: categoryCode }
   }
 
 DetailRecord
-  = ()
+  = record: Record 'DT' subSequence: Numeric2 itemId: Numeric3 schemeId: Numeric3 description: SchemeDescription
+   Char4 EndOfLine {
+    console.log(description);
+    record.subSequence = subSequence;
+    record.itemId = itemId;
+    record.schemeId = schemeId;
+    return record;
+  }
 QualificationRecord
-  =()
+  = record: Record 'QU' subSequence: Numeric2 qualificationType: Char2 EndOfLine {
+    record.subSequence = subSequence;
+    record.qualificationType = qualificationType;
+    return record;
+  }
+
 McCategoryCode
   = code: 'BIL' {return  getMasterCardCategoryCode(code);}
    / code: 'DOM' {return  getMasterCardCategoryCode(code);}
@@ -56,9 +90,39 @@ SchemeType
    / code: 'F' {return {code: code, description: 'Funding'};}
    / code: 'P' {return {code: code, description: 'Purchase'};}
 
+SchemeDescription
+  = chars: ( Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc ) {
+    return chars.join("");
+  }
+Desc
+  = ch: . {
+    return ch;
+  }
+
 ProcessingSequence
+  = Numeric4
+
+Numeric4
   = seq1: [0-9] seq2:[0-9] seq3:[0-9] seq4:[0-9] {
-    return seq1+seq2+seq3+seq4;
+        return seq1+seq2+seq3+seq4;
+  }
+
+Numeric3
+  = seq1: [0-9] seq2:[0-9] seq3:[0-9] {
+            return seq1+seq2+seq3;
+  }
+
+Numeric2
+  = seq1: [0-9] seq2:[0-9] {
+            return seq1+seq2;
+   }
+Char4
+  = ch1:[a-z] ch2:[a-z] ch3: [a-z] ch4: [a-z] {
+    return ch1+ ch2 +ch3 +ch4;
+  }
+Char2
+  = chars : ([a-z] [a-z]) {
+        return chars.join("");
   }
 
 Comment

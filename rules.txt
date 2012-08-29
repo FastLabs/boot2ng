@@ -1,4 +1,5 @@
 ** hello comment
 **  hello comment
-MCDOMC0000
-VIDMBF1111
+MCDOMC0000DT12987123CASH CHIP (DOM)                     abcd
+MCDOMC0000QU12ab
+VIDMBF1111DT12987123CASH CHIP (DOM)                     abcd
