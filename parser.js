@@ -49,15 +49,19 @@ module.exports = (function(){
         "ViCategoryCode": parse_ViCategoryCode,
         "SchemeType": parse_SchemeType,
         "SchemeDescription": parse_SchemeDescription,
+        "ReimbursementAttribute": parse_ReimbursementAttribute,
+        "InterchangeRateDesignator": parse_InterchangeRateDesignator,
         "Desc": parse_Desc,
         "Numeric4": parse_Numeric4,
         "Numeric3": parse_Numeric3,
         "Numeric2": parse_Numeric2,
         "Char4": parse_Char4,
         "Char2": parse_Char2,
+        "AnyChar": parse_AnyChar,
         "Comment": parse_Comment,
         "EndOfLine": parse_EndOfLine,
-        "Characters": parse_Characters
+        "Characters": parse_Characters,
+        "space": parse_space
       };
       
       if (startRule !== undefined) {
@@ -364,7 +368,7 @@ module.exports = (function(){
       }
       
       function parse_DetailRecord() {
-        var result0, result1, result2, result3, result4, result5, result6, result7;
+        var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9;
         var pos0, pos1;
         
         pos0 = pos;
@@ -391,9 +395,21 @@ module.exports = (function(){
                   if (result5 !== null) {
                     result6 = parse_Char4();
                     if (result6 !== null) {
-                      result7 = parse_EndOfLine();
+                      result7 = parse_ReimbursementAttribute();
                       if (result7 !== null) {
-                        result0 = [result0, result1, result2, result3, result4, result5, result6, result7];
+                        result8 = parse_InterchangeRateDesignator();
+                        if (result8 !== null) {
+                          result9 = parse_EndOfLine();
+                          if (result9 !== null) {
+                            result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8, result9];
+                          } else {
+                            result0 = null;
+                            pos = pos1;
+                          }
+                        } else {
+                          result0 = null;
+                          pos = pos1;
+                        }
                       } else {
                         result0 = null;
                         pos = pos1;
@@ -427,13 +443,19 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, record, subSequence, itemId, schemeId, description) {
+          result0 = (function(offset, record, subSequence, itemId, schemeId, description, feeRule, reimbursement, rateDesignator) {
             console.log(description);
             record.subSequence = subSequence;
             record.itemId = itemId;
             record.schemeId = schemeId;
+            if(reimbursement) {
+                record.reimbursementAttribute = reimbursement;
+            }
+            if(rateDesignator) {
+                record.interchangeRateDesignator = rateDesignator;
+            }
             return record;
-          })(pos0, result0[0], result0[2], result0[3], result0[4], result0[5]);
+          })(pos0, result0[0], result0[2], result0[3], result0[4], result0[5], result0[6], result0[7], result0[8]);
         }
         if (result0 === null) {
           pos = pos0;
@@ -874,6 +896,77 @@ module.exports = (function(){
         return result0;
       }
       
+      function parse_ReimbursementAttribute() {
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        if (/^[A-Z]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[A-Z]");
+          }
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, attribute) {return attribute;})(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        if (result0 === null) {
+          pos0 = pos;
+          result0 = parse_space();
+          if (result0 !== null) {
+            result0 = (function(offset) { return undefined;})(pos0);
+          }
+          if (result0 === null) {
+            pos = pos0;
+          }
+        }
+        return result0;
+      }
+      
+      function parse_InterchangeRateDesignator() {
+        var result0, result1;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        result0 = parse_Char2();
+        if (result0 !== null) {
+          result0 = (function(offset, rate) {return rate;})(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        if (result0 === null) {
+          pos0 = pos;
+          pos1 = pos;
+          result0 = parse_space();
+          if (result0 !== null) {
+            result1 = parse_space();
+            if (result1 !== null) {
+              result0 = [result0, result1];
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+          if (result0 !== null) {
+            result0 = (function(offset) {return undefined})(pos0);
+          }
+          if (result0 === null) {
+            pos = pos0;
+          }
+        }
+        return result0;
+      }
+      
       function parse_Desc() {
         var result0;
         var pos0;
@@ -1159,25 +1252,9 @@ module.exports = (function(){
         
         pos0 = pos;
         pos1 = pos;
-        if (/^[a-z]/.test(input.charAt(pos))) {
-          result0 = input.charAt(pos);
-          pos++;
-        } else {
-          result0 = null;
-          if (reportFailures === 0) {
-            matchFailed("[a-z]");
-          }
-        }
+        result0 = parse_AnyChar();
         if (result0 !== null) {
-          if (/^[a-z]/.test(input.charAt(pos))) {
-            result1 = input.charAt(pos);
-            pos++;
-          } else {
-            result1 = null;
-            if (reportFailures === 0) {
-              matchFailed("[a-z]");
-            }
-          }
+          result1 = parse_AnyChar();
           if (result1 !== null) {
             result0 = [result0, result1];
           } else {
@@ -1195,6 +1272,21 @@ module.exports = (function(){
         }
         if (result0 === null) {
           pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_AnyChar() {
+        var result0;
+        
+        if (/^[a-zA-Z]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[a-zA-Z]");
+          }
         }
         return result0;
       }
@@ -1402,6 +1494,21 @@ module.exports = (function(){
         }
         if (result0 === null) {
           pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_space() {
+        var result0;
+        
+        if (/^[ \t\n\r]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[ \\t\\n\\r]");
+          }
         }
         return result0;
       }

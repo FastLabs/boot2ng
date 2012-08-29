@@ -63,11 +63,18 @@ VisaPrefix
 
 DetailRecord
   = record: Record 'DT' subSequence: Numeric2 itemId: Numeric3 schemeId: Numeric3 description: SchemeDescription
-   Char4 EndOfLine {
+   feeRule: Char4 reimbursement: ReimbursementAttribute rateDesignator: InterchangeRateDesignator
+   EndOfLine {
     console.log(description);
     record.subSequence = subSequence;
     record.itemId = itemId;
     record.schemeId = schemeId;
+    if(reimbursement) {
+        record.reimbursementAttribute = reimbursement;
+    }
+    if(rateDesignator) {
+        record.interchangeRateDesignator = rateDesignator;
+    }
     return record;
   }
 QualificationRecord
@@ -94,6 +101,14 @@ SchemeDescription
   = chars: ( Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc Desc ) {
     return chars.join("");
   }
+
+ReimbursementAttribute
+  = attribute: [A-Z] {return attribute;}
+    /space  { return undefined;}
+
+InterchangeRateDesignator
+  = rate: Char2 {return rate;}
+  / space space {return undefined};
 Desc
   = ch: . {
     return ch;
@@ -101,6 +116,9 @@ Desc
 
 ProcessingSequence
   = Numeric4
+
+FlatFee
+  = sigh:
 
 Numeric4
   = seq1: [0-9] seq2:[0-9] seq3:[0-9] seq4:[0-9] {
@@ -121,10 +139,11 @@ Char4
     return ch1+ ch2 +ch3 +ch4;
   }
 Char2
-  = chars : ([a-z] [a-z]) {
+  = chars : (AnyChar AnyChar) {
         return chars.join("");
   }
-
+AnyChar
+  = [a-zA-Z]
 Comment
   = comment: ('**')(' ')+ details: Characters EndOfLine {
     return comment + details;
@@ -137,3 +156,5 @@ Characters
   = text: [a-z ]+ {
   	return text.join("");
   }
+space
+  = [ \t\n\r]
