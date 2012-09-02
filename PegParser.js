@@ -1,5 +1,8 @@
 var parser = require('./parser.js'),
-    fs = require('fs');
+    fs = require('fs')
+    ;
+
+
 fs.readFile('./rules.txt', function(err, data) {
    if(err) {
        console.log('error reading the data');
