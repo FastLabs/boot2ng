@@ -1,14 +1,21 @@
 {
  console.log('parser initialization');
-
+  var processor = require("./processor.js");
   McCategoryCodes = {
     BIL: 'Bi-Lateral Settlement',
-    DOM: 'Domestic'
+    DOM: 'Domestic',
+    SUB: 'Sub-Regional',
+    TER: 'Inter-Regional',
+    TRA: 'Intra-Regional'
+
   };
 
   ViCategoryCode = {
     DMB: 'UK Domestic',
-    DMN: 'Non UK Domestic'
+    DMN: 'Non UK Domestic',
+    EXP: 'Exported Domestic',
+    TER: 'Inter Regional',
+    TRA: 'Intra Regional'
   };
 
   function getMasterCardCategoryCode(id) {
@@ -22,18 +29,17 @@
 
 start
   = content: FileContent {
-    //console.log(getMasterCardCategoryCode('BIL'));
     return content;
   }
 
 FileContent
-  = block: (Block)*  {
-    console.log(JSON.stringify(block) +"\n");
+  =  block: (Block )*  {
     return block;
   }
 
 Block
-  = (Comment)* detail: DetailRecord  (Comment)* qualification: (QualificationRecord)* (Comment)* {
+  = detail: DetailRecord
+    qualification: (QualificationRecord)*  {
     if(qualification) {
         detail.qualification = qualification;
     }
@@ -46,7 +52,7 @@ Record
       prefix.sequence = seq;
       return prefix;
   }
-  /  prefix: VisaPrefix scheme: SchemeType seq: ProcessingSequence EndOfLine {
+  /  prefix: VisaPrefix scheme: SchemeType seq: ProcessingSequence {
         prefix.scheme = scheme;
         prefix.sequence = seq;
         return prefix;
@@ -63,45 +69,52 @@ VisaPrefix
   }
 
 DetailRecord
-  = record: Record 'DT' subSequence: Numeric2 itemId: Numeric3 schemeId: Numeric3 description: SchemeDescription
-   feeRule: Char4 reimbursement: ReimbursementAttribute rateDesignator: InterchangeRateDesignator
+  = record: Record 'DT' subSequence: Numeric2 itemId: Numeric3 schemeId: Numeric3 description: DataAttribute40
+   reimbursement: ReimbursementAttribute rateDesignator: InterchangeRateDesignator
    feePercentage: FeePercentage flatFee: FlatFee feeCurrency: FlatFeeCurrency
    minFee: MinimumFee intIndicator: InternationalIndicator psi: PaymentServiceIndicator
-   eci: ECIIndicator fpi: FPIIndicator maxFee: MaximumFee
-   EndOfLine {
-    console.log(description);
+   eci: ECIIndicator fpi: FPIIndicator maxFee: MaximumFee (' ')* ('\t')*
+   (LineTerminatorSequence?) {
+    var value;
     record.subSequence = subSequence;
+    record.description = description;
     record.itemId = itemId;
     record.schemeId = schemeId;
     if(reimbursement) {
         record.reimbursementAttribute = reimbursement;
     }
-    if(rateDesignator) {
-        record.interchangeRateDesignator = rateDesignator;
+    value = processor.valuePresent(rateDesignator);
+    if(value) {
+        record.interchangeRateDesignator = value;
     }
     record.feePercentage = feePercentage;
     record.flatFee = flatFee;
     record.minFee = minFee;
     record.maxFee = maxFee;
-    if(intIndicator) {
-        record.intIndicator = intIndicator;
+    value = processor.valuePresent(intIndicator);
+    if(value) {
+        record.intIndicator = value;
     }
-    if(psi) {
-        record.paymentServiceIndicator = psi;
+    value = processor.valuePresent(psi);
+    if(value) {
+        record.paymentServiceIndicator = value;
     }
-    if(eci) {
-        record.eciIndicator = eci;
+    value = processor.valuePresent(eci);
+    if(value) {
+        record.eciIndicator = value;
     }
-    if(fpi) {
-        record.fpiIndicator = fpi;
+    value = processor.valuePresent(fpi);
+    if(value) {
+        record.fpiIndicator = value;
     }
-    if(feeCurrency) {
-      record.flatFeeCurrency = feeCurrency;
+    value = processor.valuePresent(feeCurrency);
+    if(value) {
+      record.flatFeeCurrency = value;
     }
     return record;
   }
 QualificationRecord
-  = record: Record 'QU' subSequence: Numeric2 qualification: QualificationDetails (' ')* EndOfLine {
+  = record: Record 'QU' subSequence: Numeric2 qualification: QualificationDetails (' ')* (LineTerminatorSequence?) {
     var result = {};
     result.subSequence = subSequence;
     if(qualification) {
@@ -111,24 +124,29 @@ QualificationRecord
   }
 QualificationDetails
   = qType: 'AC'  operator: [YN] authChars: (AC)+ {
-    return {type: qType, op: (operator === 'Y'? "is one of": "not in"), values: authChars };
+    return processor.handleCollection({code: qType, op: operator, data: authChars});
+  }
+  / qType: 'AI' operator: [YN] {
+    //this is MCC field
+    return processor.handleBoolean({op:operator, code: qType});
   }
   / qType: 'AB' operator: [YN] binList: (BIN)+ {
-    var op = 'not blank and ' + (operator === 'Y')?"is one of":"not in";
-    return {type: qType, op:op, bins: binList};
+    return processor.handleCollection({code: qType, op:operator, data: binList});
   }
   / qType: 'AR' operator: [YN] respCodes: (AR)+ {
-    return {type: qType, op:(operator==='Y')?"is one of": "not in", codes: respCodes};
+    return processor.handleCollection({code: qType, op: operator, data: respCodes});
   }
   / qType: 'AU' operator: [YN] {
-    var desc = (operator === 'Y')?"transaction is authorised":"transaction is not authorised";
-    return {desc: desc};
+    return processor.handleBoolean({op: operator, code: qType});
+  }
+  / qType: 'AV' operator: [YN] data: (AnyChar)+ {
+    return processor.handleCollection({code: qType, op: operator, data: data});
   }
   / qType: 'BS' operator: [YN] bsaCol: (Numeric7)+ {
-    return {type: qType, op: (operator==='Y')?"is one of":"is not one of", bsa:bsaCol};
+    return processor.handleCollection({code: qType, op: operator, data: bsaCol});
   }
   / qType: 'BT' operator: [YN] bstCol: (Numeric7)+ {
-    return {type: qType, op: (operator==='Y')?"is one of":"is not one of", bt:bstCol};
+    return processor.handleCollection({code: qType, op: operator, data: bstCol});
   }
   / qType: 'CA' operator: [YN1-4] {
     var desc;
@@ -142,47 +160,46 @@ QualificationDetails
     return {type: qType, desc: desc};
   }
   / qType: 'CC' operator: [YN] m1: Member m2:Member m3: (Member)* {
-    var desc = "country code of the " + m1 + " is the sam as " + m2;
+    var data = [m1, m2];
     if(m3 !== undefined && m3 !== null && m3.length > 0) {
-        desc += " and " + m3;
+        data.push(m3[0]);
     }
-    return {type: qType, desc: desc};
+    return processor.handleFunction({code: qType, op: (operator === 'Y')?"":"not", data: data});
   }
   / qType: 'CP' operator: [YN] values: (Char2)+ {
-    return {type: qType, op: (operator === 'Y')? "is one of": "is not one of", values: values};
+    return processor.handleCollection({code: qType, op: operator, data: values});
   }
   / qType: 'CQ' operator: [YN] {
-    var desc = (operator === Y) ?"the issuer is qualified to issue chip cards": "the issuer is not qualified to issue chip cards";
-    return {type: qType, desc: desc};
+    return processor.handleBoolean({code: qType, op: operator});
   }
   / qType: 'CR' operator: [YN] {
     //checks the MCC
-    var desc = (operator === 'Y')?"is car rental":"is not car rental";
-    return {type: qType, desc: desc};
+    return processor.handleBoolean({code: qType, op: operator});
   }
   / qType: 'CS' operator: [YN] values: (Char2) + {
-    var desc = (operator === y)? "is one of" : "is not in";
-    return {type: qType, op: desc, values: values};
+    return processor.handleCollection({code: qType, op: operator, data: values});
   }
-  /qType: 'CT' operator: [YN] country: Country m1: Member theRest: (Member)* {
-    var rest = '';
-    var desc = m1 + rest + "are " + (operator === 'Y')?"":" not " +" located in " +country;
+  / qType: 'CT' operator: [YN] country: Country m1: Member theRest: (Member)* {
+    var rest = theRest.join(", ");
+    var desc = m1 + " " + rest + "are " + (operator === 'Y')?"":" not " +" located in " +country;
     return {type: qType, description: desc}
   }
-  /qType: 'DA' operator: [YN] fileType: FileType position: Numeric3 length: Numeric2 value: DataAttribute40 comment: ([a-zA-Z0-9 ])*{
+  / qType: 'CV' operator: [YN] data: (CardholderValidation)+{
+    return processor.handleCollection({code: qType, op: operator, data: data});
+  }
+  /qType: 'DA' operator: [YN] fileType: FileType position: Numeric3 length: Numeric2 value: DataAttribute40 comment: (AnyChar)*{
     return {type: qType, fileType: fileType, position: position, length: length, value: value, comment: comment.join("").trim()};
   }
   /qType: 'DB' operator: [YN] {
-    return {type: qType, desc: (operator === 'Y')?"transaction is refund": "transaction is not refund"};
+    return processor.handleBoolean({code: qType, op: operator});
   }
 
   /qType: 'DC' operator: [YN] {
-    return {type: qType, desc: (operator === 'Y')? "is debit card":"is not debit card"};
+    return processor.handleBoolean({code: qType, op:operator});
   }
 
-
   / qType: 'PR' operator: [YN] productCodes: (PR)+ {
-    return {type: qType, op: (operator === 'Y')?"is one of":"is not in", values: productCodes};
+    return processor.handleCollection({code: qType, op: operator, data: productCodes});
   }
   / qType: 'RC' operator: [YN] m1: Member m2: Member m3: (Member)* {
     var desc = "region code of the " + m1 + " is the sam as " + m2;
@@ -192,48 +209,59 @@ QualificationDetails
     return {type: qType, desc: desc};
   }
   / qType: 'RE' operator: [YN] m: Member regions: (RE)+ {
-    var desc = "the " + m + " region is one of";
-    return {type: qType, desc: desc, values: regions};
+    var op = (operator === 'Y')?"":"not";
+    var detailedRegions = [],
+        regionCount = regions.length;
+
+    for(var i = 0;i<regionCount; i++) {
+        var region = regions[i];
+        detailedRegions.push(processor.regions[region.scheme][region.value]);
+    }
+    return processor.handleFunction({code: qType, member:m, op: op, data: detailedRegions});
   }
   /qType : 'RP' operator: [YN] values: ([A-Za-z])+ {
-    return {type: qType, op: (operator === 'Y')?'is one of':'is not one of', values: values};
+    return processor.handleCollection({code: qType, op: operator, data: values});
   }
   / qType: 'RT' operator: [YN] {
-    return {type: qType, desc: (operator === 'Y')?"recurring transactions allowed": "recurring transactions not allowed"};
+    return processor.handleBoolean({code: qType, op: operator});
   }
   / qType: 'TK' operator: [YN] amount: Numeric6 curr:Currency {
-    return {type: qType, op: (operator === 'Y')?'is':'is not', amount: amount, currency: curr};
+    var op = (operator === 'Y')?"not":"";
+    return processor.handleFunction({code: qType, op: op, amount: amount, currency: curr});
   }
   / qType: 'DD' operator: [YN] days: Numeric2 dayIndicators: (DayIndicator)+ {
-    var desc = (operator === 'Y')?"processed within " + days:"not processed within " + days;
-    return {type: qType, parameters: dayIndicators, desc: desc};
+    var op = (operator === 'Y')?"including": "excluding";
+    return processor.handleFunction({code: qType, days: days, op: op, data: dayIndicators});
   }
   / qType: 'EH' operator: [YN] {
     //this is MCC related field
-    return {type: qType, desc: (operator=== 'Y')?" is electronic hot card file":"is not electronic hot card file"};
+    return processor.handleBoolean({code: qType, op: operator});
   }
   / qType: 'FL' operator: [YN] {
-    return {type: qType, desc: (operator === 'Y')?'merchant floor limit is zero':'merchant floor limit > 0'};
+    return processor.handleCondition ({
+        op: (operator === 'Y')?"is":"greater than",
+        code: qType,
+        value: 0
+    });
   }
   / qType: 'HT' operator: [YN] {
     //this is MCC related field
-    return {type: qType, desc: (operator === 'Y')?"is hotel mcc code":"is not hotel mcc code"};
+    return processor.handleBoolean({code: qType, op: operator});
   }
   / qType: 'IT' operator: [YN] {
     // according to the documentation CP will be used instead
     console.log('not supported');
-    return undefined;
+    return {code: qType, desc: "this field is not used according to the doc CP will be used instead"};
   }
   / qType: 'LV' operator: 'Y' param: [0-9] {
-    return {type: qType, param: param};
+    return {code: qType, param: param};
   }
   / qType: 'MC' operator: [YN] mccRanges: (MccRange)+ {
-      var desc = (operator === 'Y')?'is in the ranges':'is not in the ranges';
-      return {type: qType, desc: desc, ranges: mccRanges};
+      return processor.handleRange({code: qType, op: operator, data: mccRanges});
   }
   / qType: 'MO' operator: [YN] {
     //this is MCC related field
-    return {type: qType, desc: (operator === 'Y')?'is mail order':'is not mail order'};
+    return processor.handleBoolean({code: qType, op:operator});
   }
 
 AC
@@ -254,16 +282,22 @@ PR
   = seq: (CapsChar CapsChar CapsChar) { return seq.join(""); }
    / char: CapsChar space space {return char;}
 RE
-  = [1ABCDE] /*mastercard*/
-  /[123456] /*visa*/
+  = char: [1ABCDE] { return {scheme: "MC", value: char};}
+  / char: [1234567] {return {scheme: "VI", value: char};}
 
 McCategoryCode
   = code: 'BIL' {return  getMasterCardCategoryCode(code);}
    / code: 'DOM' {return  getMasterCardCategoryCode(code);}
+   / code: 'SUB' {return  getMasterCardCategoryCode(code);}
+   / code: 'TER' {return  getMasterCardCategoryCode(code);}
+   / code: 'TRA' {return  getMasterCardCategoryCode(code);}
 
 ViCategoryCode
   = code: 'DMB' {return  getVisaCategoryCode(code);}
    / code: 'DMN' {return  getVisaCategoryCode(code);}
+   / code: 'EXP' {return  getVisaCategoryCode(code);}
+   / code: 'TER' {return  getVisaCategoryCode(code);}
+   / code: 'TRA' {return  getVisaCategoryCode(code);}
 
 SchemeType
   = code: 'C' {return {code: code, description: 'Cash'};}
@@ -282,7 +316,7 @@ DataAttribute40
   }
 
 ReimbursementAttribute
-  = attribute: [A-Z] {return attribute;}
+  = attribute: [A-Z0-9] {return attribute;}
     /space  { return undefined;}
 
 InterchangeRateDesignator
@@ -343,7 +377,8 @@ FileType
     /'CR'
     /'PA'
     /'LI'
-
+CardholderValidation
+  = CapsChar
 CharOrSpace
   = char: AnyChar {return char;}
    / space {return undefined;}
@@ -371,32 +406,50 @@ Numeric2
     return seq1+seq2;
   }
 Char4
-  = ch1:[a-z] ch2:[a-z] ch3: [a-z] ch4: [a-z] {
+  = ch1:[A-Za-z0-9 ] ch2:[A-Za-z0-9 ] ch3: [A-Za-z0-9 ] ch4: [A-Za-z0-9 ] {
     return ch1+ ch2 +ch3 +ch4;
   }
 
 Char2
-  = chars : (AnyChar AnyChar) {
+  = chars : (AnyNoSpace AnyNoSpace) {
         return chars.join("");
   }
+
 CapsChar
   = [A-Z]
 AnyChar
-  = [a-zA-Z ]
+  = [a-zA-Z 0-9'=]
+
+AnyNoSpace
+  = [a-zA-Z0-9'=]
+
 Comment
-  = comment: ('**')(' ')+ details: Characters EndOfLine {
-    return comment + details;
+  = marker: ('**') details: (!LineTerminator SourceCharacter)*{
+    var comment = (details !== undefined)?details.join("").trim():"";
+    console.log(comment);
+    return marker + comment;
   }
+
+LineTerminator
+  = [\n\r\u2028\u2029]
+LineTerminatorSequence "end of line"
+  = "\n"
+  / "\r\n"
+  / "\r"
+  / "\u2028" // line separator
+  / "\u2029" // paragraph separator
+
+SourceCharacter
+  = .
+
 Country
   = Currency
 Currency
   = chars: (CapsChar CapsChar CapsChar) { return chars.join("");}
 EndOfLine
-  = ('\r\n')* ('$')* ('\n')*
+  = ('\r\n')* ('\n')*
 
 Characters
-  = text: [a-z ]+ {
-  	return text.join("");
-  }
+  = text: [>=/#\.\$\w\ 0-9A-Za-z:\-]
 space
   = [ \t\n\r]
