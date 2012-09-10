@@ -109,7 +109,7 @@ DetailRecord
     }
     value = processor.valuePresent(feeCurrency);
     if(value) {
-      record.flatFeeCurrency = value;
+      record.flatFee.currency = value;
     }
     return record;
   }
@@ -151,13 +151,13 @@ QualificationDetails
   / qType: 'CA' operator: [YN1-4] {
     var desc;
     if(operator === "Y") {
-        desc = "must be numeric and >0"
+        desc = "numeric and > 0"
     } else if(operator === "N"){
-        desc = "must be 0"
+        desc = "0"
     } else {
-        desc = "must be " + operator;
+        desc = operator;
     }
-    return {type: qType, desc: desc};
+    return {fieldCode: qType, data: desc, op:"", sentence : "CAT code" + desc};
   }
   / qType: 'CC' operator: [YN] m1: Member m2:Member m3: (Member)* {
     var data = [m1, m2];
@@ -180,15 +180,20 @@ QualificationDetails
     return processor.handleCollection({code: qType, op: operator, data: values});
   }
   / qType: 'CT' operator: [YN] country: Country m1: Member theRest: (Member)* {
-    var rest = theRest.join(", ");
-    var desc = m1 + " " + rest + "are " + (operator === 'Y')?"":" not " +" located in " +country;
-    return {type: qType, description: desc}
+    var rest = "";
+    theRest.forEach(function(memberCode) {
+        rest += (", " +memberCode);
+    });
+    var desc = processor.MemberMap[m1] + rest + ((rest.length ===0)?" is":" are ") + ((operator === 'Y')?"":" not ") +" located in " +country;
+    return {fieldCode: qType, sentence: desc}
   }
   / qType: 'CV' operator: [YN] data: (CardholderValidation)+{
     return processor.handleCollection({code: qType, op: operator, data: data});
   }
   /qType: 'DA' operator: [YN] fileType: FileType position: Numeric3 length: Numeric2 value: DataAttribute40 comment: (AnyChar)*{
-    return {type: qType, fileType: fileType, position: position, length: length, value: value, comment: comment.join("").trim()};
+    var fieldName = comment.join("").trim();
+    return {fieldCode: fieldName, fileType: fileType, position: position, length: length,
+    fieldName: fieldName, sentence: ""};
   }
   /qType: 'DB' operator: [YN] {
     return processor.handleBoolean({code: qType, op: operator});
@@ -206,7 +211,7 @@ QualificationDetails
         if(m3 !== undefined && m3 !== null && m3.length > 0) {
             desc += " and " + m3;
         }
-    return {type: qType, desc: desc};
+    return {fieldCode: qType, desc: desc};
   }
   / qType: 'RE' operator: [YN] m: Member regions: (RE)+ {
     var op = (operator === 'Y')?"":"not";
@@ -251,10 +256,10 @@ QualificationDetails
   / qType: 'IT' operator: [YN] {
     // according to the documentation CP will be used instead
     console.log('not supported');
-    return {code: qType, desc: "this field is not used according to the doc CP will be used instead"};
+    return {fieldCode: qType, desc: "this field is not used according to the doc CP will be used instead"};
   }
   / qType: 'LV' operator: 'Y' param: [0-9] {
-    return {code: qType, param: param};
+    return {fieldCode: qType, param: param, sentence: "Data Level (" + param +")"};
   }
   / qType: 'MC' operator: [YN] mccRanges: (MccRange)+ {
       return processor.handleRange({code: qType, op: operator, data: mccRanges});
@@ -273,7 +278,7 @@ BIN
     return seq.join("");
   }
 AR
-  = seq: (AnyChar AnyChar) {
+  = seq: (AnyNoSpace AnyNoSpace) {
     return seq.join("");
   }
 Member

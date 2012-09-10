@@ -4,7 +4,7 @@
   , "private": true
   , "dependencies": {
       "express": "3.x"
-    , "jade": ">= 0.0.1"
+    , "ejs": "*"
   }
   , "devDependencies": {
   	"testacular":">=0.0.14"

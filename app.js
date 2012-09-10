@@ -4,7 +4,8 @@
 
 var express = require('express'),
     api = require('./routes/api.js').api,
-    http = require('http');
+    http = require('http')
+    interchange = require('./interchange.js');
 
 var app = express();
 api.loadRules();
@@ -13,7 +14,7 @@ api.loadRules();
 app.configure(function () {
     app.set('port', process.env.PORT || 3000);
     app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
+    app.set('view engine', 'ejs');
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(app.router);
@@ -32,6 +33,8 @@ app.configure('production', function () {
 //app.get('/', routes.index);
 app.get('/api/structures', api.structures);
 app.get('/api/rules', api.rules);
+
+app.get("/interchange/rules",interchange.load);
 
 app.post('/api/rule', api.saveRule);
 

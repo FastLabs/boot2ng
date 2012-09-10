@@ -4,6 +4,19 @@ var VisaFields = {
 
 };
 
+var CatCodes =  McCategoryCodes = {
+    BIL: 'Bi-Lateral Settlement',
+    DOM: 'Domestic',
+    SUB: 'Sub-Regional',
+    TER: 'Inter-Regional',
+    TRA: 'Intra-Regional',
+    DMB: 'UK Domestic',
+    DMN: 'Non UK Domestic',
+    EXP: 'Exported Domestic',
+    TER: 'Inter Regional',
+    TRA: 'Intra Regional'
+};
+
 
 MemberMap = {
     A: "Acquirer",
@@ -54,7 +67,7 @@ var CommonFields = {
     HT: "Hotel",
     DC: "Debit Card Indicator",
     MO: "Mail Order",
-    MC: "MCC Ranges",
+    MC: "MCC",
     PR: "Product Code",
     RC: "Region Code Comparison",
     RE: "Region Code of the %s is %s one of ",
@@ -82,6 +95,12 @@ var TemplateGenerators = {
     }
 };
 
+var SchemeType = {
+    C: 'Cash',
+    F: "Funding",
+    P: "Purchase"
+}
+
 MasterCardFields = {
 
 };
@@ -103,12 +122,13 @@ function getField(fieldCode) {
 function handleCollection(structure) {
     var fieldCode = structure.code,
         operator = " one of",
-        prefix =  (structure.op === 'Y')?" is":" is not";
+        prefix =  (structure.op === 'Y')?"":" not";
 
     return {
         fieldCode: fieldCode,
-        sentence: getField(fieldCode) + prefix + operator,
-        data: structure.data
+        sentence: getField(fieldCode) + prefix + ((structure.data.length >1)? operator:""),
+        data: structure.data,
+        op: prefix + ((structure.data.length >1)? operator:"")
     }
 }
 // is {FIELD_NAME}
@@ -116,7 +136,9 @@ function handleBooleanCheck(structure) {
     var operator = (structure.op === 'Y')?"is": "is not";
     return {
         fieldCode: structure.code,
-        sentence: getField(structure.code) + " " + operator
+        sentence: operator + " " + getField(structure.code),
+        op: structure.op,
+        data: ""
     };
 }
 //{FIELD_NAME} is _
@@ -125,7 +147,8 @@ function propertyCheck(fieldMap, structure) {
     var operator = (structure.op === 'Y')?" is ": " is not ";
     return {
         sentence: getField(structure.code) + operator,
-        data: structure.data
+        data: structure.data,
+        fieldCode: structure.code
     };
 }
 
@@ -137,22 +160,24 @@ function handleFunctionCall(structure) {
         sentence = fnGenerator(sentenceTmpl, structure);
     }
     return {
-        code:structure.code,
+        fieldCode:structure.code,
         sentence: sentence
     };
 }
 
 function handleRangeCheck(structure) {
-    var operator = (structure.op === 'Y')? "is": "is not " + "in the ranges",
-        ranges = [];
-        var availableCount = structure.data.length;
-   // for(var i = 0; availableCount - 1; i+=2) {
-    //    ranges.push({min: structure.data[i], max: structure.data[i+1]});
-    //}
+    var operator = ((structure.op === 'Y')? "": "not ") + "in the ranges";
+    var ranges = "";
+    if(structure.data) {
+        structure.data.forEach(function(range) {
+           ranges = ranges + range.low + "-" + range.top +", ";
+        });
+    }
     return {
-        sentence: operator,
+        sentence: getField(structure.code) + " " + operator,
         fieldCode: structure.code,
-        data: ranges
+        data: ranges,
+        op: operator
     };
 }
 function handleCondition(structure) {
@@ -171,6 +196,8 @@ function presentAndNotEmpty (value) {
 
 
 module.exports = {
+    catCodes: CatCodes,
+    scheme: SchemeType,
     visa: VisaFields,
     regions: RegionMap,
     handleRange: handleRangeCheck,
