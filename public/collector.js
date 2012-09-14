@@ -1,9 +1,11 @@
 //Defines the rule context
 'use strict'
 angular.module('collector', ['hop.directives', 'rules', 'rulesContext'])
-    .config(function ($routeProvider) {
+    .config(function ($routeProvider, $locationProvider) {
         $routeProvider.when('/', { templateUrl:'rulelist.html'});
-        $routeProvider.when('/:context', { templateUrl:'rulelist.html'});
+        $routeProvider.when('/validation', {templateUrl:'rulelist.html'});
+        $routeProvider.when("/interchange", {templateUrl: "decisiontable.html"});
+
     });
 
 //Defines the entity model context
@@ -34,9 +36,9 @@ function listController($scope) {
     };
 }
 
-function appController($scope, ruleFactory, rulesRepo, ruleContext) {
+function appController($scope, ruleFactory, rulesRepo, ruleContext, $location, $route) {
     $scope.rules = rulesRepo.repository;
-
+    console.log('123' + $location.path()  );
     $scope.newRule = function () {
         $scope.currentRule = ruleFactory.newInstance();
         //$scope.currentContext = ruleContext.newEditScope($scope.currentRule);
@@ -48,7 +50,6 @@ function appController($scope, ruleFactory, rulesRepo, ruleContext) {
         artifact.dirty = true;
         $scope.currentRule = clone;
         console.log('update rule');
-      //  $scope.currentContext = ruleContext.newEditScope($scope.currentRule);
     };
 
     $scope.addRule = function () {

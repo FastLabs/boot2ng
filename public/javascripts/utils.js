@@ -71,9 +71,13 @@ angular.module('user', []).factory('userInfo', function() {
     };
 });
 
-function barController($scope, userInfo) {
+function barController($scope, userInfo, $route, $location) {
     $scope.login = function () {
         console.log('try to authenticate'+ $scope.user  + ' ' + $scope.password);
+    }
+
+    $scope.getBarStatus = function () {
+        return
     }
 
     $scope.changeUser = function() {

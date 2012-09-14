@@ -34,9 +34,11 @@ app.configure('production', function () {
 app.get('/api/structures', api.structures);
 app.get('/api/rules', api.rules);
 
-app.get("/interchange/rules",interchange.load);
+app.get("/interchange/:scheme",interchange.renderDecisionTable);
 
 app.post('/api/rule', api.saveRule);
+app.delete('/api/rule/:id', api.deleteRule);
+app.put("/api/rule/:id", api.updateRule);
 
 app.post('/login', function (req, res) {
     console.log('authentication attempt'  );

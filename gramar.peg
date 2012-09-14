@@ -25,10 +25,26 @@
   function getVisaCategoryCode(id) {
     return {code: id, description: ViCategoryCode[id]};
   }
+
+  var dataFields = [];
+
+  function addDataFieldIfNotPresent(field) {
+    var fieldCount = dataFields.length;
+    for(var i=0; i<fieldCount; i++) {
+        if(field.code === dataFields[i].code) {
+            return;
+        }
+    }
+    dataFields.push(field);
+  }
 }
 
 start
   = content: FileContent {
+  var count = 0;
+   /* dataFields.forEach(function(dataField) {
+        console.log(count++ + '"' + dataField.code +'", // ' + dataField.fieldName);
+    });*/
     return content;
   }
 
@@ -140,7 +156,7 @@ QualificationDetails
     return processor.handleBoolean({op: operator, code: qType});
   }
   / qType: 'AV' operator: [YN] data: (AnyChar)+ {
-    return processor.handleCollection({code: qType, op: operator, data: data});
+    return processor.handleCollection({code: qType, op: operator, data: data.join("").trim()});
   }
   / qType: 'BS' operator: [YN] bsaCol: (Numeric7)+ {
     return processor.handleCollection({code: qType, op: operator, data: bsaCol});
@@ -191,9 +207,11 @@ QualificationDetails
     return processor.handleCollection({code: qType, op: operator, data: data});
   }
   /qType: 'DA' operator: [YN] fileType: FileType position: Numeric3 length: Numeric2 value: DataAttribute40 comment: (AnyChar)*{
-    var fieldName = comment.join("").trim();
-    return {fieldCode: fieldName, fileType: fileType, position: position, length: length,
-    fieldName: fieldName, sentence: ""};
+    var sentence = comment.join("").trim(),
+        fieldCode = fileType +"" +position;// there are few columns with different length but i think it doesn't matter +""+length;
+    addDataFieldIfNotPresent({code: fieldCode, fieldName: sentence});
+    return {fieldCode: fieldCode, fileType: fileType, position: position, length: length,
+    fieldName: fieldCode, sentence: sentence};
   }
   /qType: 'DB' operator: [YN] {
     return processor.handleBoolean({code: qType, op: operator});

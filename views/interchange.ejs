@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= cardScheme %></title>
+      <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+      <style type="text/css">
+          .action {
+              background-color: aliceBlue
+          }
+      </style>
+  </head>
+  <body style="margin: 8px;">
+    <h1><%= cardScheme %> interchange</h1>
+    <p>Rules extracted <%= count %></p>
+        <%
+        var schemes = Object.keys(aggregated);
+        schemes.forEach(function(scheme) {
+            var catCodes = Object.keys(aggregated[scheme]);
+            catCodes.forEach(function(catCode) {
+        %>
+        <div class="well well-small">
+            <h5>Scheme: <%=scheme%> CatCode: <%=catCode%> </h5>
+        </div>
+        <%
+           var rules = aggregated[scheme][catCode].collection;
+           var structure = aggregated[scheme][catCode].structure;
+        %>
+        <table class='table table-bordered'>
+            <tr>
+                <%if(structure.isFieldVisible("reimbursementAttribute")) {%>
+                    <th title="Reimbursement Attribute">R Attr</th>
+                <%}%>
+                <% structure.conditions.forEach(function(condition) {
+                if(structure.isFieldVisible(condition)){%>
+                    <th title="<%=structure.getFieldDesc(cardScheme, condition)%>"><%=condition%></th>
+                <%} });%>
+                <% if(structure.isFieldVisible("interchangeRateDesignator")) {%>
+                    <th class="action">Rate Designator</th>
+                <%}%>
+                <%if(structure.isFieldVisible("feePercentage")) {%>
+                    <th class="action">Fee %</th>
+                <%}%>
+                <%if(structure.isFieldVisible("flatFee")) { %>
+                    <th class="action">Flat Rate</th>
+                <%}%>
+                <%if(structure.isFieldVisible("minFee")){%>
+                    <th class="action">Min Fee</th>
+                <%}%>
+                <%if(structure.isFieldVisible("maxFee")){%>
+                    <th class="action">Max Fee</th>
+                <%}%>
+                <th>Description</th>
+            </tr>
+            <tbody>
+            <%
+                rules.forEach(function(rule){
+                %>
+                <tr>
+                    <%if(structure.isFieldVisible("reimbursementAttribute")) {%>
+                        <td><%=rule.reimbursementAttribute%></td>
+                    <%}%>
+                    <%
+                    structure.conditions.forEach(function(condition) {
+                    if(structure.isFieldVisible(condition)) {
+                        var qual = rule.getQualificationByCode(condition);
+                        if(qual && qual.op !== undefined && qual.data !== undefined) {
+                    %>
+                    <td title="<%=structure.getFieldDesc(cardScheme, condition)%>">
+                        <%= qual.op + " " + qual.data%>
+                    </td>
+                    <%
+                    } else {
+                    %>
+                        <td title="<%=structure.getFieldDesc(cardScheme, condition)%>" ><%= ((qual&& qual.sentence !== undefined)?qual.sentence:"")%></td>
+                    <%
+                    }
+                    }
+                    });
+                    %>
+                    <% if(structure.isFieldVisible("interchangeRateDesignator")) {%>
+                        <td class="action"><%=rule.interchangeRateDesignator%></td>
+                    <%}%>
+                    <%if(structure.isFieldVisible("feePercentage")){%>
+                        <td class="action"><%=rule.feePercentage%></td>
+                    <%}%>
+                    <%if(structure.isFieldVisible("flatFee")){%>
+                        <td class="action"><%=rule.flatFee.sign%> <%=rule.flatFee.rate%><%=((rule.flatFee.currency!== undefined)?rule.flatFee.currency:"")%></td>
+                    <%}%>
+                    <%if(structure.isFieldVisible("minFee")){%>
+                        <td class="action"><%=rule.minFee%></td>
+                    <%}%>
+                    <%if(structure.isFieldVisible("maxFee")){%>
+                        <td class="action"><%=rule.maxFee%></td>
+                    <%}%>
+
+
+                    <td>
+                        <%=rule.description%>
+                    </td>
+                </tr>
+            <%
+            });
+            %>
+            </tbody>
+        </table>
+        <%}); });%>
+  </body>
+
+</html>

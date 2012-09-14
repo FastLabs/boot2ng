@@ -1,0 +1,34 @@
+<div ng-controller="decisionTableController">
+<div class="span8">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th ng-repeat="condition in table.conditions">{{condition}}</th>
+            <th ng-repeat="action in table.actions">{{action}}</th>
+
+        </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="rule in table.rules" ng-click="editRule(rule)">
+                <td ng-repeat="condition in table.conditions">
+                    {{rule.conditions[condition].value}}
+                </td>
+                <td ng-repeat="action in table.actions">
+                    {{rule.actions[action].value}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="span4 well">
+    <ul>
+        <li ng-repeat="(key, value) in selected.conditions">
+            {{key}}
+            {{value.sentence}}
+            <input ng-model="value.value"/>
+
+        </li>
+    </ul>
+
+</div>
+</div>

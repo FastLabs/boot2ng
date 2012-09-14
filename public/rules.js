@@ -149,38 +149,54 @@ angular.module('repository', ['ngResource'])
     .factory('repository',function ($resource) {
         var CollectionRepository = function (initial) {
             var values = [];
+            var RuleResource = $resource('/api/rule/:id', {id: "@id"}, {
+                update: {method: 'PUT', params: {id: "@id"}}
+            });
             if (initial) {
                 values = initial;
             }
+
             var save = function (value) {
-                var RuleResource = $resource('/api/rule');
                 var x = new RuleResource({payload: value});
                 x.$save();
 
             };
+
             this.addValue = function (value, sync) {
+                var update = false;
                 for (var i in values) {
                     var current = values[i]
                     if (current.dirty === true) {
                         if (current.id === value.id) {
                             values.splice(i, 1);
+                            update = true;
+                            break;
                         }
                     }
                 }
                 values.push(value);
                 value.setModified(false);//TODO: understand how this will affect server side synchronization
                 if(sync === true) {
-                    save(value);
+                    var resource = new RuleResource({payload: value, id: value.attributes.id});
+                    if(update === true) {
+                        resource.$update();
+                    } else {
+                        save(value);
+                    }
+
                 }
             };
             this.removeValue = function (value) {
                 if (value) {
-                    var artifactId = value.attributes.id
+                    var artifactId = value.attributes.id;
                     for (var i in values) {
                         if (values[i].attributes.id === artifactId) {
                             values.splice(i, 1);
+                            break;
                         }
                     }
+                    var x = new RuleResource({id: value.attributes.id});
+                    x.$delete();
                 }
             };
             //if used in UI binding cache the value so this function
@@ -257,7 +273,7 @@ angular.module('rulesContext', ['artifact', 'utils', 'ngResource', 'rules', 'rep
                 instance.actions = rule.actions;
                 instance.conditions = rule.conditions;
                 instance.name = rule.name;
-                instance.atrributes = rule.atrributes;
+                instance.attributes = rule.attributes;
                 instance.comments = rule.comments;
                 //__proto__ didn't work in ie9
                 repository.addValue(instance, false);

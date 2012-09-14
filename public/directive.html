@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>test the directives</title>
+    <script src="./lib/angular-1.0.1.js" language="JavaScript"></script>
+    <script src="./lib/jquery-1.8.1.js"></script>
+    <script src="./lib/bootstrap.js"></script>
+    <script src="./directive.js" language="JavaScript"></script>
+    <link rel="stylesheet" href="./stylesheets/bootstrap.css"/>
+    <link rel="stylesheet" href="./stylesheets/style.css">
+
+
+</head>
+<body ng-init="x = [3, 4, 5]" ng-app="entry" ng-controller="listController">
+<div class="span6" >
+
+
+    <ul class="rules span3" >
+        <item on-update="onUpdate(val)" on-delete="onDelete(val)" ng-repeat="val in x" item-title="Hello Item {{val}}"></item>
+    </ul>
+</div>
+<div>
+    <input type="text" data-provide="typeahead" data-source='["a", "aks", "b", "c"]'/>
+    <typeahead typeahead-source="dataSource" typeahead-handler="handle"></typeahead>
+</div>
+</body>
+</html>

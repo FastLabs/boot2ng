@@ -29,6 +29,35 @@ var saveRule = function(req, res) {
     dumpRules();
 };
 
+var deleteRule = function(req, res) {
+    var ruleId = req.params.id,
+        ruleCount = rulesCollection.length;
+    for(var i = 0; i < ruleCount; i++) {
+        if(rulesCollection[i].attributes.id === ruleId) {
+            rulesCollection.splice(i, 1);
+            dumpRules();
+            break;
+        }
+    }
+    res.end();
+}
+
+var updateRule = function(req, res) {
+    var ruleId = req.params.id,
+        rule = req.body.payload;
+
+    for(var i in rulesCollection) {
+        var currentRule = rulesCollection[i];
+        if(currentRule.attributes.id === ruleId) {
+            rulesCollection.splice(i, 1);
+            rulesCollection.push(rule);
+            dumpRules();
+            break;
+        }
+    }
+    res.end();
+}
+
 var dumpRules = function() {
     var data = JSON.stringify(rulesCollection);
     fs.writeFile('./rules.json', data, function(err) {
@@ -42,8 +71,10 @@ var dumpRules = function() {
 
 
 exports.api = {
-	structures: structs,
+    structures: structs,
     rules: rules,
     saveRule: saveRule,
-    loadRules: loadRules
+    loadRules: loadRules,
+    deleteRule: deleteRule,
+    updateRule: updateRule
 };

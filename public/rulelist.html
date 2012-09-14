@@ -53,11 +53,15 @@
             </ul>
         </div>
         <div class="span6" style="clear: both;">
-            <span class='label label-info'> Attributes</span>
+            <div style="margin-bottom: 4px;">
+                <span class='label label-info'> Attributes</span>
+            </div>
             <ul>
-                <li class='removable' ng-repeat='(key, value) in currentRule.attributes'>
-                    <div class="removable"> <h5>{{key}} : {{value}} </h5>
-                        <a ng-click='currentRule.removeAttribute(key)'><i class='icon-remove'></i></a></div>
+                <li class='removable alert span6' ng-repeat='(key, value) in currentRule.attributes' style="position: relative;">
+                    {{key}} : {{value}}
+                    <div style=" height: 14px; position: absolute; top:4px; right: 4px;">
+                        <a ng-click='currentRule.removeAttribute(key)'><i class='icon-remove'></i></a>
+                    </div>
                 </li>
             </ul>
         </div>

@@ -9,6 +9,7 @@
     <script type="text/javascript" src="context.js"></script>
     <script type="text/javascript" src="./javascripts/artifact.js"></script>
     <script type="text/javascript" src="./javascripts/utils.js"></script>
+    <script type="text/javascript" src="./decisionTable.js"></script>
 
     <link rel="stylesheet" href="/stylesheets/bootstrap.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
@@ -29,6 +30,7 @@
 </head>
 
 <body ng-app='collector'>
+
 <div class='navbar navbar-fixed-top' ng-controller='barController'>
     <div class='navbar-inner'>
         <div class='container'>
@@ -36,8 +38,8 @@
 
             <div class='nav-collapse'>
                 <ul class='nav'>
-                    <li class='active'><a href='#'>Validation</a></li>
-                    <li><a href='#'>Interchange</a></li>
+                    <li class='active'><a href='#validation'>Validation</a></li>
+                    <li><a href='#interchange'>Interchange</a></li>
                 </ul>
                 <!--action="/login" method="post"-->
                 <form class="navbar-form pull-right" ng-submit='changeUser()' >
