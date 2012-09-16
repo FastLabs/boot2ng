@@ -25,7 +25,7 @@ angular.module("list", [])
             enterHandler: "=typeaheadHandler"
         },
         template: "<div><input ng-model='query' type='text'/>" +
-            " <ul class='typeahead dropdown-menu' style='display:block'>" +
+            " <ul class='typeahead dropdown-menu'>" +
             "<li ng-repeat='item in filteredItems'> <a>{{item}} </a></li></ul></div>",
 
         link: function(scope, element, attr, contr) {
@@ -39,12 +39,40 @@ angular.module("list", [])
                 }
                 //console.log(event);
             });
-            var style = "display: block;top:" + inputElement[0].offsetTop + "px; left:"+ inputElement[0].offsetLeft+"px;" ;
-            listElement[0].setAttribute("style", style);//inputElement[0].offsetTop + 10;
+
+            inputElement.bind("keyup", function(ev) {
+                switch(ev.keyCode) {
+                    case 27: //escape
+                        hide();
+                        break;
+                    case 40: //down arrow
+                        break;
+                    case 38: //up arrow
+                        break;
+                }
+                ev.stopPropagation();
+                ev.preventDefault();
+            });
+
+            var show = function () {
+                var style = "display: block;top:" + (inputElement[0].offsetTop  + inputElement[0].offsetHeight) + "px; left:"+ inputElement[0].offsetLeft+"px;" ;
+                    listElement[0].setAttribute("style", style);//inputElement[0].offsetTop + 10;
+                },
+                hide = function() {
+                  listElement[0].setAttribute("style", "display:none");
+                },
+                up = function() {
+
+                };
+
             //listElement.
             scope.$watch("query", function(value) {
-                scope.filteredItems = filter(scope.source, value);
-                console.log(scope.filteredItems);
+                if(value && value.length >0) {
+                    scope.filteredItems = filter(scope.source, value);
+                    show();
+                } else {
+                    hide();
+                }
 
                 //console.log($scope.query);
                 //console.log($scope.source);
@@ -65,7 +93,7 @@ function listController ($scope) {
     $scope.onDelete = function(val) {
         console.log("delete" + val);
     }
-    $scope.dataSource = ["a","b", "c", "d"];
+    $scope.dataSource = ["Oleg","Luca", "Ioana", "Lina"];
     $scope.handle = function () {
         console.log('handled');
     }
