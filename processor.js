@@ -178,8 +178,11 @@ function handleCollection(structure) {
 }
 // is {FIELD_NAME}
 function handleBooleanCheck(structure) {
-    var operator = (structure.op === 'Y')?"is": "is not";
+    var operator = (structure.op === 'Y')?"is": "is not",
+        value = (structure.op === 'Y')?"true": "false";
+
     return {
+        value: value,
         fieldCode: structure.code,
         fieldName: CommonFields[structure.code],
         sentence: operator + " " + getField(structure.code),
@@ -209,7 +212,8 @@ function handleFunctionCall(structure) {
     return {
         fieldCode:structure.code,
         fieldName: CommonFields[structure.code],
-        sentence: sentence
+        sentence: sentence,
+        payload: structure
     };
 }
 

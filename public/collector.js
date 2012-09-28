@@ -5,6 +5,7 @@ angular.module('collector', ['hop.directives', 'rules', 'rulesContext'])
         $routeProvider.when('/', { templateUrl:'rulelist.html'});
         $routeProvider.when('/validation', {templateUrl:'rulelist.html'});
         $routeProvider.when("/interchange", {templateUrl: "decisiontable.html"});
+        $routeProvider.when("/transaction", {templateUrl:"transaction.html"});
 
     });
 

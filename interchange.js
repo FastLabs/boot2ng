@@ -34,6 +34,15 @@ function renderDecisionTable (req, res) {
             aggregated: ag});
     });
 }
+function renderPurchaseDomestic(req, res) {
+    var schemeName = "Visa",
+        file = cardSchemeFiles[schemeName];
+    loadData(file, function(rules) {
+        var ag = aggregator.getAggregated(schemeName, rules);
+        res.render("Purchase UK Domestic" ,{aggregated: ag});
+    });
+
+}
 
 function aggregate(schemeName, callback) {
     var schemeName = schemeName || "MasterCard",
@@ -45,5 +54,6 @@ function aggregate(schemeName, callback) {
 
 module.exports = {
     renderDecisionTable: renderDecisionTable,
-    loadRules: aggregate
+    loadRules: aggregate,
+    renderPurchaseDomestic : renderPurchaseDomestic
 }

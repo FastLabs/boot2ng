@@ -211,7 +211,7 @@ QualificationDetails
         fieldCode = fileType +"" +position;// there are few columns with different length but i think it doesn't matter +""+length;
     addDataFieldIfNotPresent({code: fieldCode, fieldName: sentence});
     return {fieldCode: fieldCode, fileType: fileType, position: position, length: length,
-    fieldName: fieldCode, sentence: sentence};
+    fieldName: fieldCode, sentence: sentence, value: value};
   }
   /qType: 'DB' operator: [YN] {
     return processor.handleBoolean({code: qType, op: operator});

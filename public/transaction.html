@@ -1,0 +1,190 @@
+<div ng-controller="transactionController">
+    <div class="span6">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th></th>
+                <th>id</th>
+                <th title="Reimbursement Attribute">R Attr</th>
+                <th>Issuer</th>
+                <th>Acquirer</th>
+                <th>Merchant</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr style="cursor: pointer;" ng-repeat="transaction in transactions"
+                ng-click="editTransaction(transaction)">
+                <td><a ng-click="submit(transaction)" rel="tooltip" title="To Rule Engine"><i
+                        class="icon-play-circle"></i></a></td>
+                <td>
+                    {{transaction.id}}
+                </td>
+                <td>
+                    {{transaction.reimbursementAttribute}}
+                </td>
+                <td>
+                    {{getRegion(transaction.issuer.region)}} ({{transaction.issuer.country}})
+                </td>
+                <td>
+                    {{getRegion(transaction.acquirer.region)}} ({{transaction.acquirer.country}})
+                </td>
+                <td>
+                    {{getRegion(transaction.merchant.region)}} ({{transaction.merchant.country}})
+                </td>
+
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div class="span5 well" ng-show="selectedTransaction">
+        <form class="form-horizontal">
+            <h4>Edit Transaction</h4>
+
+            <div class="control-group">
+                <label class="control-label">
+                    Reimbursement Attribute
+                </label>
+
+                <div class="controls">
+                    <label class="radio inline">
+                        <input value="0" type="radio"
+                               ng-model="selectedTransaction.reimbursementAttribute"><B>0</B></input>
+                    </label>
+                    <label class="radio inline">
+                        <input value="D" type="radio"
+                               ng-model="selectedTransaction.reimbursementAttribute"><B>D</B></input>
+                    </label>
+                    <label class="radio inline">
+                        <input value="B" type="radio"
+                               ng-model="selectedTransaction.reimbursementAttribute"><B>B</B></input>
+                    </label>
+                    <label class="radio inline">
+                        <input value="I" type="radio"
+                               ng-model="selectedTransaction.reimbursementAttribute"><B>I</B></input>
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Short Name
+                </label>
+
+                <div class="controls">
+                    <input ng-model="selectedTransaction.shortName"> </input>
+                </div>
+            </div>
+            <!-- acquirer information -->
+            <div class="control-group">
+                <h5>Acquirer</h5>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Region</label>
+
+                <div class="controls">
+                    <label class="radio inline" ng-repeat="region in regions">
+                        <input value="{{region.value}}" type="radio"
+                               ng-model="selectedTransaction.acquirer.region"><B>{{region.name}}</B></input>
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Country</label>
+
+                <div class="controls">
+                    <label class="radio inline"
+                           ng-repeat="country in regionCountries=countries[selectedTransaction.acquirer.region]">
+                        <input value="{{country}}" type="radio"
+                               ng-model="selectedTransaction.acquirer.country"><B>{{country}}</B></input>
+                    </label>
+                </div>
+            </div>
+
+            <!-- merchant information-->
+            <div class="control-group">
+                <h5>Merchant</h5>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Region</label>
+
+                <div class="controls">
+                    <label class="radio inline" ng-repeat="region in regions">
+                        <input value="{{region.value}}" type="radio"
+                               ng-model="selectedTransaction.merchant.region"><B>{{region.name}}</B></input>
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Country</label>
+
+                <div class="controls">
+                    <label class="radio inline"
+                           ng-repeat="country in regionCountries=countries[selectedTransaction.merchant.region]">
+                        <input value="{{country}}" type="radio"
+                               ng-model="selectedTransaction.merchant.country"><B>{{country}}</B></input>
+                    </label>
+                </div>
+            </div>
+
+
+            <!-- issuer information-->
+            <div class="control-group">
+                <h5>Issuer</h5>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Region</label>
+
+                <div class="controls">
+                    <label class="radio inline" ng-repeat="region in regions">
+                        <input value="{{region.value}}" type="radio"
+                               ng-model="selectedTransaction.issuer.region"><B>{{region.name}}</B></input>
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Country</label>
+
+                <div class="controls">
+                    <label class="radio inline"
+                           ng-repeat="country in regionCountries=countries[selectedTransaction.issuer.region]">
+                        <input value="{{country}}" type="radio"
+                               ng-model="selectedTransaction.issuer.country"><B>{{country}}</B></input>
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group" ng-show="selectedTransaction.jurisdiction">
+                <label class="control-label">Jurisdiction</label>
+
+                <div class="controls">
+                    <span class="label label-info">{{selectedTransaction.jurisdiction}}</span>
+                </div>
+            </div>
+
+
+            <div class="control-group" ng-show="selectedTransaction.fee.flatRate">
+                <label class="control-label">Flat Rate</label>
+
+                <div class="controls">
+                    <span class="label label-info">{{selectedTransaction.fee.flatRate}} {{selectedTransaction.fee.flatRateCurrency}}</span>
+                </div>
+            </div>
+
+            <div class="control-group" ng-show="selectedTransaction.fee.percentageRate">
+                <label class="control-label">Percentage</label>
+                <div class="controls">
+                    <span class="label label-info">{{selectedTransaction.fee.percentageRate}} %</span>
+                </div>
+
+            </div>
+
+            <!-- control area-->
+            <!-- <div class="control-group">
+                <button class="btn btn-primary btn-small">Save</button>
+                <button class="btn btn-danger btn-small">Revert</button>
+            </div>-->
+        </form>
+    </div>
+
+</div>

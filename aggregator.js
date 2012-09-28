@@ -1,4 +1,5 @@
-var processor = require('./processor.js');
+var processor = require('./processor.js'),
+    dtGenerator = require('./generator.js');
 
 var SchemeFields = {
     Common:  ["AC",
@@ -111,6 +112,26 @@ function getFieldDescription(scheme, fieldCode) {
     return (result !== undefined)? result:"";
 }
 
+function getColumnVerbalisation( scheme, fieldCode) {
+    var result = dtGenerator.columns[scheme][fieldCode].column;
+    return (result !== undefined)?result:"";
+}
+
+function getCellSentence(scheme, fieldCode, qualification) {
+    var sentenceBuilder = dtGenerator.columns[scheme][fieldCode].getSentence;
+    if(sentenceBuilder) {
+        return sentenceBuilder(qualification);
+    }
+    return "";
+}
+
+function getColumnHeader(scheme, fieldCode, columnCode) {
+    var headerBuilder = dtGenerator.columns[scheme][fieldCode].getTitle
+    if(headerBuilder) {
+        return headerBuilder(columnCode)
+    }
+    return ""
+}
 
 function isFieldVisible(fieldName) {
     var fieldCount = this.fields.length;
@@ -128,6 +149,9 @@ function getStructure(inherited, rule) {
         inherited.fields = [].concat(SchemeFields.Common, SchemeFields[inherited.schemeName]),
             inherited.isFieldVisible = isFieldVisible;
         inherited.getFieldDesc = getFieldDescription;
+        inherited.getColumnVerbalisation = getColumnVerbalisation;
+        inherited.getCellSentence = getCellSentence;
+        inherited.getColumnHeader = getColumnHeader;
         inherited.init = false;
 
     }

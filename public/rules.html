@@ -4,12 +4,15 @@
     <title>Rule Collection Toolkit</title>
     <script src="lib/angular-1.0.1.js" type="text/javascript"></script>
     <script src="lib/angular-resource-1.0.1.js" type="text/javascript"></script>
+
+
     <script type="text/javascript" src='collector.js'></script>
     <script type="text/javascript" src="rules.js"></script>
     <script type="text/javascript" src="context.js"></script>
     <script type="text/javascript" src="./javascripts/artifact.js"></script>
     <script type="text/javascript" src="./javascripts/utils.js"></script>
     <script type="text/javascript" src="./decisionTable.js"></script>
+    <script type="text/javascript" src="./transaction.js"></script>
 
     <link rel="stylesheet" href="/stylesheets/bootstrap.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
@@ -38,8 +41,9 @@
 
             <div class='nav-collapse'>
                 <ul class='nav'>
-                    <li class='active'><a href='#validation'>Validation</a></li>
+                    <li><a href='#validation'>Validation</a></li>
                     <li><a href='#interchange'>Interchange</a></li>
+                    <li><a href='#transaction'>Transaction</a></li>
                 </ul>
                 <!--action="/login" method="post"-->
                 <form class="navbar-form pull-right" ng-submit='changeUser()' >

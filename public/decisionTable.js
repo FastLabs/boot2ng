@@ -1,6 +1,4 @@
 function decisionTableController($scope) {
-
-
     $scope.table = {
         conditions:["c1", "c2", "c3"],
         actions: ["a1", "a2"],

@@ -43,4 +43,7 @@ form {
 .removable:hover [class^="icon-"] {
     display: inline-block;
 }
+.form-horizontal .control-group {
+    margin-bottom: 5px;
+}
 
