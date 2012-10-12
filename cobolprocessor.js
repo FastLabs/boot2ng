@@ -1,32 +1,25 @@
-var fs = require('fs'),
-    lineReader = require('readline');
+var fs = require('fs');
 
-var stream = fs.createReadStream("./validation.cobol", {
+var inStream = fs.createReadStream("./validation.cobol", {
     flags: 'r',
     encoding: "ascii",
     bufferSize: 1024
 });
 
+var outStream = fs.createWriteStream("properties.txt",
+        { flags: 'w',
+          encoding: "ascii",
+          mode: 666 });
+
 var pattern = new RegExp("REF-30-(.)+ =");
+var exp = /REF-([1-9a-z'\-'])*/igm;
 
-
-reader = lineReader.createInterface({
-    input: stream,
-    output: process.stdout
-});
-
-//reader.on('line', function(line) {
-//    console.log(line);
-//});
-/*
-stream.on('data', function(data) {
+inStream.on('data', function(data) {
     console.log(data);
-    x++;
 });
-*/
 
-stream.on('end', function() {
+inStream.on('end', function() {
     console.log("->" + "File loaded");
-    reader.close();
 });
-stream.resume();
+
+inStream.resume();
