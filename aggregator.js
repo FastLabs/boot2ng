@@ -1,5 +1,6 @@
 var processor = require('./processor.js'),
-    dtGenerator = require('./generator.js');
+    dtGenerator = require('./generator.js'),
+    testing = require('./testing.js');
 
 var SchemeFields = {
     Common:  ["AC",
@@ -31,7 +32,8 @@ var SchemeFields = {
         "RE",
         "RP",
         "RT",
-        "TK"],
+        "TK",
+        "LV"],
     Visa: [
         "C1061", // Short name ends EXEMPT
         "C1064", // Short name ends ZZ1
@@ -101,8 +103,8 @@ function getQualificationByCode(code) {
 }
 
 function getFieldDescription(scheme, fieldCode) {
-    var result = processor.FieldDescMap[fieldCode];
-    if(result === undefined && scheme === "Visa") {
+        var result = processor.FieldDescMap[fieldCode];
+        if(result === undefined && scheme === "Visa") {
         result = processor.VisaFields[fieldCode];
     }
     if(result=== undefined && scheme === "MasterCard") {
@@ -113,24 +115,27 @@ function getFieldDescription(scheme, fieldCode) {
 }
 
 function getColumnVerbalisation( scheme, fieldCode) {
-    var result = dtGenerator.columns[scheme][fieldCode].column;
-    return (result !== undefined)?result:"";
+    var result = dtGenerator.columns[scheme][fieldCode];
+    if(result === undefined) {
+        console.log(">>> " + fieldCode);
+    }
+    return (result && result.column !== undefined)?result.column:"";
 }
 
 function getCellSentence(scheme, fieldCode, qualification) {
-    var sentenceBuilder = dtGenerator.columns[scheme][fieldCode].getSentence;
-    if(sentenceBuilder) {
-        return sentenceBuilder(qualification);
+    var sentenceBuilder = dtGenerator.columns[scheme][fieldCode];
+    if(sentenceBuilder && sentenceBuilder.getSentence) {
+        return sentenceBuilder.getSentence(qualification);
     }
     return "";
 }
 
 function getColumnHeader(scheme, fieldCode, columnCode) {
-    var headerBuilder = dtGenerator.columns[scheme][fieldCode].getTitle
-    if(headerBuilder) {
-        return headerBuilder(columnCode)
+    var headerBuilder = dtGenerator.columns[scheme][fieldCode];
+    if(headerBuilder && headerBuilder.getTitle) {
+        return headerBuilder.getTitle(columnCode)
     }
-    return ""
+    return "";
 }
 
 function isFieldVisible(fieldName) {
@@ -143,15 +148,39 @@ function isFieldVisible(fieldName) {
     return false;
 }
 
-function getStructure(inherited, rule) {
+var patchMap = {
+    code: {
+        isFieldVisible: isFieldVisible,
+        getFieldDesc: getFieldDescription,
+        getColumnVerbalisation: getColumnVerbalisation,
+        getCellSentence: getCellSentence,
+        getColumnHeader:getColumnHeader
+    },
+    test: {
+        isFieldVisible: isFieldVisible,
+        getValue: testing.getValue
+    }
+};
+
+function copyProperties(source, destination) {
+    for(var i in source){
+        destination[i] = source[i];
+    }
+}
+
+function getStructure(inherited, rule, selector) {
     if(inherited.init === true) {
         inherited.conditions = [];
-        inherited.fields = [].concat(SchemeFields.Common, SchemeFields[inherited.schemeName]),
-            inherited.isFieldVisible = isFieldVisible;
-        inherited.getFieldDesc = getFieldDescription;
-        inherited.getColumnVerbalisation = getColumnVerbalisation;
-        inherited.getCellSentence = getCellSentence;
-        inherited.getColumnHeader = getColumnHeader;
+        inherited.fields = [].concat(SchemeFields.Common, SchemeFields[inherited.schemeName]);
+        var patch = patchMap[selector];
+        if(patch) {
+            //inherited.isFieldVisible = patch.isFieldVisible;
+            //inherited.getFieldDesc = patch.getFieldDesc;
+            //inherited.getColumnVerbalisation = patch.getColumnVerbalisation;
+            //inherited.getCellSentence = patch.getCellSentence;
+            //inherited.getColumnHeader = patch.getColumnHeader;
+            copyProperties(patch, inherited);
+        }
         inherited.init = false;
 
     }
@@ -172,8 +201,10 @@ function getStructure(inherited, rule) {
 }
 
 
-function getAggregated(schemeName, rules) {
-    var aggregated = {};
+function getAggregated(schemeName, rules, selector) {
+
+    var aggregated = {},
+        sel = selector || "code"
     rules.forEach(function (rule) {
         rule.getQualificationByCode = getQualificationByCode;
         var scheme = processor.scheme[rule.scheme.code],
@@ -183,18 +214,18 @@ function getAggregated(schemeName, rules) {
             var catCodeGroupCollection = schemeGroup[catCode];
             if(catCodeGroupCollection) {
                 catCodeGroupCollection.collection.push(rule);
-                catCodeGroupCollection.structure = getStructure(catCodeGroupCollection.structure, rule);
+                catCodeGroupCollection.structure = getStructure(catCodeGroupCollection.structure, rule, sel);
             } else {
                 catCodeGroupCollection = [rule];
                 schemeGroup[catCode] = {collection: catCodeGroupCollection,
-                    structure: getStructure({init:true, schemeName: schemeName}, rule)
+                    structure: getStructure({init:true, schemeName: schemeName}, rule, sel)
                 };
             }
         }else {
             var catCodeCollection = [rule];
             schemeGroup = { };
             schemeGroup[catCode] = { collection: catCodeCollection,
-                structure: getStructure({init: true, schemeName: schemeName}, rule)
+                structure: getStructure({init: true, schemeName: schemeName}, rule, sel)
             };
             aggregated[scheme] = schemeGroup;
         }
