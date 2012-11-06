@@ -18,14 +18,18 @@ var domains = {
             O: "O - Signature Business",
             J: "J - Platinum",
             K: "K - Signature",
-            Z: "Z"// this is not listed in the document
+            Z: "Z",// this is not listed in the document
+            E: "E",
+            V: "V"
         }
     },
     DD: {
         description: "Day Indicators",
         values: {
             S: "Saturdays",
-            B: "Bank Holidays"
+            B: "Bank Holidays",
+            T: "T",
+            P: "P"
         }
     },
     RT: {
@@ -38,16 +42,35 @@ var domains = {
     RAttr: {
       description: "Reimbursement Attribute",
       values: {
+          A: "A",
           B: "B",
           D: "D",
           I: "I",
+          J: "J",
           C: "C",
           F: "F",
-          0: "0"
+          0: "0",
+          7: "7",
+          5: "5",
+          6: "6"
       }
-    }
+    },
+    RE: {
+        description: "Region",
+        values: {
+            EU : "Europe",
+            7: "7"
+        }
 
-}
+    }
+};
+
+MemberMap = {
+    A: "Acquirer",
+    I: "Issuer",
+    M: "Merchant"
+};
+
 function getDomain(fieldCode, value, isInt) {
     var domain = domains[fieldCode]
     if(domain) {
@@ -70,12 +93,17 @@ function getDomainCollection(fieldCode, values, isInt) {
     return result;
 }
 
-function getCollection(columnCode, collection, isInt) {
+function getCollection(columnCode, collection, settings) {
+    settings = settings ||{}
     if(collection.length == 1) {
-        return "<Param><![CDATA["+ getDomain(columnCode, collection[0], isInt) + "]]></Param>"
+        return "<Param><![CDATA["+ getDomain(columnCode, collection[0], settings.isInt) + "]]></Param>"
     } else {
-        var expression = "<Text><![CDATA[<an object> is one of <objects>]]></Text>",
-            params = "<Param><![CDATA[{" + getDomainCollection(columnCode, collection, isInt) +"}]]></Param>";
+        var prefix = "";
+        if(settings.negated !== undefined && settings.negated) {
+            prefix = "not";
+        }
+        var expression = "<Text><![CDATA[<an object> is "+ prefix + " one of <objects>]]></Text>",
+            params = "<Param><![CDATA[{" + getDomainCollection(columnCode, collection, settings.isInt) +"}]]></Param>";
         return expression + params;
     }
     return "";
@@ -83,6 +111,22 @@ function getCollection(columnCode, collection, isInt) {
 
 var columns = {
     Visa:{
+        "AV": { column: "the verification value of the authorisation of 'the transaction' is <a string>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Auth Verification Code");
+            },
+            getSentence: function(data) {
+                if(data && data.data) {
+                    var result = "";
+                    if(data.op.trim() === "not" ) {
+                        result = "<Text><![CDATA[<an object> is not <an object>]]></Text>";
+                    }
+
+                    result = result + "<Param><![CDATA[\"" + data.data +"\"]]></Param>";
+                    return result;
+                }
+            }
+        },
         "RAttr" : {
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Reimbursement Attribute");
@@ -103,9 +147,45 @@ var columns = {
             }
 
         },
-        "MC": {column: "the mcc of the mcc of the merchant of the acquirer of 'the transaction' is <a number>",
+        "MC": {column: "the mcc of the merchant of the acquirer of 'the transaction' is <a number>",
             getSentence: function(data) {
-                return "";
+                var inRangesPrefix = "<Text><![CDATA[<a merchant category code> is in ranges <int ranges>]]></Text>",
+                //  <Param><![CDATA[{ 5192 to 5192 , 5449 to 5499 , 5994 to 5944 }]]></Param>
+                    oneOfPrefix = "<Text><![CDATA[<a merchant category code> is one of <numbers>]]></Text>";
+                    //<Param><![CDATA[{ 1233 , 456 }]]></Param>
+
+
+
+                var oneOfOperator = [],
+                    inRangesOperator = [];
+                if(data && data.original) {
+                   var ranges = data.original;
+                    ranges.forEach(function(range) {
+                        if(range.low == range.top) {
+                            oneOfOperator.push(range);
+                        } else {
+                            inRangesOperator.push(range);
+                        }
+                    });
+                    var list = "";
+                    if(inRangesOperator.length > 0) {
+                        for(var i in inRangesOperator) {
+                            var range = inRangesOperator[i];
+                            list += (range.low + " to " + range.top) + (i < inRangesOperator.length - 1?",":"");
+                        }
+
+                        for (var j in oneOfOperator) {
+                            list += (", " + oneOfOperator[j].low + " to "+ oneOfOperator[j].top);
+                        }
+                        return inRangesPrefix + "<Param><![CDATA[{"+ list + "}]]></Param>"
+                    } else {
+                        for(var i in oneOfOperator) {
+                            var range = oneOfOperator[i];
+                            list += (range.low ) + (i < oneOfOperator.length - 1?",":"");
+                        }
+                        return oneOfPrefix + "<Param><![CDATA[{" + list + "}]]></Param>";
+                    }
+                }
             },
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "MCC");
@@ -159,8 +239,12 @@ var columns = {
                 return getTitle(columnCode, "Capture Method")
             },
             getSentence : function (data) {
-                if(data) {
-                    return getCollection("CP", data.data)
+                if(data){
+                    var negated = false;
+                    if(data.op.trim() === "not one of") {
+                        negated = true;
+                    }
+                    return getCollection("CP", data.data, {negated: negated});
                 }
             }
 
@@ -238,7 +322,7 @@ var columns = {
             },
             getSentence: function(data) {
                 if(data) {
-                    return getCollection("CS", data.data, true);
+                    return getCollection("CS", data.data, {isInt:true});
                 }
             }
         },
@@ -273,6 +357,19 @@ var columns = {
             }
 
         },
+        "RE" : { column: "<geo locateds> of 'the transaction'  have the same Region  and is <regions>",
+            getTitle : function(columnCode) {
+                return getTitle(columnCode, "Region");
+            },
+            getSentence: function(data) {
+                if(data && data.payload) {
+                    var member = "<Param><![CDATA[{" + MemberMap[data.payload.member] +"}]]></Param>",
+                        region = "<Param><![CDATA[{"+ getDomainCollection("RE", data.payload.data) + "}]]></Param>";
+                    return member + region;
+                }
+            }
+        }
+        ,
         "C2092": {column: "'the transaction' is refund is <a boolean>",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Is Refund");
@@ -288,7 +385,7 @@ var columns = {
                 if(!rule.flatFee.currency ) {
                     return "";
                 }
-                var flatFee = "<Param><![CDATA["+ rule.flatFee.rate +"]]></Param>",
+                var flatFee = "<Param><![CDATA["+ rule.flatFee.numeric +"]]></Param>",
                     currency = "<Param><![CDATA["+rule.flatFee.currency + "]]></Param>";
                 return flatFee + currency;
             },
@@ -319,7 +416,181 @@ var columns = {
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Min Fee");
             }
+        },
+        "ruleId" : {
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Rule Id");
+            },
+            getSentence: function(rule) {
+                if(rule) {
+                    return "<Param><![CDATA[\"" + rule.itemId +""+ rule.schemeId +"\"]]></Param>";
+                }
+            }
+        },
+        "CT" : {column: "the country of the merchant of the acquirer of 'the transaction' is <a string>",
+            getTitle: function(columnCode ) {
+                return getTitle(columnCode, "Merchant Location");
+            },
+            getSentence : function(data) {
+                if(data && data.country) {
+                    return "<Param><![CDATA["+ getDomain("CT", data.country) + "]]></Param>" ;//"<Param><![CDATA["+ data.country + "]]></Param>"
+                }
+            }
+        },
+        "LV": { column: "data level of 'the transaction' is <a number>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Data Level");
+            },
+            getSentence: function(data){
+                if(data && data.param) {
+                return "<Param><![CDATA[" +data.param + "]]></Param>";
+                }
+            }
+        },
+        "C2041" : { column: "the company of the merchant of the acquirer of 'the transaction' is <a string>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Company");
+            },
+            getSentence: function(data) {
+                if(data && data.value) {
+                    return "<Param><![CDATA["+ getDomain("C2041", data.value) + "]]></Param>";
+                }
+                return "";
+            }
+        },
+        "C2310" : { column: "the card details of the issuer of 'the transaction' in chip card range is <a boolean>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Chip Card Range");
+            },
+            getSentence: function(data) {
+                if(data && data.value) {
+                    var val = ((data.operator === "Y")?true:false);
+                    return "<Param><![CDATA["+ val + "]]></Param>";
+                }
+            }
+        },
+        "AC": {column: "the characteristics of the authorisation of 'the transaction' is <a string>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Auh. Char. Ind.");
+            },
+            getSentence: function(data) {
+                if(data && data.data) {
+                    return getCollection("AC", data.data);//"<Param><![CDATA["+ data.value + "]]></Param>";
+                }
+            }
+        },
+        "C2201" : { column :"the flags of 'the transaction' is regulated value is <a boolean>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Is Regulated Flag Set");
+            },
+            getSentence: function(data) {
+                if(data) {
+                    return "<Param><![CDATA[true]]></Param>";
+                }
+            }
+        },
+        "C2072" : { column: "the reference of 'the transaction' is <a string>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Transaction Reference");
+            },
+            getSentence: function(data) {
+                if(data && data.value) {
+                    return "<Param><![CDATA["+ data.value + "]]></Param>";
+                }
+            }
+        },
+        "C2311": { column: "the trace id of 'the transaction' is not empty is <a boolean>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Trace Id not spaces");
+            },
+            getSentence: function(data) {
+                if(data) {
+                    return "<Param><![CDATA[true]]></Param>";
+                }
+            }
+        },
+        "C2202": { column: "the visa product id of 'the transaction' is <a string>",
+            getTitle: function (columnCode) {
+                return getTitle(columnCode, "Visa Prod. Id");
+            },
+            getSentence: function (data) {
+                if(data && data.value) {
+                    return "<Param><![CDATA["+ getDomain("C2202",data.value) + "]]></Param>";
+                }
+            }
+        },
+        "C2204": {column:"the commercial service id of the issuer of 'the transaction' is <a string>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Issuer Comm Service");
+            },
+            getSentence: function(data) {
+                if(data && data.value) {
+                    return "<Param><![CDATA["+ getDomain("C2204",data.value) + "]]></Param>";
+                }
+            }
+
+        },
+
+        "LI028": { column: "the unit price of the invoice of the corporate summary of 'the transaction' is <a number>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Unit Price");
+            },
+            getSentence: function(data) {
+                if(data) {
+                    return  "<Text><![CDATA[<an object> is not <an object>]]></Text>" + "<Param><![CDATA[0]]></Param>";
+                }
+            }
+        },
+        "LI047" : { column: "the invoice of the corporate summary of 'the transaction' provides product information is <a boolean>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Product Code Provided")
+            },
+            getSentence: function(data) {
+                if(data) {
+                    return "<Param><![CDATA[true]]></Param>";
+                }
+            }
+        },
+        "LI105": { column: "the invoice of the corporate summary of 'the transaction' provides product information is <a boolean>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "CommodityCode");
+            },
+            getSentence: function(data) {
+                if(data) {
+                    return "<Param><![CDATA[true]]></Param>";
+                }
+            }
+        },
+        "CC": { column: "<geo locateds> of 'the transaction'  have the same {Region}",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Same Region");
+            },
+            getSentence: function(data) {
+                if(data && data.data) {
+                    var members = data.data,
+                        list = "";
+                    for(var i in members) {
+                        if (members[i] !== undefined) {
+                            list += members[i] + ((i< members.length-1)?", ":"");
+                        }
+                    }
+                    return "<Param><![CDATA[{"+ list +"}]]></Param>";
+                }
+
+            }
+        },
+        "CQ": { column: "the issuer of 'the transaction' is chip qualified is <a boolean>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Chip Qualified Iss");
+            },
+            getSentence: function(data) {
+                if(data) {
+                    return "<Param><![CDATA[" + data.value +"]]></Param>";
+                }
+            }
         }
+
+
     },
     MasterCard:{
 
