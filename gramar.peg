@@ -135,7 +135,7 @@ QualificationRecord
     result.subSequence = subSequence;
     if(qualification) {
         result.qualification = qualification;
-    }
+    } else {console.log("!!!!!!!!!!!!!!!!!!!!!!!1")}
     return result;
   }
 QualificationDetails
@@ -201,7 +201,7 @@ QualificationDetails
         rest += (", " +memberCode);
     });
     var desc = processor.MemberMap[m1] + rest + ((rest.length ===0)?" is":" are ") + ((operator === 'Y')?"":" not ") +" located in " +country;
-    return {fieldCode: qType, sentence: desc}
+    return {fieldCode: qType, sentence: desc, country: country};
   }
   / qType: 'CV' operator: [YN] data: (CardholderValidation)+{
     return processor.handleCollection({code: qType, op: operator, data: data});
@@ -237,10 +237,15 @@ QualificationDetails
         regionCount = regions.length;
 
     for(var i = 0;i<regionCount; i++) {
-        var region = regions[i];
-        detailedRegions.push(processor.regions[region.scheme][region.value]);
+        var region = regions[i],
+            domain = processor.regions[region.scheme][region.value];
+        if(domain) {
+            detailedRegions.push(domain);
+            } else {
+                console.log("!!!! RE prob " + region.value);
+            }
     }
-    return processor.handleFunction({code: qType, member:m, op: op, data: detailedRegions});
+    return processor.handleFunction({code: qType, member:m, op: op, original: regions, data: detailedRegions});
   }
   /qType : 'RP' operator: [YN] values: ([A-Za-z])+ {
     return processor.handleCollection({code: qType, op: operator, data: values});
@@ -357,20 +362,26 @@ ProcessingSequence
   = Numeric4
 
 FeePercentage
-  = Numeric4
+  = val: Numeric4 {
+    return parseFloat(val)/100;
+  }
 
 FlatFee
-  = sign: [ +-] rate: Numeric7 {return {rate: rate, sign: sign };}
+  = sign: [ +-] rate: Numeric7 {return {rate: rate, sign: sign, numeric: parseFloat(sign +rate)/10000 };}
 
 FlatFeeCurrency
   = Currency
   / space space space {return undefined;}
 
 MinimumFee
-  = Numeric4
+  = val: Numeric4 {
+    return parseFloat(val)/1000;
+  }
 
 MaximumFee
-  = Numeric6
+  = val: Numeric6 {
+    return parseFloat(val)/1000;
+  }
 InternationalIndicator
   = CharOrSpace
 
