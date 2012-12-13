@@ -599,5 +599,8 @@ var columns = {
 };
 
 module.exports = {
-    columns:columns
+    columns:columns,
+    getDomain: getDomain,
+    getDomainCollection: getDomainCollection
+
 }

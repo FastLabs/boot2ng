@@ -42,7 +42,8 @@ RegionMap = {
       3: "EU",
       4: "Asia Pacific",
       5: "Latin America",
-      6: "CEMEA"
+      6: "CEMEA",
+      7: "7"
   }
 };
 
@@ -77,7 +78,8 @@ var CommonFields = {
     RE: "Region Code of the %s is %s one of ",
     RP: "Requested Payment Service",
     RT: "Requiring Transactions",
-    TK: "transaction amount converted to %s is %s less than %s"
+    TK: "transaction amount converted to %s is %s less than %s",
+    LV: "Data Level"
 };
 
 var VisaFields = {
@@ -168,13 +170,15 @@ function handleCollection(structure) {
         operator = " one of",
         prefix =  (structure.op === 'Y')?"":" not";
 
-    return {
+    var x =  {
+        original: structure.original,
         fieldCode: fieldCode,
         fieldName: CommonFields[structure.code],
         sentence: getField(fieldCode) + prefix + ((structure.data.length >1)? operator:""),
         data: structure.data,
         op: prefix + ((structure.data.length >1)? operator:"")
     }
+        return x;
 }
 // is {FIELD_NAME}
 function handleBooleanCheck(structure) {
@@ -230,6 +234,7 @@ function handleRangeCheck(structure) {
         fieldCode: structure.code,
         fieldName: CommonFields[structure.code],
         data: ranges,
+        original: structure.data,
         op: operator
     };
 }

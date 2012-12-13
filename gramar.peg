@@ -383,7 +383,10 @@ MaximumFee
     return parseFloat(val)/1000;
   }
 InternationalIndicator
-  = CharOrSpace
+  = val: CharOrSpace {
+    console.log(val);
+    return val;
+  }
 
 PaymentServiceIndicator
   = CharOrSpace

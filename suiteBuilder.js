@@ -1,7 +1,7 @@
 var interchange = require("./interchange.js"),
     cardScheme = "Visa",
     scheme = "Purchase",
-    catCode = "Inter Regional",
+    catCode = "Intra Regional",
     merchantCountry = undefined;
 
 var templates = {
@@ -169,7 +169,8 @@ var templates = {
     }
 }
 
-var mccCombinations = [];
+var mccCombinations = [],
+    methodOfCaptureCollection = [];
 
 function mccRangeToString(mccRange) {
     if(mccRange.low === mccRange.top) {
@@ -186,6 +187,13 @@ function collectMcc(mccCollection) {
     if(mccCombinations.indexOf(mccUID) === -1) {
         mccCombinations.push(mccUID);
     }
+}
+function collectMethodOfCapture (valueCollection) {
+    var key = JSON.stringify(valueCollection);
+    if(methodOfCaptureCollection.indexOf(key) === -1) {
+        methodOfCaptureCollection.push(key)
+    }
+
 }
 function fromTemplates(templateList){
     var result = {};
@@ -218,6 +226,7 @@ function putIn(source, destination) {
 }
 
 interchange.loadRules(cardScheme, function(aggregated) {
+
     var rules = aggregated[scheme][catCode].collection,
         structure = aggregated[scheme][catCode].structure,
         schemeTemplate = templates[cardScheme][scheme],
@@ -270,6 +279,9 @@ interchange.loadRules(cardScheme, function(aggregated) {
                             if(testValue.fieldName === "MCC") {
                                 collectMcc(testValue.original);
                             }
+                            if(testValue.fieldName === "methodOfCapture") {
+                                collectMethodOfCapture(testValue.original);
+                            }
                             putIn(testValue, result);
                         }
                            //console.log(JSON.stringify(testValue));
@@ -313,10 +325,16 @@ interchange.loadRules(cardScheme, function(aggregated) {
 
     //console.log("---------------------------------------------------------------------------------");
     });
-    console.log("------------------extracted MCC combinations");
+    /*console.log("------------------extracted MCC combinations");
     for(var i in mccCombinations) {
         console.log(mccCombinations[i]);
-    }
+    }*/
+
+    console.log("method of capture combinations");
+    methodOfCaptureCollection.forEach(function (item){
+        console.log(item);
+    })
+
 
 
     //console.log(JSON.stringify(structure));

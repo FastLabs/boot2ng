@@ -5,17 +5,62 @@ var fs = require("fs"),
     toBeScanned = "./data",
     outputDir = "./data/output"
     enrichment = {
-        "reimbursementAttribute": function(attribute, instance) {
-            if (instance[attribute] === undefined) {
-                instance[attribute] = "RA_NEW";
-            }
-            else {
-                instance[attribute] = "RA_OVERIDDEN";
-            }
-        },
-        "issuer/region": function(attribute, instance) {
-            instance[attribute] = "3";
-        }
+		"paymentScheme": function(attribute, instance) {
+			instance[attribute] = "1";
+		},
+		
+		"amount": function(attribute, instance) {
+			instance[attribute] = "10099.0";
+			instance['currency'] = "GBP"
+		},
+		
+		"methodOfCapture": function(attribute, instance) {
+			if(instance[attribute] === undefined) {
+				instance[attribute] = "Mock";
+			}
+		},
+		"mailOrder": function(attribute, instance) {
+			if(instance[attribute] === undefined) {
+				instance[attribute] = "false";
+			}
+		},
+		"dataLevel": function(attribute, instance) {
+			if(instance[attribute] === undefined) {
+				instance[attribute] = "0";
+			}
+		},
+		"refund": function(attribute, instance) {
+			if(instance[attribute] === undefined) {
+				instance[attribute] = "false";
+			}
+		},
+		
+		"merchant/company": function(attribute, instance) {
+			if(instance[attribute] === undefined) {
+				instance[attribute] = "ANY";
+			}
+		},
+		
+		"merchant/cardHolderPresent": function(attribute, instance) {
+			instance[attribute] = "2";
+		},
+		
+		"issuer/debitCardIndicator": function(attribute, instance) {
+			if(instance[attribute] === undefined) {
+				instance[attribute] = "false";
+			}
+		},
+		"issuer/productCode": function(attribute, instance) {
+			if(instance[attribute] === undefined) {
+				instance[attribute] = "MOCK";
+			}
+		},
+		
+		"authorisation/authorised": function(attribute, instance) {
+			if(instance[attribute] === undefined){
+				instance[attribute]  = "false";
+			}
+		}
     };
 
 function lookupInstance(path, instance) {
@@ -24,7 +69,13 @@ function lookupInstance(path, instance) {
         pathElementCount = elements.length - 1,
         currentInstance = instance;
     while(i< pathElementCount) {
-        currentInstance = currentInstance[elements[i++]];
+        var selected = currentInstance[elements[i]];
+		if (!selected) {
+			selected = {};
+			currentInstance[elements[i]] = selected;
+		}
+		currentInstance = selected;
+		i++;
     }
 
     return {
@@ -54,11 +105,10 @@ function process( instance) {
             transformer(toBeTransformed.element, toBeTransformed.instance);
         }
     });
-
 }
 
+//loads a particular file content
 fileEmitter.on('file', function(fileName) {
-
     fs.readFile(toBeScanned + "/" + fileName, "ascii", function(err, data) {
         if (err) {
             console.log("error loading files");
@@ -70,7 +120,7 @@ fileEmitter.on('file', function(fileName) {
         save(fileName, values);
     });
 });
-
+//scans the input folder
 fs.readdir(toBeScanned, function(err, files) {
     if (err) {
         console.log("Error loading the directory");

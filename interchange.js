@@ -13,7 +13,7 @@ var cardSchemeFiles = {
 function loadData(file, callback) {
     fs.readFile(file, function (err, data) {
         if(err) {
-            console.log("error loading the rule file" + file);
+            console.log("error loading the rule file " + file);
         } else {
             var rules = parser.parse(new String(data));
             if(callback) {
@@ -44,11 +44,11 @@ function renderPurchaseDomestic(req, res) {
 
 }
 
-function aggregate(schemeName, callback) {
+function aggregate(schemeName, callback, selector) {
     var schemeName = schemeName || "MasterCard",
         file = cardSchemeFiles[schemeName];
     loadData(file, function(rules) {
-        callback(aggregator.getAggregated(schemeName, rules));
+        callback(aggregator.getAggregated(schemeName, rules, selector));
     })
 }
 

@@ -1,6 +1,7 @@
 var processor = require('./processor.js'),
     dtGenerator = require('./generator.js'),
-    testing = require('./testing.js');
+    testing = require('./testing.js'),
+    optimize = require('./optimize.js');
 
 var SchemeFields = {
     Common:  ["AC",
@@ -159,6 +160,11 @@ var patchMap = {
     test: {
         isFieldVisible: isFieldVisible,
         getValue: testing.getValue
+    },
+    optimize: {
+        isFieldVisible: isFieldVisible,
+        getValue: optimize.getValue,
+        getCondition: optimize.getCondition
     }
 };
 

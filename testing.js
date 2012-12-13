@@ -76,7 +76,7 @@ var columns = {
                         negated = true;
                     }
 
-                    return {fieldName: "methodOfCapture", value: (negated)?getNegation(["EG", "EH", "EK", "ST", "CH", "PI", "CL"], qualification.data):qualification.data[0]};
+                    return {fieldName: "methodOfCapture",original: qualification.data, value: (negated)?getNegation(["EG", "EH", "EK", "ST", "CH", "PI", "CL"], qualification.data):qualification.data[0]};
                 }
             }
         },
