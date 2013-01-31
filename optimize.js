@@ -24,12 +24,8 @@ function flatArray(array) {
 }
 
 var columns = {
-    Visa:{
-        "reimbursementAttribute":{
-            getValue:function (value) {
-                return value;
-            }
-        },
+    Common:{
+
         "C1061":{
             getValue:function (qualification) {
                 return {fieldName:"shortName", value:qualification.value, hash:"sn:" + qualification.value};
@@ -117,28 +113,8 @@ var columns = {
                 }
             }
         },
-        "C1064":{
-            getValue:function (qualification) {
-                return {fieldName:"shortName", value:"_" + qualification.value, hash:"sn:" + qualification.value};
-            },
-            getCondition:function (data) {
-                if (data) {
-                    return "the short name of 'the merchant' ends with \"" + data.value + "\"";
-                }
-                return "";
-            }
-        },
-        "C2002":{
-            getValue:function (qualification) {
-                return {fieldName:"bin", value:qualification.value, destination:"issuer", hash:"issbin:" + qualification.value};
-            },
-            getCondition:function (data) {
-                if (data) {
-                    console.log(data.value);
-                    return "the bin of 'the issuer' is \"" + data.value + "\"";
-                }
-            }
-        },
+
+
         "DC":{
             getValue:function (qualification) {
                 var result = "Debit";
@@ -189,7 +165,7 @@ var columns = {
             },
             getCondition:function (data) {
                 var operator = " one of ";
-                if(data.op !== undefined && data.op !== "") {
+                if (data.op !== undefined && data.op !== "") {
                     operator = data.op;
                 }
                 return "the  method of capture of 'the transaction' is " + operator + " { " + generator.getDomainCollection("CP", data.data) + "}";
@@ -325,18 +301,7 @@ var columns = {
                 }
             }
         },
-        "C2092":{
-            getValue:function (qualification) {
-                return {fieldName:"isRefund", value:( qualification.value === "R" ? true : false), hash:"refund:" + qualification.value}
-            },
-            getCondition:function (data) {
-                if (data.value === 'R') {
-                    return "'the transaction' is Refund";
-                }
-                return "it is not true that 'the transaction' is Refund";
-            }
 
-        },
         "LV":{
             getValue:function (qualification) {
                 return {fieldName:"dataLevel", value:qualification.param, hash:"lv:" + qualification.param};
@@ -358,31 +323,8 @@ var columns = {
                 }
             }
         },
-        "C2041":{
-            getValue:function (qualification) {
-                return {fieldName:"company", value:qualification.value, destination:"merchant", hash:"company:" + qualification.value};
-            },
-            getCondition:function (data) {
-                if (data && data.value) {
-                    return "the company of 'the merchant' is " + generator.getDomain("C2041", data.value);
-                }
-                return "";
-            }
-        },
-        "C2310":{
-            getValue:function (qualification) {
-                var v = qualification.operator === 'Y' ? true : false;
-                return {fieldName:"isChipCardRange", value:v, destination:"issuer", hash:"chipRange:" + v};
-            },
-            getCondition:function (data) {
-                if (data && data.value) {
-                    if (data.operator === "Y") {
-                        return "the card details of 'the transaction' in chip card range";
-                    }
-                    return "it is not true that the card details of 'the transaction' in chip card range";
-                }
-            }
-        },
+
+
         "C2201":{//not qualification program
             getValue:function (qualification) {
                 return {fieldName:"regulatedValueFlag", value:true, hash:"regulatedValueFlag:true"};
@@ -422,15 +364,7 @@ var columns = {
                 }
             }
         },
-        "C2204":{ // large ticket
-            getValue:function (qualification) {
-                return {fieldName:"commercialServiceId", value:qualification.value, destination:"issuer", hash:"comServid:" + qualification.value};
-            }, getCondition:function (data) {
-                if (data && data.value) {
-                    return "the commercial service id of 'the issuer' is " + generator.getDomain("C2204", data.value);
-                }
-            }
-        },
+
         "LI028":{ // not used in qualification programs
             getValue:function (qualification) {
                 return {fieldName:"unitCost", value:10.0, destination:"invoice"};
@@ -441,14 +375,7 @@ var columns = {
                 }
             }
         },
-        "LI047":{// not used in qualification programs
-            getValue:function (qualification) {
-                return {fieldName:"productCode", value:"ANY", destination:"invoice", hash:"prodCode:hasInfo"};
-            },
-            getCondition:function (qualification) {
-                var text = "the product code of the issuer of 'the transaction' is"
-            }
-        },
+
         "LI105":{
             getValue:function (qualification) {
                 return {fieldName:"commodityCode", value:"ANY", destination:"invoice", hash:"commCode:hasInfo"};
@@ -560,23 +487,108 @@ var columns = {
             getCondition:function (qualification) {
                 return "the agent id of 'the transaction' is \"" + qualification.value + "\"";
             }
-
         }
+    },
+    Visa:{
+        "C1064":{
+            getValue:function (qualification) {
+                return {fieldName:"shortName", value:"_" + qualification.value, hash:"sn:" + qualification.value};
+            },
+            getCondition:function (data) {
+                if (data) {
+                    return "the short name of 'the merchant' ends with \"" + data.value + "\"";
+                }
+                return "";
+            }
+        }, "C2002":{
+            getValue:function (qualification) {
+                return {fieldName:"bin", value:qualification.value, destination:"issuer", hash:"issbin:" + qualification.value};
+            },
+            getCondition:function (data) {
+                if (data) {
+                    console.log(data.value);
+                    return "the bin of 'the issuer' is \"" + data.value + "\"";
+                }
+            }
+        }, "C2092":{
+            getValue:function (qualification) {
+                return {fieldName:"isRefund", value:( qualification.value === "R" ? true : false), hash:"refund:" + qualification.value}
+            },
+            getCondition:function (data) {
+                if (data.value === 'R') {
+                    return "'the transaction' is Refund";
+                }
+                return "it is not true that 'the transaction' is Refund";
+            }
 
+        }, "C2041":{
+            getValue:function (qualification) {
+                return {fieldName:"company", value:qualification.value, destination:"merchant", hash:"company:" + qualification.value};
+            },
+            getCondition:function (data) {
+                if (data && data.value) {
+                    return "the company of 'the merchant' is " + generator.getDomain("C2041", data.value);
+                }
+                return "";
+            }
+        }, "C2310":{
+            getValue:function (qualification) {
+                var v = qualification.operator === 'Y' ? true : false;
+                return {fieldName:"isChipCardRange", value:v, destination:"issuer", hash:"chipRange:" + v};
+            },
+            getCondition:function (data) {
+                if (data && data.value) {
+                    if (data.operator === "Y") {
+                        return "the card details of 'the transaction' in chip card range";
+                    }
+                    return "it is not true that the card details of 'the transaction' in chip card range";
+                }
+            }
+        }, "C2204":{ // large ticket
+            getValue:function (qualification) {
+                return {fieldName:"commercialServiceId", value:qualification.value, destination:"issuer", hash:"comServid:" + qualification.value};
+            }, getCondition:function (data) {
+                if (data && data.value) {
+                    return "the commercial service id of 'the issuer' is " + generator.getDomain("C2204", data.value);
+                }
+            }
+        }, "LI047"://TODO: this must be implemented
+        {
+
+        }, "reimbursementAttribute":{
+            getValue:function (value) {
+                return value;
+            }
+        }
+    },
+    MasterCard:{
 
     }
 }
-    function getValue(scheme, fieldName, value)
-{
+function getValue(scheme, fieldName, value) {
     var builder = columns[scheme][fieldName];
-    if (builder) {
+    if(builder === undefined) {
+        builder = columns["Common"][fieldName];
+    }
+    if (builder && builder.getValue) {
         return builder.getValue(value);
     }
 }
+/**
+ * if the content builder is not present for the scheme
+ * then common map is checked
+ */
 function getCondition(scheme, fieldName, value) {
-    var builder = columns[scheme][fieldName];
-    if (builder && builder.getCondition) {
-        return builder.getCondition(value);
+    var contentBuilder = columns[scheme][fieldName];
+
+    if (contentBuilder === undefined) {
+        contentBuilder = columns["Common"][fieldName]
+    }
+
+    if (contentBuilder && contentBuilder.getCondition) {
+        return contentBuilder.getCondition(value);
+    } else {
+        console.log("Error finding the problem " + fieldName);
     }
 }
 module.exports = {

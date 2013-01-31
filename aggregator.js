@@ -118,7 +118,7 @@ function getFieldDescription(scheme, fieldCode) {
 }
 
 function getColumnVerbalisation( scheme, fieldCode) {
-    var result = dtGenerator.columns[scheme][fieldCode];
+    var result = dtGenerator.getContentBuilder(scheme, fieldCode);
     if(result === undefined) {
         console.log(">>> " + fieldCode);
     }
@@ -126,7 +126,7 @@ function getColumnVerbalisation( scheme, fieldCode) {
 }
 
 function getCellSentence(scheme, fieldCode, qualification) {
-    var sentenceBuilder = dtGenerator.columns[scheme][fieldCode];
+    var sentenceBuilder = dtGenerator.getContentBuilder(scheme, fieldCode);
     if(sentenceBuilder && sentenceBuilder.getSentence) {
         return sentenceBuilder.getSentence(qualification);
     }
@@ -134,7 +134,7 @@ function getCellSentence(scheme, fieldCode, qualification) {
 }
 
 function getColumnHeader(scheme, fieldCode, columnCode) {
-    var headerBuilder = dtGenerator.columns[scheme][fieldCode];
+    var headerBuilder = dtGenerator.getContentBuilder(scheme, fieldCode);
     if(headerBuilder && headerBuilder.getTitle) {
         return headerBuilder.getTitle(columnCode)
     }
