@@ -562,7 +562,30 @@ var columns = {
         }
     },
     MasterCard:{
-
+        "BS" : {
+            getValue: function(value) {
+                return {fieldName:"BS", hash: "bs:" + JSON.stringify(value.data)};
+            },
+            getCondition: function(qualification) {
+                return "'selected BSA' is" + qualification.op + " \"" + qualification.data[0]+"\"";
+            }
+        },
+        "BT" : {
+            getValue: function(value) {
+                return {fieldName:"BT", hash: "bt:" + JSON.stringify(value.data)};
+            },
+            getCondition: function(qualification) {
+                return "the type of 'selected BSA' is" + qualification.op + ' "' + qualification.data[0] +'"';
+            }
+        },
+        "C2390": {
+            getValue: function(qualification) {
+                return {field: "brand", hash: "br:maestro" };
+            },
+            getCondition: function(qualification) {
+               return "the brand of the issuer is Maestro";
+            }
+        }
     }
 }
 function getValue(scheme, fieldName, value) {
@@ -588,7 +611,7 @@ function getCondition(scheme, fieldName, value) {
     if (contentBuilder && contentBuilder.getCondition) {
         return contentBuilder.getCondition(value);
     } else {
-        console.log("Error finding the problem " + fieldName);
+        console.log("Error finding the column " + fieldName);
     }
 }
 module.exports = {

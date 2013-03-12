@@ -4,7 +4,7 @@ var processor = require('./processor.js'),
     optimize = require('./optimize.js');
 
 var SchemeFields = {
-    Common:  ["AC",
+    Common:  [
         "AB",// acquirer bin
         "AR",// authorisation response
         "AU", // is the transaction authorised
@@ -41,11 +41,12 @@ var SchemeFields = {
         ,"LI028" // Unit Cost not zeros
         ,"C2201" // regulated value flag set
         ,"C2072" // Trans Ref not spaces
-        ,"LI105" // Product Code not spaces
+        ,"LI105" // Product Code not spaces/ commodity code
         ,"C2311" // Trace ID not spaces
         , "C2202" // Visa Product ID G1
      ],
     Visa: [
+        "AC", //authorisation characteristic indicator
         "C1064", // Short name ends ZZ1
         "C2002", // ISSUER BIN 448448
         "C2092", // Not a refund
@@ -120,7 +121,7 @@ function getFieldDescription(scheme, fieldCode) {
 function getColumnVerbalisation( scheme, fieldCode) {
     var result = dtGenerator.getContentBuilder(scheme, fieldCode);
     if(result === undefined) {
-        console.log(">>> " + fieldCode);
+        console.log("cannot find content builder for >>> " + fieldCode);
     }
     return (result && result.column !== undefined)?result.column:"";
 }

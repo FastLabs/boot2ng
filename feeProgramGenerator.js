@@ -42,7 +42,7 @@ function generateQualificationProgram (hash, program) {
 }
 
 eventBus.on("save", function (item) {
-    var file = outputPath + item.fileName +".brl";
+    var file = outputPath + item.fileName.trim() +".brl";
     console.log("saving: " + file);
     fs.writeFile(file, item.content, function(err) {
         if(err) {

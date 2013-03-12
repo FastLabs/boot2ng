@@ -1,0 +1,98 @@
+[
+    {
+        "scheme":{
+            "code":"P",
+            "description":"Purchase"
+        },
+        "categoryCode":{
+            "code":"TRA",
+            "description":"Intra Regional"
+        },
+        "sequence":"0077",
+        "subSequence":"00",
+        "description":"AP EOA GOLD",
+        "itemId":"136",
+        "schemeId":"136",
+        "reimbursementAttribute":"B",
+        "feePercentage":"0142",
+        "flatFee":{
+            "rate":"0000000",
+            "sign":" "
+        },
+        "minFee":"0000",
+        "maxFee":"000000",
+        "qualification":[
+            {
+                "subSequence":"01",
+                "qualification":{
+                    "code":"CC",
+                    "sentence":"Country Code of the Merchant,Issuer are  equal"
+                }
+            },
+            {
+                "subSequence":"02",
+                "qualification":{
+                    "fieldCode":"CP",
+                    "sentence":"Method of Capture is one of",
+                    "data":["PI", "CH", "CL", "LO", "ST"]
+                }
+            },
+            {
+                "subSequence":"03",
+                "qualification":{
+                    "code":"DD",
+                    "sentence":"processed in 03 days including:  [ 'S', 'B', 'P' ]"
+                }
+            },
+            {
+                "subSequence":"04",
+                "qualification":{
+                    "code":"RE",
+                    "sentence":"Region Code of the Merchant is  one of  [ 'Asia Pacific' ]"
+                }
+            }
+        ]
+    },
+    {
+        "scheme":{
+            "code":"P",
+            "description":"Purchase"
+        },
+        "categoryCode":{
+            "code":"TRA",
+            "description":"Intra-Regional"
+        },
+        "sequence":"0222",
+        "subSequence":"00",
+        "description":"CONS PREMIUM STANDARD (INTRA SAMEA)",
+        "itemId":"107",
+        "schemeId":"107",
+        "interchangeRateDesignator":"PS",
+        "feePercentage":"0000",
+        "flatFee":{
+            "rate":"0000000",
+            "sign":" "
+        },
+        "minFee":"0000",
+        "maxFee":"000000",
+        "flatFeeCurrency":"USD",
+        "qualification":[
+            {
+                "subSequence":"01",
+                "qualification":{
+                    "fieldCode":"BT",
+                    "sentence":"Business Service Agreement Type is one of",
+                    "data":["2060001"]
+                }
+            },
+            {
+                "subSequence":"02",
+                "qualification":{
+                    "fieldCode":"PR",
+                    "sentence":"Product Code is one of",
+                    "data":["MPL", "MCT", "MDP", "MRH"]
+                }
+            }
+        ]
+    }
+]

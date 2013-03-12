@@ -590,7 +590,28 @@ var columns = {
 
     },
     MasterCard:{
-
+        "BS" : {
+            column : "the business service agreement of the merchant",
+            getSentence : function(data) {
+                if(data !== undefined) {
+                    console.log("------------- bsa " + JSON.stringify(data.data));
+                }
+            },
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Business Service Agreement");
+            }
+        },
+        "BT" : {
+            column : "the business service agreement of the merchant",
+            getSentence : function(data) {
+                if(data !== undefined) {
+                    console.log("------------- BSAType " + JSON.stringify(data.data));
+                }
+            },
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Business Service Agreement");
+            }
+        }
     },
     Visa: {
         "C1064": { column: "the short name of 'the transaction' is <a string>",

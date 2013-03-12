@@ -1,5 +1,5 @@
 var interchange = require('./interchange.js'),
-    cardScheme = "Visa",
+    cardScheme = "MasterCard",
     programGenerator = require("./feeProgramGenerator.js"),
     feeStructureGenerator = require("./feeStructureGenerator.js");
 
@@ -213,7 +213,7 @@ interchange.loadRules(cardScheme, function (aggregated) {
     allSchemes.forEach(function (scheme) {
         catCodes = aggregated[scheme];
         Object.keys(catCodes).forEach(function (catCode) {
-            if (scheme === "Purchase" && catCode === "Inter Regional") {
+            if (scheme === "Cash" && catCode === "Intra Regional") {
                 var rules = aggregated[scheme][catCode].collection,
                    structure = aggregated[scheme][catCode].structure;
                 handleRuleList(scheme, catCode, rules, structure);
@@ -223,7 +223,7 @@ interchange.loadRules(cardScheme, function (aggregated) {
             programGenerator.qualificationProgram(hash, collected[hash]);
        });
         Object.keys(feeStructure).forEach(function (path) {
-           feeStructureGenerator.generateFeeTable(path, feeStructure[path]);
+           feeStructureGenerator.generateFeeTable(cardScheme, path, feeStructure[path]);
         });
 console.log( "--------" + Object.keys(collected).length);
 });

@@ -6,8 +6,8 @@ uuid = require('node-uuid'),
     outputPath = "./data/generated/fees/",
     fs = require("fs");
 
-function generateFeeStructure(path, content) {
-
+function generateFeeStructure(scheme, path, content) {
+    cardScheme = scheme;
     eventBus.emit("save", getTableBody(path.replace('/', ' '), content));
 }
 
@@ -34,7 +34,7 @@ function getContent(content) {
         structure.conditions.forEach(function (condition) {
             if (structure.isFieldVisible(condition)) {
                 var qualification = rule.rule.getQualification(condition),
-                    sentence = structure.getCellSentence("Visa", condition, qualification);
+                    sentence = structure.getCellSentence(cardScheme, condition, qualification);
                 conditions += getCondition(partitionId++, sentence);
             }
         });
@@ -111,7 +111,7 @@ function getTableStructure(structure) {
 function getColumnDefinition(id, structure, condition) {
     var definition = '<ConditionDefinition Id="C' + id + '">'
         + '<ExpressionDefinition>'
-        + '<Text><![CDATA[' + structure.getColumnVerbalisation("Visa", condition) + ']]></Text>'
+        + '<Text><![CDATA[' + structure.getColumnVerbalisation(cardScheme, condition) + ']]></Text>'
         + '</ExpressionDefinition>\n</ConditionDefinition>';
     return definition;
 }

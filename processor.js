@@ -103,6 +103,8 @@ var VisaFields = {
 };
 
 var MasterCardFields = {
+    BS: "Business Service Agreement",
+    BT: "Business Service Agreement type",
     C2390: "Brand is Maestro",
     C1061: "Short name ends EXEMPT",
     C1215: "MC Ass ID not '0'",
