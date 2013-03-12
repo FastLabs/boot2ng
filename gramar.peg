@@ -228,6 +228,9 @@ QualificationDetails
   / qType: 'PR' operator: [YN] productCodes: (PR)+ {
     return processor.handleCollection({code: qType, op: operator, data: productCodes});
   }
+  / qType: 'PI' operator:[YN] {
+    return processor.handleBoolean({code: qType, op: operator});
+  }
   / qType: 'RC' operator: [YN] m1: Member m2: Member m3: (Member)* {
     var desc = "region code of the " + m1 + " is the sam as " + m2;
         if(m3 !== undefined && m3 !== null && m3.length > 0) {
@@ -311,8 +314,9 @@ AR
 Member
   = [IAM]
 PR
-  = seq: (CapsChar CapsChar CapsChar) { return seq.join(""); }
-   / char: CapsChar space space {return char;}
+  = seq: (CapsCharNumber CapsCharNumber CapsCharNumber) {  return seq.join("").trim(); }
+  /seq: (CapsCharNumber space space) { return seq.join("").trim(); }
+  /seq: (CapsCharNumber CapsCharNumber space) { return seq.join("").trim(); }
 RE
   = char: [1ABCDE] { return {scheme: "MC", value: char};}
   / char: [1234567] {return {scheme: "VI", value: char};}
@@ -391,6 +395,7 @@ InternationalIndicator
     if(val != undefined && val.trim().length >0) {
         console.log("international indicator " +val);
     }
+>>>>>>> f681fcdc1d4089ca0e928eaaeaabc25e9608ad56
     return val;
   }
 
@@ -460,6 +465,8 @@ Char2
 
 CapsChar
   = [A-Z]
+CapsCharNumber
+  = [A-Z0-9]
 AnyChar
   = [a-zA-Z 0-9'=]
 

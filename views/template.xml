@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.dt:DecisionTable xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.dt="http://ilog.rules.studio/model/dt.ecore">
+    <name>Purchase UK Domestic</name>
+    <uuid>a18560eb-9b17-4f16-ab89-5660e2d50f73</uuid>
+    <locale>en_GB</locale>
+    <definition>
+        <DT Version="7.0" xmlns="http://schemas.ilog.com/Rules/7.0/DecisionTable">
+            <Body>
+                <Properties>
+                    <Property Name="Check.Gap" Type="xs:boolean"><![CDATA[false]]></Property>
+                    <Property Name="UI.AutoResizeTable" Type="xs:boolean"><![CDATA[false]]></Property>
+                    <Property Name="UI.RenderBoolean" Type="xs:boolean"><![CDATA[true]]></Property>
+                </Properties>
+                <Structure>
+                    <ConditionDefinitions>
+                        <ConditionDefinition Id="C0">
+                            <Properties>
+                                <Property Name="Check.Gap" Type="xs:boolean"><![CDATA[false]]></Property>
+                            </Properties>
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the reimbursement attribute of 'the transaction' is <a reimbursement attribute>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C1">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the short name of 'the transaction' is <a string>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C3">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the bin of the issuer of 'the transaction' is <a string>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C2">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the mcc of the mcc of the merchant of the acquirer of 'the transaction' is <a number>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C4">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the card details of the issuer of 'the transaction' is debit is <a boolean>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C5">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the product code of the issuer of 'the transaction' is <a product code>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C12">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the capture method of 'the transaction' is <a string>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C16">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the scheme of the card details of the issuer of 'the transaction' is <a number>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C13">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the response of the authorisation of 'the transaction' is <a string>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C17">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the card validation response code of the card details of the issuer of 'the transaction' is <a string>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C14">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the authorisation of 'the transaction' is authorised is <a boolean>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C6">
+                            <ExpressionDefinition>
+                                <Text><![CDATA['the transaction' is refund is <a boolean>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C7">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the amount of 'the transaction' converted to GBP is <a number>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C8">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[processed in <a number> days including <day differences>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C9">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[recurring transaction is <an allowed or not> for the merchant of the acquirer of 'the transaction']]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C15">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the cat code of the terminal of the merchant of the acquirer of 'the transaction' is <a string>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C10">
+                            <ExpressionDefinition>
+                                <Text><![CDATA['the transaction' is refund is <a boolean>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                        <ConditionDefinition Id="C11">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[the flags of 'the transaction' is moto is <an object>]]></Text>
+                            </ExpressionDefinition>
+                        </ConditionDefinition>
+                    </ConditionDefinitions>
+                    <ActionDefinitions>
+                        <ActionDefinition Id="A0">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[<a number> as flat rate of the fee of the acquirer of 'the transaction' in <an ISOCurrency code>]]></Text>
+                            </ExpressionDefinition>
+                        </ActionDefinition>
+                        <ActionDefinition Id="A1">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[set the fee percentage of the fee of the acquirer of 'the transaction'    to <a number>]]></Text>
+                            </ExpressionDefinition>
+                        </ActionDefinition>
+                        <ActionDefinition Id="A3">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[set the min amount of the fee of the acquirer of 'the transaction'    to <a number>]]></Text>
+                            </ExpressionDefinition>
+                        </ActionDefinition>
+                        <ActionDefinition Id="A2">
+                            <ExpressionDefinition>
+                                <Text><![CDATA[set the max amount of the fee of the acquirer of 'the transaction'    to <a number>]]></Text>
+                            </ExpressionDefinition>
+                        </ActionDefinition>
+                    </ActionDefinitions>
+                </Structure>
+                <Contents>
+                    <Partition DefId="C0">
+                        <Condition>
+                            <Expression>
+                                <Param><![CDATA[D]]></Param>
+                            </Expression>
+                            <Partition DefId="C1">
+                                <Condition>
+                                    <Expression>
+                                        <Text><![CDATA[<a string> ends with <a string>]]></Text>
+                                        <Param><![CDATA["EXEMPT"]]></Param>
+                                    </Expression>
+                                    <Partition DefId="C2">
+                                        <Condition>
+                                            <Expression>
+                                                <Text><![CDATA[<a number> is between <min> and <max>]]></Text>
+                                                <Param><![CDATA[8398]]></Param>
+                                                <Param><![CDATA[8398]]></Param>
+                                            </Expression>
+                                            <Partition DefId="C5">
+                                                <Condition>
+                                                    <Expression/>
+                                                    <Partition DefId="C14">
+                                                        <Condition>
+                                                            <Expression>
+                                                                <Param><![CDATA[false]]></Param>
+                                                            </Expression>
+                                                            <Partition DefId="C7">
+                                                                <Condition>
+                                                                    <Expression>
+                                                                        <Param><![CDATA[10]]></Param>
+                                                                    </Expression>
+                                                                    <Partition DefId="C8">
+                                                                        <Condition>
+                                                                            <Expression>
+                                                                                <Param><![CDATA[10]]></Param>
+                                                                                <Param><![CDATA[{ Bank Holidays , Saturdays }]]></Param>
+                                                                            </Expression>
+                                                                            <Partition DefId="C9">
+                                                                                <Condition>
+                                                                                    <Expression>
+                                                                                        <Param><![CDATA[Allowed]]></Param>
+                                                                                    </Expression>
+                                                                                    <Partition DefId="C10">
+                                                                                        <Condition>
+                                                                                            <Expression>
+                                                                                                <Param><![CDATA[true]]></Param>
+                                                                                            </Expression>
+                                                                                            <Partition DefId="C11">
+                                                                                                <Condition>
+                                                                                                    <Expression>
+                                                                                                        <Param><![CDATA[true]]></Param>
+                                                                                                    </Expression>
+                                                                                                    <ActionSet>
+                                                                                                        <Action DefId="A0">
+                                                                                                            <Expression>
+                                                                                                                <Param><![CDATA[0.175]]></Param>
+                                                                                                                <Param><![CDATA[GBP]]></Param>
+                                                                                                            </Expression>
+                                                                                                        </Action>
+                                                                                                        <Action DefId="A1">
+                                                                                                            <Expression>
+                                                                                                                <Param><![CDATA[0.33]]></Param>
+                                                                                                            </Expression>
+                                                                                                        </Action>
+                                                                                                        <Action DefId="A3">
+                                                                                                            <Expression/>
+                                                                                                        </Action>
+                                                                                                        <Action DefId="A2">
+                                                                                                            <Expression/>
+                                                                                                        </Action>
+                                                                                                    </ActionSet>
+                                                                                                </Condition>
+                                                                                            </Partition>
+                                                                                        </Condition>
+                                                                                    </Partition>
+                                                                                </Condition>
+                                                                            </Partition>
+                                                                        </Condition>
+                                                                    </Partition>
+                                                                </Condition>
+                                                            </Partition>
+                                                        </Condition>
+                                                    </Partition>
+                                                </Condition>
+                                            </Partition>
+                                        </Condition>
+                                    </Partition>
+                                </Condition>
+                            </Partition>
+                        </Condition>
+                        <Condition>
+                            <Expression>
+                                <Param><![CDATA[B]]></Param>
+                            </Expression>
+                            <Partition DefId="C1">
+                                <Condition>
+                                    <Expression>
+                                        <Text><![CDATA[<a string> ends with <a string>]]></Text>
+                                        <Param><![CDATA["ZZZ1"]]></Param>
+                                    </Expression>
+                                    <Partition DefId="C5">
+                                        <Condition>
+                                            <Expression>
+                                                <Param><![CDATA[A - ATM]]></Param>
+                                            </Expression>
+                                            <Partition DefId="C16">
+                                                <Condition>
+                                                    <Expression>
+                                                        <Param><![CDATA[10]]></Param>
+                                                    </Expression>
+                                                    <Partition DefId="C13">
+                                                        <Condition>
+                                                            <Expression>
+                                                                <Param/>
+                                                            </Expression>
+                                                            <Partition DefId="C7">
+                                                                <Condition>
+                                                                    <Expression>
+                                                                        <Param><![CDATA[11]]></Param>
+                                                                    </Expression>
+                                                                    <ActionSet>
+                                                                        <Action DefId="A0">
+                                                                            <Expression/>
+                                                                        </Action>
+                                                                        <Action DefId="A1">
+                                                                            <Expression/>
+                                                                        </Action>
+                                                                        <Action DefId="A3">
+                                                                            <Expression/>
+                                                                        </Action>
+                                                                        <Action DefId="A2">
+                                                                            <Expression/>
+                                                                        </Action>
+                                                                    </ActionSet>
+                                                                </Condition>
+                                                            </Partition>
+                                                        </Condition>
+                                                    </Partition>
+                                                </Condition>
+                                            </Partition>
+                                        </Condition>
+                                    </Partition>
+                                </Condition>
+                            </Partition>
+                        </Condition>
+                    </Partition>
+                </Contents>
+            </Body>
+            <Resources DefaultLocale="en_GB">
+                <ResourceSet Locale="en_GB">
+                    <Data Name="/0/0/0/0/0/0/0/0/0/0/A#Comment"><![CDATA[CASH (Inter)]]></Data>
+                    <Data Name="Definitions(A0)#HeaderText"><![CDATA[Flat Rate]]></Data>
+                    <Data Name="Definitions(A0)#Width"><![CDATA[277]]></Data>
+                    <Data Name="Definitions(A0)[0]#HeaderText"><![CDATA[Amount]]></Data>
+                    <Data Name="Definitions(A0)[1]#HeaderText"><![CDATA[Currency]]></Data>
+                    <Data Name="Definitions(A1)#HeaderText"><![CDATA[Fee %]]></Data>
+                    <Data Name="Definitions(A1)#Width"><![CDATA[81]]></Data>
+                    <Data Name="Definitions(A2)#HeaderText"><![CDATA[Max Fee]]></Data>
+                    <Data Name="Definitions(A2)#Width"><![CDATA[80]]></Data>
+                    <Data Name="Definitions(A3)#HeaderText"><![CDATA[Min Fee]]></Data>
+                    <Data Name="Definitions(A3)#Width"><![CDATA[81]]></Data>
+                    <Data Name="Definitions(C0)#HeaderText"><![CDATA[Reimbursement Attribute]]></Data>
+                    <Data Name="Definitions(C0)#Width"><![CDATA[61]]></Data>
+                    <Data Name="Definitions(C1)#HeaderText"><![CDATA[Short Name]]></Data>
+                    <Data Name="Definitions(C1)#Width"><![CDATA[103]]></Data>
+                    <Data Name="Definitions(C10)#HeaderText"><![CDATA[is refund]]></Data>
+                    <Data Name="Definitions(C11)#HeaderText"><![CDATA[MOTO]]></Data>
+                    <Data Name="Definitions(C12)#HeaderText"><![CDATA[Capture Method]]></Data>
+                    <Data Name="Definitions(C13)#HeaderText"><![CDATA[Auth Resp]]></Data>
+                    <Data Name="Definitions(C14)#HeaderText"><![CDATA[Authorised]]></Data>
+                    <Data Name="Definitions(C15)#HeaderText"><![CDATA[Cat Code]]></Data>
+                    <Data Name="Definitions(C16)#HeaderText"><![CDATA[Card Scheme]]></Data>
+                    <Data Name="Definitions(C17)#HeaderText"><![CDATA[cardholder validation]]></Data>
+                    <Data Name="Definitions(C2)#HeaderText"><![CDATA[MCC]]></Data>
+                    <Data Name="Definitions(C2)#Width"><![CDATA[120]]></Data>
+                    <Data Name="Definitions(C3)#HeaderText"><![CDATA[Issuer Bin]]></Data>
+                    <Data Name="Definitions(C3)#Width"><![CDATA[59]]></Data>
+                    <Data Name="Definitions(C4)#HeaderText"><![CDATA[Debit]]></Data>
+                    <Data Name="Definitions(C4)#Width"><![CDATA[53]]></Data>
+                    <Data Name="Definitions(C5)#HeaderText"><![CDATA[Product Code]]></Data>
+                    <Data Name="Definitions(C6)#HeaderText"><![CDATA[Refund]]></Data>
+                    <Data Name="Definitions(C6)#Width"><![CDATA[44]]></Data>
+                    <Data Name="Definitions(C7)#HeaderText"><![CDATA[GBP Amount]]></Data>
+                    <Data Name="Definitions(C7)#Width"><![CDATA[81]]></Data>
+                    <Data Name="Definitions(C8)#HeaderText"><![CDATA[processed in]]></Data>
+                    <Data Name="Definitions(C8)#Width"><![CDATA[233]]></Data>
+                    <Data Name="Definitions(C8)[0]#HeaderText"><![CDATA[days]]></Data>
+                    <Data Name="Definitions(C8)[1]#HeaderText"><![CDATA[including]]></Data>
+                    <Data Name="Definitions(C9)#HeaderText"><![CDATA[Recurring Transaction]]></Data>
+                    <Data Name="Definitions(C9)#Width"><![CDATA[108]]></Data>
+                </ResourceSet>
+            </Resources>
+        </DT></definition>
+</ilog.rules.studio.model.dt:DecisionTable>

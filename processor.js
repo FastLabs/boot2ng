@@ -79,7 +79,8 @@ var CommonFields = {
     RP: "Requested Payment Service",
     RT: "Requiring Transactions",
     TK: "transaction amount converted to %s is %s less than %s",
-    LV: "Data Level"
+    LV: "Data Level",
+    PI: "Premium Merchant"
 };
 
 var VisaFields = {
@@ -96,7 +97,9 @@ var VisaFields = {
     C2204: "Issuer Comm Service Id E or K",
     LI028: "Unit Cost not zeros",
     LI047: "Product Code not spaces",
-    LI105: "Commodity Code not spaces"
+    LI105: "Commodity Code not spaces",
+    C2326: "validation code",
+    C2464: "funding source"
 };
 
 var MasterCardFields = {

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ilog.rules.studio.model.dt:DecisionTable xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ilog.rules.studio.model.dt="http://ilog.rules.studio/model/dt.ecore">
+    <name>Purchase UK Domestic2</name>
+    <uuid>a18560eb-9b17-4f16-ab89-5660e2d50f72</uuid>
+    <locale>en_GB</locale>
+    <definition>
+        <DT Version="7.0" xmlns="http://schemas.ilog.com/Rules/7.0/DecisionTable">
+        <Body>
+        <Properties>
+            <Property Name="Check.Gap" Type="xs:boolean"><![CDATA[false]]></Property>
+            <Property Name="UI.AutoResizeTable" Type="xs:boolean"><![CDATA[false]]></Property>
+            <Property Name="UI.RenderBoolean" Type="xs:boolean"><![CDATA[true]]></Property>
+        </Properties>
+<%
+var scheme = "Purchase",
+        cardScheme = "Visa",
+        catCode = "Non UK Domestic",
+        country = "USA",
+        region = undefined,
+        structure = aggregated[scheme][catCode].structure,
+        rules = aggregated[scheme][catCode].collection;
+
+        var isRegionVisible = function(rule) {
+            if(region == undefined) return true;
+            var region = rule.getQualificationByCode("RE");
+            if(region) {
+                var regions = region.data;
+                if(regions[0] === region) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        var isRuleVisible = function(rule) {
+            //var mc = rule.getQualificationByCode("MC");
+            //if(mc) {
+            //     console.log(JSON.stringify(mc.data));
+            //}
+            if(country === undefined) return true;
+            var countryCode = rule.getQualificationByCode("CT");
+            //console.log(JSON.stringify(countryCode));
+            if(countryCode) {
+                if(countryCode.country === country) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+%>
+<Structure>
+    <ConditionDefinitions>
+        <% if (structure.isFieldVisible("reimbursementAttribute")) {
+        var count = 0;
+        %>
+        <ConditionDefinition Id="C<%=count++%>">
+            <Properties>
+                <Property Name="Check.Gap" Type="xs:boolean"><![CDATA[false]]></Property>
+            </Properties>
+            <ExpressionDefinition>
+                <Text><![CDATA[the reimbursement attribute of 'the transaction' is <a reimbursement attribute>]]></Text>
+            </ExpressionDefinition>
+        </ConditionDefinition>
+        <%}
+        structure.conditions.forEach(function (condition) {
+        if(structure.isFieldVisible(condition)) { %>
+        <ConditionDefinition Id="C<%=count++%>">
+            <ExpressionDefinition>
+                <Text><![CDATA[<%-structure.getColumnVerbalisation(cardScheme, condition)%>]]></Text>
+            </ExpressionDefinition>
+        </ConditionDefinition>
+        <%}
+        });
+        %>
+    </ConditionDefinitions>
+    <ActionDefinitions>
+        <ActionDefinition Id="A0">
+            <ExpressionDefinition>
+                <Text><![CDATA[<a number> as flat rate of the fee of the acquirer of 'the transaction' in <an ISOCurrency code>]]></Text>
+            </ExpressionDefinition>
+        </ActionDefinition>
+        <ActionDefinition Id="A1">
+            <ExpressionDefinition>
+                <Text><![CDATA[set the fee percentage of the fee of the acquirer of 'the transaction' to <a number>]]></Text>
+            </ExpressionDefinition>
+        </ActionDefinition>
+        <ActionDefinition Id="A3">
+            <ExpressionDefinition>
+                <Text><![CDATA[set the min amount of the fee of the acquirer of 'the transaction' to <a number>]]></Text>
+            </ExpressionDefinition>
+        </ActionDefinition>
+        <ActionDefinition Id="A2">
+            <ExpressionDefinition>
+                <Text><![CDATA[set the max amount of the fee of the acquirer of 'the transaction' to <a number>]]></Text>
+            </ExpressionDefinition>
+        </ActionDefinition>
+        <ActionDefinition Id="A4">
+            <Properties>
+                <Property Name="Visible"><![CDATA[false]]></Property>
+            </Properties>
+            <ExpressionDefinition>
+                <Text><![CDATA[set the fired rule of the fee of the acquirer of 'the transaction' to <a string>]]></Text>
+            </ExpressionDefinition>
+        </ActionDefinition>
+    </ActionDefinitions>
+</Structure>
+    <Contents>
+        <Partition DefId="C0">
+            <%
+            var ruleCount = 0;
+            rules.forEach(function(rule) {
+            if(/*ruleCount++ < 100 &&*/ isRuleVisible(rule) && isRegionVisible(rule)) {
+            var partitionCount = 1;
+            %>
+
+            <Condition>
+                <Expression>
+                    <Param><%-structure.getCellSentence(cardScheme, "RAttr", rule)%></Param>
+                </Expression>
+                <%structure.conditions.forEach(function(condition){
+                if(structure.isFieldVisible(condition)) {
+                    var qual = rule.getQualificationByCode(condition);
+                if(condition == "AC") {
+                    console.log(qual);
+                }
+                %>
+                <Partition DefId="C<%=partitionCount++%>">
+                    <Condition>
+                        <Expression>
+                            <%-structure.getCellSentence(cardScheme, condition, qual)%>
+                        </Expression>
+                        <%
+                        }});%>
+                        <ActionSet>
+                            <Action DefId="A0">
+                                <Expression>
+                                    <%-structure.getCellSentence(cardScheme, "flatFee", rule)%>
+                                </Expression>
+                            </Action>
+                            <Action DefId="A1">
+                                <Expression>
+                                    <%-structure.getCellSentence(cardScheme, "feePercentage", rule)%>
+                                </Expression>
+                            </Action>
+                            <Action DefId="A2">
+                                <Expression>
+                                    <%-structure.getCellSentence(cardScheme, "maxFee", rule)%>
+                                </Expression>
+                            </Action>
+                            <Action DefId="A3">
+                                <Expression>
+                                    <%-structure.getCellSentence(cardScheme, "minFee", rule)%>
+                                </Expression>
+                            </Action>
+                            <Action DefId="A4">
+                                <Expression>
+                                    <%-structure.getCellSentence(cardScheme, "ruleId", rule)%>
+                                </Expression>
+                            </Action>
+                        </ActionSet>
+                <%structure.conditions.forEach(function(condition){
+                        if(structure.isFieldVisible(condition)) {
+                        %>
+                        </Condition>
+                    </Partition><% }});%>
+                            </Condition> <% }/*rule count check*/ });%>
+    </Partition>
+    </Contents>
+    </Body>
+        <Resources DefaultLocale="en_GB">
+            <ResourceSet Locale="en_GB">
+                <%if(structure.isFieldVisible("reimbursementAttribute")){%><%-structure.getColumnHeader(cardScheme, "RAttr", "C0")%>
+                <%}
+                var headCount = 1;
+                structure.conditions.forEach(function (condition) {
+                    if(structure.isFieldVisible(condition)){%><%-structure.getColumnHeader(cardScheme, condition, "C" + headCount++)%>
+                    <%}});if(structure.isFieldVisible("feePercentage")){%><%-structure.getColumnHeader(cardScheme, "feePercentage", "A0")%>
+                <%} if(structure.isFieldVisible("flatFee")){%><%-structure.getColumnHeader(cardScheme, "flatFee", "A1")%>
+                <%} if(structure.isFieldVisible("minFee")){%><%-structure.getColumnHeader(cardScheme, "minFee", "A3")%>
+                <%} if(structure.isFieldVisible("maxFee")){%><%-structure.getColumnHeader(cardScheme, "maxFee", "A2")%><%} console.log("**" + ruleCount); %>
+                <Data Name="Definitions(A4)#HeaderText"><![CDATA[Rule Id]]></Data>
+            </ResourceSet>
+        </Resources>
+        </DT></definition>
+</ilog.rules.studio.model.dt:DecisionTable>
+

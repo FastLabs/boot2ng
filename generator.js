@@ -20,7 +20,33 @@ var domains = {
             K: "K - Signature",
             Z: "Z",// this is not listed in the document
             E: "E",
-            V: "V"
+            V: "V",
+            S1:"S1",
+            S2:"S2",
+            S3:"S3",
+            K1:"K1",
+            G1:"G1",
+            I:"I",
+            N:"N",
+            C: "C",
+            G3: "G3",
+            L:"L"
+        }
+    },
+    CP: { Description: "method of capture",
+        values: {PA: "PA",
+        FA: "FA",
+        CH: "CH",
+        PI: "PI",
+        ST: "ST",
+        LO: "LO",
+        LP: "LP",
+        PK: "PK"
+        , EG: "EG"
+        , EH: "EH"
+        , EJ: "EJ"
+        , CL: "CL"
+        , EK: "EK   "
         }
     },
     DD: {
@@ -62,6 +88,15 @@ var domains = {
             7: "7"
         }
 
+    },
+    C2464 :{
+        description: "account funding source",
+        values: {
+            C: "Credit",
+            D: "Debit",
+            P: "Prepaid",
+            H: "Charge"
+        }
     }
 };
 
@@ -110,7 +145,7 @@ function getCollection(columnCode, collection, settings) {
 }
 
 var columns = {
-    Visa:{
+    Common:{
         "AV": { column: "the verification value of the authorisation of 'the transaction' is <a string>",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Auth Verification Code");
@@ -127,14 +162,7 @@ var columns = {
                 }
             }
         },
-        "RAttr" : {
-            getTitle: function(columnCode) {
-                return getTitle(columnCode, "Reimbursement Attribute");
-            },
-            getSentence: function(rule) {
-                return getDomain("RAttr", rule.reimbursementAttribute);
-            }
-        },
+
         "C1061":{column: "the short name of 'the transaction' is <a string>",
             getSentence: function(data) {
                 if(data && data.value) {
@@ -147,7 +175,7 @@ var columns = {
             }
 
         },
-        "MC": {column: "the mcc of the merchant of the acquirer of 'the transaction' is <a number>",
+        "MC": {column: "the mcc of 'the merchant' is <a number>",
             getSentence: function(data) {
                 var inRangesPrefix = "<Text><![CDATA[<a merchant category code> is in ranges <int ranges>]]></Text>",
                 //  <Param><![CDATA[{ 5192 to 5192 , 5449 to 5499 , 5994 to 5944 }]]></Param>
@@ -191,30 +219,9 @@ var columns = {
                 return getTitle(columnCode, "MCC");
             }
         },
-        "C2002": { column: "the bin of the issuer of 'the transaction' is <a string>",
-            getSentence: function(data) {
 
-                if(data) {
-                    console.log(data.value);
-                    return "<Param><![CDATA[\""+ data.value +"\"]]></Param>";
-                }
-            },
-            getTitle : function(columnCode) {
-                return getTitle(columnCode, "Issuer Bin");
-            }
-        },
-        "C1064": { column: "the short name of 'the transaction' is <a string>",
-            getSentence : function (data) {
-                if(data ) {
-                    return "<Text><![CDATA[<a string> ends with <a string>]]></Text><Param><![CDATA[\""+ data.value + "\"]]></Param>"
-                }
-                return "";
-            },
-            getTitle: function(columnCode) {
-                return getTitle(columnCode, "Short Name");
-            }
-        },
-        "DC": {column: "the card details of the issuer of 'the transaction' is debit is <a boolean>",
+
+        /*"DC": {column: "the card details of 'the transaction' is debit is <a boolean>",
             getSentence: function(data){
                 if(data) {
                     return "<Param><![CDATA["+ data.value + "]]></Param>"
@@ -223,8 +230,24 @@ var columns = {
             getTitle: function (columnCode) {
                 return getTitle(columnCode, "Is Debit Card")
             }
-        },
-        "PR": {column: "the product code of the issuer of 'the transaction' is <a product code>",
+        }*/
+        "DC" :{
+            column: "the account funding source of 'the transaction' is <an account funding source>",
+            getTitle:function (columnCode) {
+                return getTitle(columnCode, "Funding Source");
+            },
+            getSentence: function(qualification ) {
+                if(qualification !== undefined) {
+                    var result = "Debit"
+                    if(qualification.op === "N") {
+                        result = "Credit";
+                    }
+                    return '<Param><![CDATA[' + result +']]></Param>'
+                }
+            }
+        }
+        ,
+        "PR": {column: "the product code of 'the issuer' is <a product code>",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Product Code");
             },
@@ -234,7 +257,7 @@ var columns = {
                 }
             }
         },
-        "CP": {column: "the capture method of 'the transaction' is <a string>",
+        "CP": {column: "the method of capture of 'the transaction' is <a string>",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Capture Method")
             },
@@ -292,7 +315,7 @@ var columns = {
             },
             getSentence: function(data) {
                 if(data) {
-                    return getCollection("AR", data.data)
+                        return getCollection("AR", data.data)
                 }
             }
         },
@@ -306,7 +329,7 @@ var columns = {
                 }
             }
         },
-        "CA": {column: "the cat code of the terminal of the merchant of the acquirer of 'the transaction' is <a string>",
+        "CA": {column: "the cat code of the terminal of 'the merchant' is <a string>",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "CAT code");
             },
@@ -316,19 +339,23 @@ var columns = {
                 }
             }
         },
-        "CS": {column: "the scheme of the card details of the issuer of 'the transaction' is <a number>",
+        "CS": {column: "the scheme of the card details of 'the transaction' is <a number>",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Card Scheme");
             },
             getSentence: function(data) {
                 if(data) {
+                    var negated = false;
+                    if( data.op.indexOf("not one of")< 0) {
+                        negated = true;
+                    }
                     return getCollection("CS", data.data, {isInt:true});
                 }
             }
         },
-        "MO": {column: "the flags of 'the transaction' is moto is <an object>",
+        "MO": {column: "'the merchant' is marked as MOTO is <a boolean>",
             getTitle: function(columnCode) {
-                return getTitle(columnCode, "MOTO transaction");
+                return getTitle(columnCode, "MOTO");
             },
             getSentence: function(data) {
                 if(data) {
@@ -336,7 +363,7 @@ var columns = {
                 }
             }
         },
-        "CV": {column: "the card validation response code of the card details of the issuer of 'the transaction' is <a string>",
+        "CV": {column: "the card validation response code of the card details of 'the transaction' is <a string>",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Card Validation Code");
             },
@@ -346,7 +373,7 @@ var columns = {
                 }
             }
         },
-        "RT": {column: "recurring transaction is <an allowed or not> for the merchant of the acquirer of 'the transaction'",
+        "RT": {column: "recurring transaction is <an allowed or not> for 'the merchant'",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Is Recurring Transaction");
             },
@@ -370,51 +397,14 @@ var columns = {
             }
         }
         ,
-        "C2092": {column: "'the transaction' is refund is <a boolean>",
-            getTitle: function(columnCode) {
-                return getTitle(columnCode, "Is Refund");
-            },
-            getSentence: function(data) {
-                if(data) {
-                    return "<Param><![CDATA["+ (data.value=='R'?true:false) +"]]></Param>";
-                }
-            }
-        },
-        "flatFee": {
+
+
+        "feeDescriptor": {
             getSentence: function (rule) {
-                if(!rule.flatFee.currency ) {
-                    return "";
-                }
-                var flatFee = "<Param><![CDATA["+ rule.flatFee.numeric +"]]></Param>",
-                    currency = "<Param><![CDATA["+rule.flatFee.currency + "]]></Param>";
-                return flatFee + currency;
+                return "<Param><![CDATA[\"" + rule.feeDescriptor +"\"]]></Param>";
             },
             getTitle: function(columnCode) {
-                return getTitle(columnCode, "Flat Fee")
-            }
-        },
-        "feePercentage" : {
-            getSentence: function (rule) {
-                return "<Param><![CDATA["+ rule.feePercentage + "]]></Param>"
-            },
-            getTitle: function(columnCode) {
-                return getTitle(columnCode, "Fee %");
-            }
-        },
-        "maxFee" : {
-            getSentence: function(rule) {
-                return "<Param><![CDATA["+ rule.maxFee + "]]></Param>"
-            },
-            getTitle: function(columnCode) {
-                return getTitle(columnCode, "Max Fee");
-            }
-        },
-        "minFee" : {
-            getSentence: function(rule) {
-                return "<Param><![CDATA["+ rule.minFee + "]]></Param>"
-            },
-            getTitle: function(columnCode) {
-                return getTitle(columnCode, "Min Fee");
+                return getTitle(columnCode, "Fee Descriptor");
             }
         },
         "ruleId" : {
@@ -427,7 +417,7 @@ var columns = {
                 }
             }
         },
-        "CT" : {column: "the country of the merchant of the acquirer of 'the transaction' is <a string>",
+        "CT" : {column: "the country of 'the merchant' is <a string>",
             getTitle: function(columnCode ) {
                 return getTitle(columnCode, "Merchant Location");
             },
@@ -447,18 +437,10 @@ var columns = {
                 }
             }
         },
-        "C2041" : { column: "the company of the merchant of the acquirer of 'the transaction' is <a string>",
-            getTitle: function(columnCode) {
-                return getTitle(columnCode, "Company");
-            },
-            getSentence: function(data) {
-                if(data && data.value) {
-                    return "<Param><![CDATA["+ getDomain("C2041", data.value) + "]]></Param>";
-                }
-                return "";
-            }
-        },
-        "C2310" : { column: "the card details of the issuer of 'the transaction' in chip card range is <a boolean>",
+
+
+        "C2205": { // TODO: this is not corresponding mapping just to avoid compilation errors
+            column: "the card details of 'the transaction' in chip card range is <a boolean>",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Chip Card Range");
             },
@@ -519,17 +501,7 @@ var columns = {
                 }
             }
         },
-        "C2204": {column:"the commercial service id of the issuer of 'the transaction' is <a string>",
-            getTitle: function(columnCode) {
-                return getTitle(columnCode, "Issuer Comm Service");
-            },
-            getSentence: function(data) {
-                if(data && data.value) {
-                    return "<Param><![CDATA["+ getDomain("C2204",data.value) + "]]></Param>";
-                }
-            }
 
-        },
 
         "LI028": { column: "the unit price of the invoice of the corporate summary of 'the transaction' is <a number>",
             getTitle: function(columnCode) {
@@ -541,16 +513,7 @@ var columns = {
                 }
             }
         },
-        "LI047" : { column: "the invoice of the corporate summary of 'the transaction' provides product information is <a boolean>",
-            getTitle: function(columnCode) {
-                return getTitle(columnCode, "Product Code Provided")
-            },
-            getSentence: function(data) {
-                if(data) {
-                    return "<Param><![CDATA[true]]></Param>";
-                }
-            }
-        },
+
         "LI105": { column: "the invoice of the corporate summary of 'the transaction' provides product information is <a boolean>",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "CommodityCode");
@@ -579,7 +542,20 @@ var columns = {
 
             }
         },
-        "CQ": { column: "the issuer of 'the transaction' is chip qualified is <a boolean>",
+        "PI": {
+            column: "'the merchant' is marked as Premium is <a boolean>",
+
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Premium Merchant");
+            },
+            getSentence: function(data) {
+                if(data && data.data) {
+                    return "<Param><![CDATA[{"+ true +"}]]></Param>";
+                }
+            }
+        }
+        ,
+        "CQ": { column: "'the issuer' is chip qualified is <a boolean>",
             getTitle: function(columnCode) {
                 return getTitle(columnCode, "Chip Qualified Iss");
             },
@@ -588,19 +564,171 @@ var columns = {
                     return "<Param><![CDATA[" + data.value +"]]></Param>";
                 }
             }
+        },
+        "AI" : {
+            column:"'the merchant' is marked as Airline Merchant is <a boolean>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Airline Merchant")
+            },
+            getSentence: function(data) {
+                //TODO: this should be implemented if required
+                return "";
+            }
+        },
+        "C2464" : {
+            column: "the account funding source of 'the transaction' is <an account funding source>",
+            getTitle:function (columnCode) {
+                return getTitle(columnCode, "Funding Source");
+            },
+            getSentence: function(qualification ) {
+                if(qualification !== undefined) {
+                    return '<Param><![CDATA[' + getDomain("C2464", qualification.value) +']]></Param>'
+                }
+            }
         }
 
 
     },
     MasterCard:{
 
+    },
+    Visa: {
+        "C1064": { column: "the short name of 'the transaction' is <a string>",
+            getSentence : function (data) {
+                if(data ) {
+                    return "<Text><![CDATA[<a string> ends with <a string>]]></Text><Param><![CDATA[\""+ data.value + "\"]]></Param>"
+                }
+                return "";
+            },
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Short Name");
+            }
+        },
+        "C2002": { column: "the bin of 'the issuer' is <a string>",
+            getSentence: function(data) {
+
+                if(data) {
+                    console.log(data.value);
+                    return "<Param><![CDATA[\""+ data.value +"\"]]></Param>";
+                }
+            },
+            getTitle : function(columnCode) {
+                return getTitle(columnCode, "Issuer Bin");
+            }
+        },
+        "C2092": {column: "'the transaction' is refund is <a boolean>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Is Refund");
+            },
+            getSentence: function(data) {
+                if(data) {
+                    return "<Param><![CDATA["+ (data.value=='R'?true:false) +"]]></Param>";
+                }
+            }
+        },
+        "C2041" : { column: "the company of 'the merchant' is <a string>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Company");
+            },
+            getSentence: function(data) {
+                if(data && data.value) {
+                    return "<Param><![CDATA["+ getDomain("C2041", data.value) + "]]></Param>";
+                }
+                return "";
+            }
+        },
+        "C2310" : { column: "the card details of 'the transaction' in chip card range is <a boolean>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Chip Card Range");
+            },
+            getSentence: function(data) {
+                if(data && data.value) {
+                    var val = ((data.operator === "Y")?true:false);
+                    return "<Param><![CDATA["+ val + "]]></Param>";
+                }
+            }
+        },
+        "C2204": {column:"the commercial service id of 'the issuer' is <a string>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Issuer Comm Service");
+            },
+            getSentence: function(data) {
+                if(data && data.value) {
+                    return "<Param><![CDATA["+ getDomain("C2204",data.value) + "]]></Param>";
+                }
+            }
+
+        },
+        "LI047" : { column: "the invoice of the corporate summary of 'the transaction' provides product information is <a boolean>",
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Product Code Provided")
+            },
+            getSentence: function(data) {
+                if(data) {
+                    return "<Param><![CDATA[true]]></Param>";
+                }
+            }
+        },
+        "RAttr" : {
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Reimbursement Attribute");
+            },
+            getSentence: function(rule) {
+
+                return '<Param><![CDATA[' + getDomain("RAttr", rule.reimbursementAttribute) + ']]></Param>';
+            }
+        },
+        "flatFee": {
+            getSentence: function (rule) {
+                if(!rule.flatFee.currency ) {
+                    return "";
+                }
+                var flatFee = "<Param><![CDATA["+ rule.flatFee.numeric +"]]></Param>",
+                    currency = "<Param><![CDATA["+rule.flatFee.currency + "]]></Param>";
+                return flatFee + currency;
+            },
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Flat Fee")
+            }
+        },
+        "feePercentage" : {
+            getSentence: function (rule) {
+                return "<Param><![CDATA["+ rule.feePercentage + "]]></Param>"
+            },
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Fee %");
+            }
+        },
+        "maxFee" : {
+            getSentence: function(rule) {
+                return "<Param><![CDATA["+ rule.maxFee + "]]></Param>"
+            },
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Max Fee");
+            }
+        },
+        "minFee" : {
+            getSentence: function(rule) {
+                return "<Param><![CDATA["+ rule.minFee + "]]></Param>"
+            },
+            getTitle: function(columnCode) {
+                return getTitle(columnCode, "Min Fee");
+            }
+        }
     }
+
 
 };
 
+function getContentBuilder(scheme, fieldCode) {
+   var schemeBuilder =  columns[scheme][fieldCode]
+   return schemeBuilder || columns["Common"][fieldCode];
+}
+
 module.exports = {
-    columns:columns,
+    getContentBuilder : getContentBuilder,
     getDomain: getDomain,
-    getDomainCollection: getDomainCollection
+    getDomainCollection: getDomainCollection,
+    MemberMap: MemberMap
 
 }

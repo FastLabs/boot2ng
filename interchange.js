@@ -5,7 +5,7 @@ var fs = require('fs'),
 
 
 var cardSchemeFiles = {
-  MasterCard: "./MasterCard Rules.txt",
+  MasterCard: "./jan_mc_rules.txt",
   Visa: "./jan_vi_rules.txt"
 };
 

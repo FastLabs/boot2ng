@@ -5,64 +5,68 @@ var processor = require('./processor.js'),
 
 var SchemeFields = {
     Common:  ["AC",
-        "AB",
-        "AR",
-        "AU",
-        "AV",
-        "BS",
-        "BT",
-        "CA",
-        "CC",
-        "CP",
-        "CQ",
-        "CR",
-        "CS",
-        "CT",
-        "CV",
-        "DA",
-        "DB",
-        "DD",
-        "EH",
-        "FL",
-        "HT",
-        "DC",
-        "MO",
-        "MC",
-        "PR",
-        "RC",
-        "RE",
-        "RP",
-        "RT",
-        "TK",
-        "LV"],
+        "AB",// acquirer bin
+        "AR",// authorisation response
+        "AU", // is the transaction authorised
+        "AV", // avs response code
+       // "BS",
+        //"BT",
+        "CA", // Customer Activated Terminal Type, found CAN in mastercard
+        "CC", // country code equality
+        "CP", // method of capture
+        "CQ", //CQ chip qualified issuer
+        "CR", // car rental
+        "CS", // card scheme
+        "CT", // country code
+        "CV", // cardholder validation
+        "DA", //data attribute check the C**** fields
+        "DB",// transaction is refund
+        "DD", //timeliness
+        "EH",// Electronic Hot Card File
+        "FL", //Floor limit - not in use
+        "HT", // Hotel
+        "DC",// debit card indicator
+        "MO",// mail order
+        "MC", //mcc range
+        "PR",// product code
+        "RC",// compare region code
+        "RE",// region code
+        "RP", //requested payment service, not used (visa only)
+        "RT",//recurring transaction
+        "TK",// transaction amount
+        "LV",// data level, checks industry specific
+        "PI",// preferential interchange, used in bilateral rules, ignore where the company is checked
+        "feeDescriptor",
+        "C1061" // Short name ends EXEMPT
+        ,"LI028" // Unit Cost not zeros
+        ,"C2201" // regulated value flag set
+        ,"C2072" // Trans Ref not spaces
+        ,"LI105" // Product Code not spaces
+        ,"C2311" // Trace ID not spaces
+        , "C2202" // Visa Product ID G1
+     ],
     Visa: [
-        "C1061", // Short name ends EXEMPT
         "C1064", // Short name ends ZZ1
         "C2002", // ISSUER BIN 448448
         "C2092", // Not a refund
         "C2041", // Company is 686747
         "C2310", // Chip card range
-        "C2201", // regulated value flag set
-        "C2072", // Trans Ref not spaces
-        "C2311", // Trace ID not spaces
-        "C2202", // Visa Product ID G1
         "C2204", // Issuer Comm Service Id E or K
-        "LI028", // Unit Cost not zeros
         "LI047", // Product Code not spaces
-        "LI105", // Commodity Code not spaces
-        "reimbursementAttribute", "feePercentage", "minFee" , "maxFee", "flatFee"],
-    MasterCard: ["C2390", // Brand is Maestro
-        "C1061", // Short name ends EXEMPT
+        "reimbursementAttribute", "feePercentage", "minFee" , "maxFee", "flatFee"
+    , "C2205",
+    "C2464"
+    , "C2326"],
+    MasterCard: [
+        "BS", //business service agreement
+        "BT", //business service agreement type
+        "C2390", // Brand is Maestro
         "C1215", // MC Ass ID not '0'
         "C2463", // PayPass card indicator set to Y
-        "LI028", // Unit Price not zero
         "LI062", // Item Description Not Spaces
         "LI088", // Quantity not zero
         "C2119", // Auth code ends S
         "C2315", // Trace ID is MasterCard
-        "C2201", // ENHANCED VALUE FLAG SET TO Y
-        "C2072", // Trans ref not spaces
-        "LI105", // Product Code not spaces
         "IT021", // Ticket Number not spaces
         "IT037", // Passenger Name not spaces
         "IT057", // Orig Airport not spaces
@@ -71,8 +75,6 @@ var SchemeFields = {
         "IT124", // Dest Airport not spaces
         "IT133", // Travel Date not zero
         "LI095", // VAT Rate not zero
-        "C2311", // Trace ID not spaces
-        "C2202", // Rate ind = B for Base
         "LI017", // Tax amount not zero
         "PA021", // Tax amount not zero
         "IT122", // Service Class not spaces
@@ -116,7 +118,7 @@ function getFieldDescription(scheme, fieldCode) {
 }
 
 function getColumnVerbalisation( scheme, fieldCode) {
-    var result = dtGenerator.columns[scheme][fieldCode];
+    var result = dtGenerator.getContentBuilder(scheme, fieldCode);
     if(result === undefined) {
         console.log(">>> " + fieldCode);
     }
@@ -124,7 +126,7 @@ function getColumnVerbalisation( scheme, fieldCode) {
 }
 
 function getCellSentence(scheme, fieldCode, qualification) {
-    var sentenceBuilder = dtGenerator.columns[scheme][fieldCode];
+    var sentenceBuilder = dtGenerator.getContentBuilder(scheme, fieldCode);
     if(sentenceBuilder && sentenceBuilder.getSentence) {
         return sentenceBuilder.getSentence(qualification);
     }
@@ -132,7 +134,7 @@ function getCellSentence(scheme, fieldCode, qualification) {
 }
 
 function getColumnHeader(scheme, fieldCode, columnCode) {
-    var headerBuilder = dtGenerator.columns[scheme][fieldCode];
+    var headerBuilder = dtGenerator.getContentBuilder(scheme, fieldCode);
     if(headerBuilder && headerBuilder.getTitle) {
         return headerBuilder.getTitle(columnCode)
     }
@@ -164,7 +166,10 @@ var patchMap = {
     optimize: {
         isFieldVisible: isFieldVisible,
         getValue: optimize.getValue,
-        getCondition: optimize.getCondition
+        getCondition: optimize.getCondition,
+        getColumnVerbalisation: getColumnVerbalisation,
+        getCellSentence: getCellSentence,
+        getColumnHeader:getColumnHeader
     }
 };
 
