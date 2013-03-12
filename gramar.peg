@@ -395,7 +395,6 @@ InternationalIndicator
     if(val != undefined && val.trim().length >0) {
         console.log("international indicator " +val);
     }
->>>>>>> f681fcdc1d4089ca0e928eaaeaabc25e9608ad56
     return val;
   }
 
