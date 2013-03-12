@@ -15,7 +15,12 @@ function getNegation(data, value) {
     }
 }
 
-var columns = {
+var memberCodes = {
+        "I": "issuer",
+        "A" : "acquirer",
+        "M": "merchant"
+    },
+    columns = {
     Visa: {
         "reimbursementAttribute":{
             getValue: function(value) {
@@ -151,8 +156,19 @@ var columns = {
             }
         },
         "CT": {
-            getValue: function(qualification){
-                return {fieldName:"country", destination:"merchant", value: qualification.country};
+            getValue: function(qualification) {
+                var result = [];
+                if(qualification.members) {
+                     qualification.members.forEach(function (member) {
+                         if(memberCodes[member]) {
+                            result.push({fieldName:"country", destination:memberCodes[member], value: qualification.country});
+                         } else {
+                             console.log("****Error finding the member code !!!!!");
+                         }
+                     });
+                };
+                return result;
+                //return {fieldName:"country", destination:"merchant", value: qualification.country};
             }
         },
         "C2041" : {
@@ -217,15 +233,7 @@ var columns = {
         },
         "RE" : {
             getValue: function(qualification) {
-                var destination = "merchant"
-                if(qualification.payload) {
-                    if (qualification.payload.member === "I") {
-                        destination = "issuer";
-                    } else if(qualification.payload.member === "A") {
-                        destination = "acquirer";
-                    }
-                    return {fieldName: "region", destination: destination, value: qualification.payload.original[0].value};
-                }
+                    return {fieldName: "region", destination: memberCodes[qualification.payload.member], value: qualification.payload.original[0].value};
             }
         },
         "CQ": {

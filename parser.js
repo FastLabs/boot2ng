@@ -45,20 +45,47 @@ module.exports = (function(){
         "VisaPrefix": parse_VisaPrefix,
         "DetailRecord": parse_DetailRecord,
         "QualificationRecord": parse_QualificationRecord,
+        "QualificationDetails": parse_QualificationDetails,
+        "AC": parse_AC,
+        "BIN": parse_BIN,
+        "AR": parse_AR,
+        "Member": parse_Member,
+        "PR": parse_PR,
+        "RE": parse_RE,
         "McCategoryCode": parse_McCategoryCode,
         "ViCategoryCode": parse_ViCategoryCode,
         "SchemeType": parse_SchemeType,
         "SchemeDescription": parse_SchemeDescription,
+        "DataAttribute40": parse_DataAttribute40,
         "ReimbursementAttribute": parse_ReimbursementAttribute,
         "InterchangeRateDesignator": parse_InterchangeRateDesignator,
         "Desc": parse_Desc,
+        "DayIndicator": parse_DayIndicator,
+        "FeePercentage": parse_FeePercentage,
+        "FlatFee": parse_FlatFee,
+        "FlatFeeCurrency": parse_FlatFeeCurrency,
+        "MinimumFee": parse_MinimumFee,
+        "MaximumFee": parse_MaximumFee,
+        "InternationalIndicator": parse_InternationalIndicator,
+        "FPIIndicator": parse_FPIIndicator,
+        "MccRange": parse_MccRange,
+        "FileType": parse_FileType,
+        "CharOrSpace": parse_CharOrSpace,
+        "Numeric7": parse_Numeric7,
+        "Numeric6": parse_Numeric6,
         "Numeric4": parse_Numeric4,
         "Numeric3": parse_Numeric3,
         "Numeric2": parse_Numeric2,
         "Char4": parse_Char4,
         "Char2": parse_Char2,
+        "CapsChar": parse_CapsChar,
         "AnyChar": parse_AnyChar,
+        "AnyNoSpace": parse_AnyNoSpace,
         "Comment": parse_Comment,
+        "LineTerminator": parse_LineTerminator,
+        "LineTerminatorSequence": parse_LineTerminatorSequence,
+        "SourceCharacter": parse_SourceCharacter,
+        "Currency": parse_Currency,
         "EndOfLine": parse_EndOfLine,
         "Characters": parse_Characters,
         "space": parse_space
@@ -125,7 +152,10 @@ module.exports = (function(){
         result0 = parse_FileContent();
         if (result0 !== null) {
           result0 = (function(offset, content) {
-            //console.log(getMasterCardCategoryCode('BIL'));
+          var count = 0;
+           /* dataFields.forEach(function(dataField) {
+                console.log(count++ + '"' + dataField.code +'", // ' + dataField.fieldName);
+            });*/
             return content;
           })(pos0, result0);
         }
@@ -136,39 +166,20 @@ module.exports = (function(){
       }
       
       function parse_FileContent() {
-        var result0, result1, result2;
-        var pos0, pos1;
+        var result0, result1;
+        var pos0;
         
         pos0 = pos;
-        pos1 = pos;
         result0 = [];
-        result1 = parse_Comment();
+        result1 = parse_Block();
         while (result1 !== null) {
           result0.push(result1);
-          result1 = parse_Comment();
-        }
-        if (result0 !== null) {
-          result1 = [];
-          result2 = parse_Block();
-          while (result2 !== null) {
-            result1.push(result2);
-            result2 = parse_Block();
-          }
-          if (result1 !== null) {
-            result0 = [result0, result1];
-          } else {
-            result0 = null;
-            pos = pos1;
-          }
-        } else {
-          result0 = null;
-          pos = pos1;
+          result1 = parse_Block();
         }
         if (result0 !== null) {
           result0 = (function(offset, block) {
-            console.log(JSON.stringify(block) +"\n");
             return block;
-          })(pos0, result0[1]);
+          })(pos0, result0);
         }
         if (result0 === null) {
           pos = pos0;
@@ -215,7 +226,7 @@ module.exports = (function(){
       }
       
       function parse_Record() {
-        var result0, result1, result2, result3;
+        var result0, result1, result2;
         var pos0, pos1;
         
         pos0 = pos;
@@ -258,13 +269,7 @@ module.exports = (function(){
             if (result1 !== null) {
               result2 = parse_Numeric4();
               if (result2 !== null) {
-                result3 = parse_EndOfLine();
-                if (result3 !== null) {
-                  result0 = [result0, result1, result2, result3];
-                } else {
-                  result0 = null;
-                  pos = pos1;
-                }
+                result0 = [result0, result1, result2];
               } else {
                 result0 = null;
                 pos = pos1;
@@ -368,7 +373,7 @@ module.exports = (function(){
       }
       
       function parse_DetailRecord() {
-        var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9;
+        var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14, result15, result16, result17, result18, result19;
         var pos0, pos1;
         
         pos0 = pos;
@@ -391,17 +396,120 @@ module.exports = (function(){
               if (result3 !== null) {
                 result4 = parse_Numeric3();
                 if (result4 !== null) {
-                  result5 = parse_SchemeDescription();
+                  result5 = parse_DataAttribute40();
                   if (result5 !== null) {
-                    result6 = parse_Char4();
+                    result6 = parse_ReimbursementAttribute();
                     if (result6 !== null) {
-                      result7 = parse_ReimbursementAttribute();
+                      result7 = parse_InterchangeRateDesignator();
                       if (result7 !== null) {
-                        result8 = parse_InterchangeRateDesignator();
+                        result8 = parse_FeePercentage();
                         if (result8 !== null) {
-                          result9 = parse_EndOfLine();
+                          result9 = parse_FlatFee();
                           if (result9 !== null) {
-                            result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8, result9];
+                            result10 = parse_FlatFeeCurrency();
+                            if (result10 !== null) {
+                              result11 = parse_MinimumFee();
+                              if (result11 !== null) {
+                                result12 = parse_InternationalIndicator();
+                                if (result12 !== null) {
+                                  result13 = parse_CharOrSpace();
+                                  if (result13 !== null) {
+                                    result14 = parse_CharOrSpace();
+                                    if (result14 !== null) {
+                                      result15 = parse_FPIIndicator();
+                                      if (result15 !== null) {
+                                        result16 = parse_MaximumFee();
+                                        if (result16 !== null) {
+                                          result17 = [];
+                                          if (input.charCodeAt(pos) === 32) {
+                                            result18 = " ";
+                                            pos++;
+                                          } else {
+                                            result18 = null;
+                                            if (reportFailures === 0) {
+                                              matchFailed("\" \"");
+                                            }
+                                          }
+                                          while (result18 !== null) {
+                                            result17.push(result18);
+                                            if (input.charCodeAt(pos) === 32) {
+                                              result18 = " ";
+                                              pos++;
+                                            } else {
+                                              result18 = null;
+                                              if (reportFailures === 0) {
+                                                matchFailed("\" \"");
+                                              }
+                                            }
+                                          }
+                                          if (result17 !== null) {
+                                            result18 = [];
+                                            if (input.charCodeAt(pos) === 9) {
+                                              result19 = "\t";
+                                              pos++;
+                                            } else {
+                                              result19 = null;
+                                              if (reportFailures === 0) {
+                                                matchFailed("\"\\t\"");
+                                              }
+                                            }
+                                            while (result19 !== null) {
+                                              result18.push(result19);
+                                              if (input.charCodeAt(pos) === 9) {
+                                                result19 = "\t";
+                                                pos++;
+                                              } else {
+                                                result19 = null;
+                                                if (reportFailures === 0) {
+                                                  matchFailed("\"\\t\"");
+                                                }
+                                              }
+                                            }
+                                            if (result18 !== null) {
+                                              result19 = parse_LineTerminatorSequence();
+                                              result19 = result19 !== null ? result19 : "";
+                                              if (result19 !== null) {
+                                                result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10, result11, result12, result13, result14, result15, result16, result17, result18, result19];
+                                              } else {
+                                                result0 = null;
+                                                pos = pos1;
+                                              }
+                                            } else {
+                                              result0 = null;
+                                              pos = pos1;
+                                            }
+                                          } else {
+                                            result0 = null;
+                                            pos = pos1;
+                                          }
+                                        } else {
+                                          result0 = null;
+                                          pos = pos1;
+                                        }
+                                      } else {
+                                        result0 = null;
+                                        pos = pos1;
+                                      }
+                                    } else {
+                                      result0 = null;
+                                      pos = pos1;
+                                    }
+                                  } else {
+                                    result0 = null;
+                                    pos = pos1;
+                                  }
+                                } else {
+                                  result0 = null;
+                                  pos = pos1;
+                                }
+                              } else {
+                                result0 = null;
+                                pos = pos1;
+                              }
+                            } else {
+                              result0 = null;
+                              pos = pos1;
+                            }
                           } else {
                             result0 = null;
                             pos = pos1;
@@ -443,19 +551,46 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, record, subSequence, itemId, schemeId, description, feeRule, reimbursement, rateDesignator) {
-            console.log(description);
+          result0 = (function(offset, record, subSequence, itemId, schemeId, description, reimbursement, rateDesignator, feePercentage, flatFee, feeCurrency, minFee, intIndicator, psi, eci, fpi, maxFee) {
+            var value;
             record.subSequence = subSequence;
+            record.description = description;
             record.itemId = itemId;
             record.schemeId = schemeId;
             if(reimbursement) {
                 record.reimbursementAttribute = reimbursement;
             }
-            if(rateDesignator) {
-                record.interchangeRateDesignator = rateDesignator;
+            value = processor.valuePresent(rateDesignator);
+            if(value) {
+                record.interchangeRateDesignator = value;
+            }
+            record.feePercentage = feePercentage;
+            record.flatFee = flatFee;
+            record.minFee = minFee;
+            record.maxFee = maxFee;
+            value = processor.valuePresent(intIndicator);
+            if(value) {
+                record.intIndicator = value;
+            }
+            value = processor.valuePresent(psi);
+            if(value) {
+                console.log("!! payment service indicator " + value);
+                record.paymentServiceIndicator = value;
+            }
+            value = processor.valuePresent(eci);
+            if(value) {
+                record.eciIndicator = value;
+            }
+            value = processor.valuePresent(fpi);
+            if(value) {
+                record.fpiIndicator = value;
+            }
+            value = processor.valuePresent(feeCurrency);
+            if(value) {
+              record.flatFee.currency = value;
             }
             return record;
-          })(pos0, result0[0], result0[2], result0[3], result0[4], result0[5], result0[6], result0[7], result0[8]);
+          })(pos0, result0[0], result0[2], result0[3], result0[4], result0[5], result0[6], result0[7], result0[8], result0[9], result0[10], result0[11], result0[12], result0[13], result0[14], result0[15], result0[16]);
         }
         if (result0 === null) {
           pos = pos0;
@@ -464,7 +599,7 @@ module.exports = (function(){
       }
       
       function parse_QualificationRecord() {
-        var result0, result1, result2, result3, result4;
+        var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
         
         pos0 = pos;
@@ -483,11 +618,39 @@ module.exports = (function(){
           if (result1 !== null) {
             result2 = parse_Numeric2();
             if (result2 !== null) {
-              result3 = parse_Char2();
+              result3 = parse_QualificationDetails();
               if (result3 !== null) {
-                result4 = parse_EndOfLine();
+                result4 = [];
+                if (input.charCodeAt(pos) === 32) {
+                  result5 = " ";
+                  pos++;
+                } else {
+                  result5 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\" \"");
+                  }
+                }
+                while (result5 !== null) {
+                  result4.push(result5);
+                  if (input.charCodeAt(pos) === 32) {
+                    result5 = " ";
+                    pos++;
+                  } else {
+                    result5 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\" \"");
+                    }
+                  }
+                }
                 if (result4 !== null) {
-                  result0 = [result0, result1, result2, result3, result4];
+                  result5 = parse_LineTerminatorSequence();
+                  result5 = result5 !== null ? result5 : "";
+                  if (result5 !== null) {
+                    result0 = [result0, result1, result2, result3, result4, result5];
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
                 } else {
                   result0 = null;
                   pos = pos1;
@@ -509,14 +672,2001 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, record, subSequence, qualificationType) {
-            record.subSequence = subSequence;
-            record.qualificationType = qualificationType;
-            return record;
+          result0 = (function(offset, record, subSequence, qualification) {
+            var result = {};
+            result.subSequence = subSequence;
+            if(qualification) {
+                result.qualification = qualification;
+            } else {console.log("!!!!!!!!!!!!!!!!!!!!!!!1")}
+            return result;
           })(pos0, result0[0], result0[2], result0[3]);
         }
         if (result0 === null) {
           pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_QualificationDetails() {
+        var result0, result1, result2, result3, result4, result5, result6, result7;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        if (input.substr(pos, 2) === "AC") {
+          result0 = "AC";
+          pos += 2;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"AC\"");
+          }
+        }
+        if (result0 !== null) {
+          if (/^[YN]/.test(input.charAt(pos))) {
+            result1 = input.charAt(pos);
+            pos++;
+          } else {
+            result1 = null;
+            if (reportFailures === 0) {
+              matchFailed("[YN]");
+            }
+          }
+          if (result1 !== null) {
+            result3 = parse_AC();
+            if (result3 !== null) {
+              result2 = [];
+              while (result3 !== null) {
+                result2.push(result3);
+                result3 = parse_AC();
+              }
+            } else {
+              result2 = null;
+            }
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, qType, operator, authChars) {
+            return processor.handleCollection({code: qType, op: operator, data: authChars});
+          })(pos0, result0[0], result0[1], result0[2]);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        if (result0 === null) {
+          pos0 = pos;
+          pos1 = pos;
+          if (input.substr(pos, 2) === "AI") {
+            result0 = "AI";
+            pos += 2;
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"AI\"");
+            }
+          }
+          if (result0 !== null) {
+            if (/^[YN]/.test(input.charAt(pos))) {
+              result1 = input.charAt(pos);
+              pos++;
+            } else {
+              result1 = null;
+              if (reportFailures === 0) {
+                matchFailed("[YN]");
+              }
+            }
+            if (result1 !== null) {
+              result0 = [result0, result1];
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+          if (result0 !== null) {
+            result0 = (function(offset, qType, operator) {
+              //this is MCC field
+              return processor.handleBoolean({op:operator, code: qType});
+            })(pos0, result0[0], result0[1]);
+          }
+          if (result0 === null) {
+            pos = pos0;
+          }
+          if (result0 === null) {
+            pos0 = pos;
+            pos1 = pos;
+            if (input.substr(pos, 2) === "AB") {
+              result0 = "AB";
+              pos += 2;
+            } else {
+              result0 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"AB\"");
+              }
+            }
+            if (result0 !== null) {
+              if (/^[YN]/.test(input.charAt(pos))) {
+                result1 = input.charAt(pos);
+                pos++;
+              } else {
+                result1 = null;
+                if (reportFailures === 0) {
+                  matchFailed("[YN]");
+                }
+              }
+              if (result1 !== null) {
+                result3 = parse_BIN();
+                if (result3 !== null) {
+                  result2 = [];
+                  while (result3 !== null) {
+                    result2.push(result3);
+                    result3 = parse_BIN();
+                  }
+                } else {
+                  result2 = null;
+                }
+                if (result2 !== null) {
+                  result0 = [result0, result1, result2];
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+            if (result0 !== null) {
+              result0 = (function(offset, qType, operator, binList) {
+                return processor.handleCollection({code: qType, op:operator, data: binList});
+              })(pos0, result0[0], result0[1], result0[2]);
+            }
+            if (result0 === null) {
+              pos = pos0;
+            }
+            if (result0 === null) {
+              pos0 = pos;
+              pos1 = pos;
+              if (input.substr(pos, 2) === "AR") {
+                result0 = "AR";
+                pos += 2;
+              } else {
+                result0 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"AR\"");
+                }
+              }
+              if (result0 !== null) {
+                if (/^[YN]/.test(input.charAt(pos))) {
+                  result1 = input.charAt(pos);
+                  pos++;
+                } else {
+                  result1 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("[YN]");
+                  }
+                }
+                if (result1 !== null) {
+                  result3 = parse_AR();
+                  if (result3 !== null) {
+                    result2 = [];
+                    while (result3 !== null) {
+                      result2.push(result3);
+                      result3 = parse_AR();
+                    }
+                  } else {
+                    result2 = null;
+                  }
+                  if (result2 !== null) {
+                    result0 = [result0, result1, result2];
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+              if (result0 !== null) {
+                result0 = (function(offset, qType, operator, respCodes) {
+                  return processor.handleCollection({code: qType, op: operator, data: respCodes});
+                })(pos0, result0[0], result0[1], result0[2]);
+              }
+              if (result0 === null) {
+                pos = pos0;
+              }
+              if (result0 === null) {
+                pos0 = pos;
+                pos1 = pos;
+                if (input.substr(pos, 2) === "AU") {
+                  result0 = "AU";
+                  pos += 2;
+                } else {
+                  result0 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"AU\"");
+                  }
+                }
+                if (result0 !== null) {
+                  if (/^[YN]/.test(input.charAt(pos))) {
+                    result1 = input.charAt(pos);
+                    pos++;
+                  } else {
+                    result1 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("[YN]");
+                    }
+                  }
+                  if (result1 !== null) {
+                    result0 = [result0, result1];
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+                if (result0 !== null) {
+                  result0 = (function(offset, qType, operator) {
+                    return processor.handleBoolean({op: operator, code: qType});
+                  })(pos0, result0[0], result0[1]);
+                }
+                if (result0 === null) {
+                  pos = pos0;
+                }
+                if (result0 === null) {
+                  pos0 = pos;
+                  pos1 = pos;
+                  if (input.substr(pos, 2) === "AV") {
+                    result0 = "AV";
+                    pos += 2;
+                  } else {
+                    result0 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\"AV\"");
+                    }
+                  }
+                  if (result0 !== null) {
+                    if (/^[YN]/.test(input.charAt(pos))) {
+                      result1 = input.charAt(pos);
+                      pos++;
+                    } else {
+                      result1 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("[YN]");
+                      }
+                    }
+                    if (result1 !== null) {
+                      result3 = parse_AnyChar();
+                      if (result3 !== null) {
+                        result2 = [];
+                        while (result3 !== null) {
+                          result2.push(result3);
+                          result3 = parse_AnyChar();
+                        }
+                      } else {
+                        result2 = null;
+                      }
+                      if (result2 !== null) {
+                        result0 = [result0, result1, result2];
+                      } else {
+                        result0 = null;
+                        pos = pos1;
+                      }
+                    } else {
+                      result0 = null;
+                      pos = pos1;
+                    }
+                  } else {
+                    result0 = null;
+                    pos = pos1;
+                  }
+                  if (result0 !== null) {
+                    result0 = (function(offset, qType, operator, data) {
+                      return processor.handleCollection({code: qType, op: operator, data: data.join("").trim()});
+                    })(pos0, result0[0], result0[1], result0[2]);
+                  }
+                  if (result0 === null) {
+                    pos = pos0;
+                  }
+                  if (result0 === null) {
+                    pos0 = pos;
+                    pos1 = pos;
+                    if (input.substr(pos, 2) === "BS") {
+                      result0 = "BS";
+                      pos += 2;
+                    } else {
+                      result0 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\"BS\"");
+                      }
+                    }
+                    if (result0 !== null) {
+                      if (/^[YN]/.test(input.charAt(pos))) {
+                        result1 = input.charAt(pos);
+                        pos++;
+                      } else {
+                        result1 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("[YN]");
+                        }
+                      }
+                      if (result1 !== null) {
+                        result3 = parse_Numeric7();
+                        if (result3 !== null) {
+                          result2 = [];
+                          while (result3 !== null) {
+                            result2.push(result3);
+                            result3 = parse_Numeric7();
+                          }
+                        } else {
+                          result2 = null;
+                        }
+                        if (result2 !== null) {
+                          result0 = [result0, result1, result2];
+                        } else {
+                          result0 = null;
+                          pos = pos1;
+                        }
+                      } else {
+                        result0 = null;
+                        pos = pos1;
+                      }
+                    } else {
+                      result0 = null;
+                      pos = pos1;
+                    }
+                    if (result0 !== null) {
+                      result0 = (function(offset, qType, operator, bsaCol) {
+                        return processor.handleCollection({code: qType, op: operator, data: bsaCol});
+                      })(pos0, result0[0], result0[1], result0[2]);
+                    }
+                    if (result0 === null) {
+                      pos = pos0;
+                    }
+                    if (result0 === null) {
+                      pos0 = pos;
+                      pos1 = pos;
+                      if (input.substr(pos, 2) === "BT") {
+                        result0 = "BT";
+                        pos += 2;
+                      } else {
+                        result0 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("\"BT\"");
+                        }
+                      }
+                      if (result0 !== null) {
+                        if (/^[YN]/.test(input.charAt(pos))) {
+                          result1 = input.charAt(pos);
+                          pos++;
+                        } else {
+                          result1 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("[YN]");
+                          }
+                        }
+                        if (result1 !== null) {
+                          result3 = parse_Numeric7();
+                          if (result3 !== null) {
+                            result2 = [];
+                            while (result3 !== null) {
+                              result2.push(result3);
+                              result3 = parse_Numeric7();
+                            }
+                          } else {
+                            result2 = null;
+                          }
+                          if (result2 !== null) {
+                            result0 = [result0, result1, result2];
+                          } else {
+                            result0 = null;
+                            pos = pos1;
+                          }
+                        } else {
+                          result0 = null;
+                          pos = pos1;
+                        }
+                      } else {
+                        result0 = null;
+                        pos = pos1;
+                      }
+                      if (result0 !== null) {
+                        result0 = (function(offset, qType, operator, bstCol) {
+                          return processor.handleCollection({code: qType, op: operator, data: bstCol});
+                        })(pos0, result0[0], result0[1], result0[2]);
+                      }
+                      if (result0 === null) {
+                        pos = pos0;
+                      }
+                      if (result0 === null) {
+                        pos0 = pos;
+                        pos1 = pos;
+                        if (input.substr(pos, 2) === "CA") {
+                          result0 = "CA";
+                          pos += 2;
+                        } else {
+                          result0 = null;
+                          if (reportFailures === 0) {
+                            matchFailed("\"CA\"");
+                          }
+                        }
+                        if (result0 !== null) {
+                          if (/^[YN1-4]/.test(input.charAt(pos))) {
+                            result1 = input.charAt(pos);
+                            pos++;
+                          } else {
+                            result1 = null;
+                            if (reportFailures === 0) {
+                              matchFailed("[YN1-4]");
+                            }
+                          }
+                          if (result1 !== null) {
+                            result0 = [result0, result1];
+                          } else {
+                            result0 = null;
+                            pos = pos1;
+                          }
+                        } else {
+                          result0 = null;
+                          pos = pos1;
+                        }
+                        if (result0 !== null) {
+                          result0 = (function(offset, qType, operator) {
+                            var desc;
+                            if(operator === "Y") {
+                                desc = "numeric and > 0"
+                            } else if(operator === "N"){
+                                desc = "0"
+                            } else {
+                                desc = operator;
+                            }
+                            return {fieldCode: qType, data: desc, op:"", sentence : "CAT code" + desc};
+                          })(pos0, result0[0], result0[1]);
+                        }
+                        if (result0 === null) {
+                          pos = pos0;
+                        }
+                        if (result0 === null) {
+                          pos0 = pos;
+                          pos1 = pos;
+                          if (input.substr(pos, 2) === "CC") {
+                            result0 = "CC";
+                            pos += 2;
+                          } else {
+                            result0 = null;
+                            if (reportFailures === 0) {
+                              matchFailed("\"CC\"");
+                            }
+                          }
+                          if (result0 !== null) {
+                            if (/^[YN]/.test(input.charAt(pos))) {
+                              result1 = input.charAt(pos);
+                              pos++;
+                            } else {
+                              result1 = null;
+                              if (reportFailures === 0) {
+                                matchFailed("[YN]");
+                              }
+                            }
+                            if (result1 !== null) {
+                              result2 = parse_Member();
+                              if (result2 !== null) {
+                                result3 = parse_Member();
+                                if (result3 !== null) {
+                                  result4 = [];
+                                  result5 = parse_Member();
+                                  while (result5 !== null) {
+                                    result4.push(result5);
+                                    result5 = parse_Member();
+                                  }
+                                  if (result4 !== null) {
+                                    result0 = [result0, result1, result2, result3, result4];
+                                  } else {
+                                    result0 = null;
+                                    pos = pos1;
+                                  }
+                                } else {
+                                  result0 = null;
+                                  pos = pos1;
+                                }
+                              } else {
+                                result0 = null;
+                                pos = pos1;
+                              }
+                            } else {
+                              result0 = null;
+                              pos = pos1;
+                            }
+                          } else {
+                            result0 = null;
+                            pos = pos1;
+                          }
+                          if (result0 !== null) {
+                            result0 = (function(offset, qType, operator, m1, m2, m3) {
+                              var data = [m1, m2];
+                              if(m3 !== undefined && m3 !== null && m3.length > 0) {
+                                  data.push(m3[0]);
+                              }
+                              return processor.handleFunction({code: qType, op: (operator === 'Y')?"":"not", data: data});
+                            })(pos0, result0[0], result0[1], result0[2], result0[3], result0[4]);
+                          }
+                          if (result0 === null) {
+                            pos = pos0;
+                          }
+                          if (result0 === null) {
+                            pos0 = pos;
+                            pos1 = pos;
+                            if (input.substr(pos, 2) === "CP") {
+                              result0 = "CP";
+                              pos += 2;
+                            } else {
+                              result0 = null;
+                              if (reportFailures === 0) {
+                                matchFailed("\"CP\"");
+                              }
+                            }
+                            if (result0 !== null) {
+                              if (/^[YN]/.test(input.charAt(pos))) {
+                                result1 = input.charAt(pos);
+                                pos++;
+                              } else {
+                                result1 = null;
+                                if (reportFailures === 0) {
+                                  matchFailed("[YN]");
+                                }
+                              }
+                              if (result1 !== null) {
+                                result3 = parse_Char2();
+                                if (result3 !== null) {
+                                  result2 = [];
+                                  while (result3 !== null) {
+                                    result2.push(result3);
+                                    result3 = parse_Char2();
+                                  }
+                                } else {
+                                  result2 = null;
+                                }
+                                if (result2 !== null) {
+                                  result0 = [result0, result1, result2];
+                                } else {
+                                  result0 = null;
+                                  pos = pos1;
+                                }
+                              } else {
+                                result0 = null;
+                                pos = pos1;
+                              }
+                            } else {
+                              result0 = null;
+                              pos = pos1;
+                            }
+                            if (result0 !== null) {
+                              result0 = (function(offset, qType, operator, values) {
+                                return processor.handleCollection({code: qType, op: operator, data: values});
+                              })(pos0, result0[0], result0[1], result0[2]);
+                            }
+                            if (result0 === null) {
+                              pos = pos0;
+                            }
+                            if (result0 === null) {
+                              pos0 = pos;
+                              pos1 = pos;
+                              if (input.substr(pos, 2) === "CQ") {
+                                result0 = "CQ";
+                                pos += 2;
+                              } else {
+                                result0 = null;
+                                if (reportFailures === 0) {
+                                  matchFailed("\"CQ\"");
+                                }
+                              }
+                              if (result0 !== null) {
+                                if (/^[YN]/.test(input.charAt(pos))) {
+                                  result1 = input.charAt(pos);
+                                  pos++;
+                                } else {
+                                  result1 = null;
+                                  if (reportFailures === 0) {
+                                    matchFailed("[YN]");
+                                  }
+                                }
+                                if (result1 !== null) {
+                                  result0 = [result0, result1];
+                                } else {
+                                  result0 = null;
+                                  pos = pos1;
+                                }
+                              } else {
+                                result0 = null;
+                                pos = pos1;
+                              }
+                              if (result0 !== null) {
+                                result0 = (function(offset, qType, operator) {
+                                  return processor.handleBoolean({code: qType, op: operator});
+                                })(pos0, result0[0], result0[1]);
+                              }
+                              if (result0 === null) {
+                                pos = pos0;
+                              }
+                              if (result0 === null) {
+                                pos0 = pos;
+                                pos1 = pos;
+                                if (input.substr(pos, 2) === "CR") {
+                                  result0 = "CR";
+                                  pos += 2;
+                                } else {
+                                  result0 = null;
+                                  if (reportFailures === 0) {
+                                    matchFailed("\"CR\"");
+                                  }
+                                }
+                                if (result0 !== null) {
+                                  if (/^[YN]/.test(input.charAt(pos))) {
+                                    result1 = input.charAt(pos);
+                                    pos++;
+                                  } else {
+                                    result1 = null;
+                                    if (reportFailures === 0) {
+                                      matchFailed("[YN]");
+                                    }
+                                  }
+                                  if (result1 !== null) {
+                                    result0 = [result0, result1];
+                                  } else {
+                                    result0 = null;
+                                    pos = pos1;
+                                  }
+                                } else {
+                                  result0 = null;
+                                  pos = pos1;
+                                }
+                                if (result0 !== null) {
+                                  result0 = (function(offset, qType, operator) {
+                                    //checks the MCC
+                                    return processor.handleBoolean({code: qType, op: operator});
+                                  })(pos0, result0[0], result0[1]);
+                                }
+                                if (result0 === null) {
+                                  pos = pos0;
+                                }
+                                if (result0 === null) {
+                                  pos0 = pos;
+                                  pos1 = pos;
+                                  if (input.substr(pos, 2) === "CS") {
+                                    result0 = "CS";
+                                    pos += 2;
+                                  } else {
+                                    result0 = null;
+                                    if (reportFailures === 0) {
+                                      matchFailed("\"CS\"");
+                                    }
+                                  }
+                                  if (result0 !== null) {
+                                    if (/^[YN]/.test(input.charAt(pos))) {
+                                      result1 = input.charAt(pos);
+                                      pos++;
+                                    } else {
+                                      result1 = null;
+                                      if (reportFailures === 0) {
+                                        matchFailed("[YN]");
+                                      }
+                                    }
+                                    if (result1 !== null) {
+                                      result3 = parse_Char2();
+                                      if (result3 !== null) {
+                                        result2 = [];
+                                        while (result3 !== null) {
+                                          result2.push(result3);
+                                          result3 = parse_Char2();
+                                        }
+                                      } else {
+                                        result2 = null;
+                                      }
+                                      if (result2 !== null) {
+                                        result0 = [result0, result1, result2];
+                                      } else {
+                                        result0 = null;
+                                        pos = pos1;
+                                      }
+                                    } else {
+                                      result0 = null;
+                                      pos = pos1;
+                                    }
+                                  } else {
+                                    result0 = null;
+                                    pos = pos1;
+                                  }
+                                  if (result0 !== null) {
+                                    result0 = (function(offset, qType, operator, values) {
+                                      return processor.handleCollection({code: qType, op: operator, data: values});
+                                    })(pos0, result0[0], result0[1], result0[2]);
+                                  }
+                                  if (result0 === null) {
+                                    pos = pos0;
+                                  }
+                                  if (result0 === null) {
+                                    pos0 = pos;
+                                    pos1 = pos;
+                                    if (input.substr(pos, 2) === "CT") {
+                                      result0 = "CT";
+                                      pos += 2;
+                                    } else {
+                                      result0 = null;
+                                      if (reportFailures === 0) {
+                                        matchFailed("\"CT\"");
+                                      }
+                                    }
+                                    if (result0 !== null) {
+                                      if (/^[YN]/.test(input.charAt(pos))) {
+                                        result1 = input.charAt(pos);
+                                        pos++;
+                                      } else {
+                                        result1 = null;
+                                        if (reportFailures === 0) {
+                                          matchFailed("[YN]");
+                                        }
+                                      }
+                                      if (result1 !== null) {
+                                        result2 = parse_Currency();
+                                        if (result2 !== null) {
+                                          result3 = parse_Member();
+                                          if (result3 !== null) {
+                                            result4 = [];
+                                            result5 = parse_Member();
+                                            while (result5 !== null) {
+                                              result4.push(result5);
+                                              result5 = parse_Member();
+                                            }
+                                            if (result4 !== null) {
+                                              result0 = [result0, result1, result2, result3, result4];
+                                            } else {
+                                              result0 = null;
+                                              pos = pos1;
+                                            }
+                                          } else {
+                                            result0 = null;
+                                            pos = pos1;
+                                          }
+                                        } else {
+                                          result0 = null;
+                                          pos = pos1;
+                                        }
+                                      } else {
+                                        result0 = null;
+                                        pos = pos1;
+                                      }
+                                    } else {
+                                      result0 = null;
+                                      pos = pos1;
+                                    }
+                                    if (result0 !== null) {
+                                      result0 = (function(offset, qType, operator, country, m1, theRest) {
+                                        var rest = "",
+                                            members = [];
+                                        members.push(m1);
+                                        theRest.forEach(function(memberCode) {
+                                            rest += (", " +memberCode);
+                                            members.push(memberCode);
+                                        });
+                                        var desc = processor.MemberMap[m1] + rest + ((rest.length ===0)?" is":" are ") + ((operator === 'Y')?"":" not ") +" located in " +country;
+                                        return {fieldCode: qType, sentence: desc, country: country, members: members};
+                                      })(pos0, result0[0], result0[1], result0[2], result0[3], result0[4]);
+                                    }
+                                    if (result0 === null) {
+                                      pos = pos0;
+                                    }
+                                    if (result0 === null) {
+                                      pos0 = pos;
+                                      pos1 = pos;
+                                      if (input.substr(pos, 2) === "CV") {
+                                        result0 = "CV";
+                                        pos += 2;
+                                      } else {
+                                        result0 = null;
+                                        if (reportFailures === 0) {
+                                          matchFailed("\"CV\"");
+                                        }
+                                      }
+                                      if (result0 !== null) {
+                                        if (/^[YN]/.test(input.charAt(pos))) {
+                                          result1 = input.charAt(pos);
+                                          pos++;
+                                        } else {
+                                          result1 = null;
+                                          if (reportFailures === 0) {
+                                            matchFailed("[YN]");
+                                          }
+                                        }
+                                        if (result1 !== null) {
+                                          result3 = parse_CapsChar();
+                                          if (result3 !== null) {
+                                            result2 = [];
+                                            while (result3 !== null) {
+                                              result2.push(result3);
+                                              result3 = parse_CapsChar();
+                                            }
+                                          } else {
+                                            result2 = null;
+                                          }
+                                          if (result2 !== null) {
+                                            result0 = [result0, result1, result2];
+                                          } else {
+                                            result0 = null;
+                                            pos = pos1;
+                                          }
+                                        } else {
+                                          result0 = null;
+                                          pos = pos1;
+                                        }
+                                      } else {
+                                        result0 = null;
+                                        pos = pos1;
+                                      }
+                                      if (result0 !== null) {
+                                        result0 = (function(offset, qType, operator, data) {
+                                          return processor.handleCollection({code: qType, op: operator, data: data});
+                                        })(pos0, result0[0], result0[1], result0[2]);
+                                      }
+                                      if (result0 === null) {
+                                        pos = pos0;
+                                      }
+                                      if (result0 === null) {
+                                        pos0 = pos;
+                                        pos1 = pos;
+                                        if (input.substr(pos, 2) === "DA") {
+                                          result0 = "DA";
+                                          pos += 2;
+                                        } else {
+                                          result0 = null;
+                                          if (reportFailures === 0) {
+                                            matchFailed("\"DA\"");
+                                          }
+                                        }
+                                        if (result0 !== null) {
+                                          if (/^[YN]/.test(input.charAt(pos))) {
+                                            result1 = input.charAt(pos);
+                                            pos++;
+                                          } else {
+                                            result1 = null;
+                                            if (reportFailures === 0) {
+                                              matchFailed("[YN]");
+                                            }
+                                          }
+                                          if (result1 !== null) {
+                                            result2 = parse_FileType();
+                                            if (result2 !== null) {
+                                              result3 = parse_Numeric3();
+                                              if (result3 !== null) {
+                                                result4 = parse_Numeric2();
+                                                if (result4 !== null) {
+                                                  result5 = parse_DataAttribute40();
+                                                  if (result5 !== null) {
+                                                    result6 = [];
+                                                    result7 = parse_AnyChar();
+                                                    while (result7 !== null) {
+                                                      result6.push(result7);
+                                                      result7 = parse_AnyChar();
+                                                    }
+                                                    if (result6 !== null) {
+                                                      result0 = [result0, result1, result2, result3, result4, result5, result6];
+                                                    } else {
+                                                      result0 = null;
+                                                      pos = pos1;
+                                                    }
+                                                  } else {
+                                                    result0 = null;
+                                                    pos = pos1;
+                                                  }
+                                                } else {
+                                                  result0 = null;
+                                                  pos = pos1;
+                                                }
+                                              } else {
+                                                result0 = null;
+                                                pos = pos1;
+                                              }
+                                            } else {
+                                              result0 = null;
+                                              pos = pos1;
+                                            }
+                                          } else {
+                                            result0 = null;
+                                            pos = pos1;
+                                          }
+                                        } else {
+                                          result0 = null;
+                                          pos = pos1;
+                                        }
+                                        if (result0 !== null) {
+                                          result0 = (function(offset, qType, operator, fileType, position, length, value, comment) {
+                                            var sentence = comment.join("").trim(),
+                                                fieldCode = fileType +"" +position;// there are few columns with different length but i think it doesn't matter +""+length;
+                                            addDataFieldIfNotPresent({code: fieldCode, fieldName: sentence});
+                                            return {fieldCode: fieldCode, fileType: fileType, position: position, length: length,
+                                            fieldName: fieldCode, sentence: sentence, value: value};
+                                          })(pos0, result0[0], result0[1], result0[2], result0[3], result0[4], result0[5], result0[6]);
+                                        }
+                                        if (result0 === null) {
+                                          pos = pos0;
+                                        }
+                                        if (result0 === null) {
+                                          pos0 = pos;
+                                          pos1 = pos;
+                                          if (input.substr(pos, 2) === "DB") {
+                                            result0 = "DB";
+                                            pos += 2;
+                                          } else {
+                                            result0 = null;
+                                            if (reportFailures === 0) {
+                                              matchFailed("\"DB\"");
+                                            }
+                                          }
+                                          if (result0 !== null) {
+                                            if (/^[YN]/.test(input.charAt(pos))) {
+                                              result1 = input.charAt(pos);
+                                              pos++;
+                                            } else {
+                                              result1 = null;
+                                              if (reportFailures === 0) {
+                                                matchFailed("[YN]");
+                                              }
+                                            }
+                                            if (result1 !== null) {
+                                              result0 = [result0, result1];
+                                            } else {
+                                              result0 = null;
+                                              pos = pos1;
+                                            }
+                                          } else {
+                                            result0 = null;
+                                            pos = pos1;
+                                          }
+                                          if (result0 !== null) {
+                                            result0 = (function(offset, qType, operator) {
+                                              return processor.handleBoolean({code: qType, op: operator});
+                                            })(pos0, result0[0], result0[1]);
+                                          }
+                                          if (result0 === null) {
+                                            pos = pos0;
+                                          }
+                                          if (result0 === null) {
+                                            pos0 = pos;
+                                            pos1 = pos;
+                                            if (input.substr(pos, 2) === "DC") {
+                                              result0 = "DC";
+                                              pos += 2;
+                                            } else {
+                                              result0 = null;
+                                              if (reportFailures === 0) {
+                                                matchFailed("\"DC\"");
+                                              }
+                                            }
+                                            if (result0 !== null) {
+                                              if (/^[YN]/.test(input.charAt(pos))) {
+                                                result1 = input.charAt(pos);
+                                                pos++;
+                                              } else {
+                                                result1 = null;
+                                                if (reportFailures === 0) {
+                                                  matchFailed("[YN]");
+                                                }
+                                              }
+                                              if (result1 !== null) {
+                                                result0 = [result0, result1];
+                                              } else {
+                                                result0 = null;
+                                                pos = pos1;
+                                              }
+                                            } else {
+                                              result0 = null;
+                                              pos = pos1;
+                                            }
+                                            if (result0 !== null) {
+                                              result0 = (function(offset, qType, operator) {
+                                                return processor.handleBoolean({code: qType, op:operator});
+                                              })(pos0, result0[0], result0[1]);
+                                            }
+                                            if (result0 === null) {
+                                              pos = pos0;
+                                            }
+                                            if (result0 === null) {
+                                              pos0 = pos;
+                                              pos1 = pos;
+                                              if (input.substr(pos, 2) === "PR") {
+                                                result0 = "PR";
+                                                pos += 2;
+                                              } else {
+                                                result0 = null;
+                                                if (reportFailures === 0) {
+                                                  matchFailed("\"PR\"");
+                                                }
+                                              }
+                                              if (result0 !== null) {
+                                                if (/^[YN]/.test(input.charAt(pos))) {
+                                                  result1 = input.charAt(pos);
+                                                  pos++;
+                                                } else {
+                                                  result1 = null;
+                                                  if (reportFailures === 0) {
+                                                    matchFailed("[YN]");
+                                                  }
+                                                }
+                                                if (result1 !== null) {
+                                                  result3 = parse_PR();
+                                                  if (result3 !== null) {
+                                                    result2 = [];
+                                                    while (result3 !== null) {
+                                                      result2.push(result3);
+                                                      result3 = parse_PR();
+                                                    }
+                                                  } else {
+                                                    result2 = null;
+                                                  }
+                                                  if (result2 !== null) {
+                                                    result0 = [result0, result1, result2];
+                                                  } else {
+                                                    result0 = null;
+                                                    pos = pos1;
+                                                  }
+                                                } else {
+                                                  result0 = null;
+                                                  pos = pos1;
+                                                }
+                                              } else {
+                                                result0 = null;
+                                                pos = pos1;
+                                              }
+                                              if (result0 !== null) {
+                                                result0 = (function(offset, qType, operator, productCodes) {
+                                                  return processor.handleCollection({code: qType, op: operator, data: productCodes});
+                                                })(pos0, result0[0], result0[1], result0[2]);
+                                              }
+                                              if (result0 === null) {
+                                                pos = pos0;
+                                              }
+                                              if (result0 === null) {
+                                                pos0 = pos;
+                                                pos1 = pos;
+                                                if (input.substr(pos, 2) === "RC") {
+                                                  result0 = "RC";
+                                                  pos += 2;
+                                                } else {
+                                                  result0 = null;
+                                                  if (reportFailures === 0) {
+                                                    matchFailed("\"RC\"");
+                                                  }
+                                                }
+                                                if (result0 !== null) {
+                                                  if (/^[YN]/.test(input.charAt(pos))) {
+                                                    result1 = input.charAt(pos);
+                                                    pos++;
+                                                  } else {
+                                                    result1 = null;
+                                                    if (reportFailures === 0) {
+                                                      matchFailed("[YN]");
+                                                    }
+                                                  }
+                                                  if (result1 !== null) {
+                                                    result2 = parse_Member();
+                                                    if (result2 !== null) {
+                                                      result3 = parse_Member();
+                                                      if (result3 !== null) {
+                                                        result4 = [];
+                                                        result5 = parse_Member();
+                                                        while (result5 !== null) {
+                                                          result4.push(result5);
+                                                          result5 = parse_Member();
+                                                        }
+                                                        if (result4 !== null) {
+                                                          result0 = [result0, result1, result2, result3, result4];
+                                                        } else {
+                                                          result0 = null;
+                                                          pos = pos1;
+                                                        }
+                                                      } else {
+                                                        result0 = null;
+                                                        pos = pos1;
+                                                      }
+                                                    } else {
+                                                      result0 = null;
+                                                      pos = pos1;
+                                                    }
+                                                  } else {
+                                                    result0 = null;
+                                                    pos = pos1;
+                                                  }
+                                                } else {
+                                                  result0 = null;
+                                                  pos = pos1;
+                                                }
+                                                if (result0 !== null) {
+                                                  result0 = (function(offset, qType, operator, m1, m2, m3) {
+                                                    var desc = "region code of the " + m1 + " is the sam as " + m2;
+                                                        if(m3 !== undefined && m3 !== null && m3.length > 0) {
+                                                            desc += " and " + m3;
+                                                        }
+                                                    return {fieldCode: qType, desc: desc};
+                                                  })(pos0, result0[0], result0[1], result0[2], result0[3], result0[4]);
+                                                }
+                                                if (result0 === null) {
+                                                  pos = pos0;
+                                                }
+                                                if (result0 === null) {
+                                                  pos0 = pos;
+                                                  pos1 = pos;
+                                                  if (input.substr(pos, 2) === "RE") {
+                                                    result0 = "RE";
+                                                    pos += 2;
+                                                  } else {
+                                                    result0 = null;
+                                                    if (reportFailures === 0) {
+                                                      matchFailed("\"RE\"");
+                                                    }
+                                                  }
+                                                  if (result0 !== null) {
+                                                    if (/^[YN]/.test(input.charAt(pos))) {
+                                                      result1 = input.charAt(pos);
+                                                      pos++;
+                                                    } else {
+                                                      result1 = null;
+                                                      if (reportFailures === 0) {
+                                                        matchFailed("[YN]");
+                                                      }
+                                                    }
+                                                    if (result1 !== null) {
+                                                      result2 = parse_Member();
+                                                      if (result2 !== null) {
+                                                        result4 = parse_RE();
+                                                        if (result4 !== null) {
+                                                          result3 = [];
+                                                          while (result4 !== null) {
+                                                            result3.push(result4);
+                                                            result4 = parse_RE();
+                                                          }
+                                                        } else {
+                                                          result3 = null;
+                                                        }
+                                                        if (result3 !== null) {
+                                                          result0 = [result0, result1, result2, result3];
+                                                        } else {
+                                                          result0 = null;
+                                                          pos = pos1;
+                                                        }
+                                                      } else {
+                                                        result0 = null;
+                                                        pos = pos1;
+                                                      }
+                                                    } else {
+                                                      result0 = null;
+                                                      pos = pos1;
+                                                    }
+                                                  } else {
+                                                    result0 = null;
+                                                    pos = pos1;
+                                                  }
+                                                  if (result0 !== null) {
+                                                    result0 = (function(offset, qType, operator, m, regions) {
+                                                      var op = (operator === 'Y')?"":"not";
+                                                      var detailedRegions = [],
+                                                          regionCount = regions.length;
+                                                  
+                                                      for(var i = 0;i<regionCount; i++) {
+                                                          var region = regions[i],
+                                                              domain = processor.regions[region.scheme][region.value];
+                                                          if(domain) {
+                                                              detailedRegions.push(domain);
+                                                              } else {
+                                                                  console.log("!!!! RE prob " + region.value);
+                                                              }
+                                                      }
+                                                      return processor.handleFunction({code: qType, member:m, op: op, original: regions, data: detailedRegions});
+                                                    })(pos0, result0[0], result0[1], result0[2], result0[3]);
+                                                  }
+                                                  if (result0 === null) {
+                                                    pos = pos0;
+                                                  }
+                                                  if (result0 === null) {
+                                                    pos0 = pos;
+                                                    pos1 = pos;
+                                                    if (input.substr(pos, 2) === "RP") {
+                                                      result0 = "RP";
+                                                      pos += 2;
+                                                    } else {
+                                                      result0 = null;
+                                                      if (reportFailures === 0) {
+                                                        matchFailed("\"RP\"");
+                                                      }
+                                                    }
+                                                    if (result0 !== null) {
+                                                      if (/^[YN]/.test(input.charAt(pos))) {
+                                                        result1 = input.charAt(pos);
+                                                        pos++;
+                                                      } else {
+                                                        result1 = null;
+                                                        if (reportFailures === 0) {
+                                                          matchFailed("[YN]");
+                                                        }
+                                                      }
+                                                      if (result1 !== null) {
+                                                        if (/^[A-Za-z]/.test(input.charAt(pos))) {
+                                                          result3 = input.charAt(pos);
+                                                          pos++;
+                                                        } else {
+                                                          result3 = null;
+                                                          if (reportFailures === 0) {
+                                                            matchFailed("[A-Za-z]");
+                                                          }
+                                                        }
+                                                        if (result3 !== null) {
+                                                          result2 = [];
+                                                          while (result3 !== null) {
+                                                            result2.push(result3);
+                                                            if (/^[A-Za-z]/.test(input.charAt(pos))) {
+                                                              result3 = input.charAt(pos);
+                                                              pos++;
+                                                            } else {
+                                                              result3 = null;
+                                                              if (reportFailures === 0) {
+                                                                matchFailed("[A-Za-z]");
+                                                              }
+                                                            }
+                                                          }
+                                                        } else {
+                                                          result2 = null;
+                                                        }
+                                                        if (result2 !== null) {
+                                                          result0 = [result0, result1, result2];
+                                                        } else {
+                                                          result0 = null;
+                                                          pos = pos1;
+                                                        }
+                                                      } else {
+                                                        result0 = null;
+                                                        pos = pos1;
+                                                      }
+                                                    } else {
+                                                      result0 = null;
+                                                      pos = pos1;
+                                                    }
+                                                    if (result0 !== null) {
+                                                      result0 = (function(offset, qType, operator, values) {
+                                                        return processor.handleCollection({code: qType, op: operator, data: values});
+                                                      })(pos0, result0[0], result0[1], result0[2]);
+                                                    }
+                                                    if (result0 === null) {
+                                                      pos = pos0;
+                                                    }
+                                                    if (result0 === null) {
+                                                      pos0 = pos;
+                                                      pos1 = pos;
+                                                      if (input.substr(pos, 2) === "RT") {
+                                                        result0 = "RT";
+                                                        pos += 2;
+                                                      } else {
+                                                        result0 = null;
+                                                        if (reportFailures === 0) {
+                                                          matchFailed("\"RT\"");
+                                                        }
+                                                      }
+                                                      if (result0 !== null) {
+                                                        if (/^[YN]/.test(input.charAt(pos))) {
+                                                          result1 = input.charAt(pos);
+                                                          pos++;
+                                                        } else {
+                                                          result1 = null;
+                                                          if (reportFailures === 0) {
+                                                            matchFailed("[YN]");
+                                                          }
+                                                        }
+                                                        if (result1 !== null) {
+                                                          result0 = [result0, result1];
+                                                        } else {
+                                                          result0 = null;
+                                                          pos = pos1;
+                                                        }
+                                                      } else {
+                                                        result0 = null;
+                                                        pos = pos1;
+                                                      }
+                                                      if (result0 !== null) {
+                                                        result0 = (function(offset, qType, operator) {
+                                                          return processor.handleBoolean({code: qType, op: operator});
+                                                        })(pos0, result0[0], result0[1]);
+                                                      }
+                                                      if (result0 === null) {
+                                                        pos = pos0;
+                                                      }
+                                                      if (result0 === null) {
+                                                        pos0 = pos;
+                                                        pos1 = pos;
+                                                        if (input.substr(pos, 2) === "TK") {
+                                                          result0 = "TK";
+                                                          pos += 2;
+                                                        } else {
+                                                          result0 = null;
+                                                          if (reportFailures === 0) {
+                                                            matchFailed("\"TK\"");
+                                                          }
+                                                        }
+                                                        if (result0 !== null) {
+                                                          if (/^[YN]/.test(input.charAt(pos))) {
+                                                            result1 = input.charAt(pos);
+                                                            pos++;
+                                                          } else {
+                                                            result1 = null;
+                                                            if (reportFailures === 0) {
+                                                              matchFailed("[YN]");
+                                                            }
+                                                          }
+                                                          if (result1 !== null) {
+                                                            result2 = parse_Numeric6();
+                                                            if (result2 !== null) {
+                                                              result3 = parse_Currency();
+                                                              if (result3 !== null) {
+                                                                result0 = [result0, result1, result2, result3];
+                                                              } else {
+                                                                result0 = null;
+                                                                pos = pos1;
+                                                              }
+                                                            } else {
+                                                              result0 = null;
+                                                              pos = pos1;
+                                                            }
+                                                          } else {
+                                                            result0 = null;
+                                                            pos = pos1;
+                                                          }
+                                                        } else {
+                                                          result0 = null;
+                                                          pos = pos1;
+                                                        }
+                                                        if (result0 !== null) {
+                                                          result0 = (function(offset, qType, operator, amount, curr) {
+                                                            var op = (operator === 'Y')?"not":"";
+                                                            return processor.handleFunction({code: qType, op: op, amount: amount, currency: curr});
+                                                          })(pos0, result0[0], result0[1], result0[2], result0[3]);
+                                                        }
+                                                        if (result0 === null) {
+                                                          pos = pos0;
+                                                        }
+                                                        if (result0 === null) {
+                                                          pos0 = pos;
+                                                          pos1 = pos;
+                                                          if (input.substr(pos, 2) === "DD") {
+                                                            result0 = "DD";
+                                                            pos += 2;
+                                                          } else {
+                                                            result0 = null;
+                                                            if (reportFailures === 0) {
+                                                              matchFailed("\"DD\"");
+                                                            }
+                                                          }
+                                                          if (result0 !== null) {
+                                                            if (/^[YN]/.test(input.charAt(pos))) {
+                                                              result1 = input.charAt(pos);
+                                                              pos++;
+                                                            } else {
+                                                              result1 = null;
+                                                              if (reportFailures === 0) {
+                                                                matchFailed("[YN]");
+                                                              }
+                                                            }
+                                                            if (result1 !== null) {
+                                                              result2 = parse_Numeric2();
+                                                              if (result2 !== null) {
+                                                                result4 = parse_DayIndicator();
+                                                                if (result4 !== null) {
+                                                                  result3 = [];
+                                                                  while (result4 !== null) {
+                                                                    result3.push(result4);
+                                                                    result4 = parse_DayIndicator();
+                                                                  }
+                                                                } else {
+                                                                  result3 = null;
+                                                                }
+                                                                if (result3 !== null) {
+                                                                  result0 = [result0, result1, result2, result3];
+                                                                } else {
+                                                                  result0 = null;
+                                                                  pos = pos1;
+                                                                }
+                                                              } else {
+                                                                result0 = null;
+                                                                pos = pos1;
+                                                              }
+                                                            } else {
+                                                              result0 = null;
+                                                              pos = pos1;
+                                                            }
+                                                          } else {
+                                                            result0 = null;
+                                                            pos = pos1;
+                                                          }
+                                                          if (result0 !== null) {
+                                                            result0 = (function(offset, qType, operator, days, dayIndicators) {
+                                                              var op = (operator === 'Y')?"including": "excluding";
+                                                              return processor.handleFunction({code: qType, days: days, op: op, data: dayIndicators});
+                                                            })(pos0, result0[0], result0[1], result0[2], result0[3]);
+                                                          }
+                                                          if (result0 === null) {
+                                                            pos = pos0;
+                                                          }
+                                                          if (result0 === null) {
+                                                            pos0 = pos;
+                                                            pos1 = pos;
+                                                            if (input.substr(pos, 2) === "EH") {
+                                                              result0 = "EH";
+                                                              pos += 2;
+                                                            } else {
+                                                              result0 = null;
+                                                              if (reportFailures === 0) {
+                                                                matchFailed("\"EH\"");
+                                                              }
+                                                            }
+                                                            if (result0 !== null) {
+                                                              if (/^[YN]/.test(input.charAt(pos))) {
+                                                                result1 = input.charAt(pos);
+                                                                pos++;
+                                                              } else {
+                                                                result1 = null;
+                                                                if (reportFailures === 0) {
+                                                                  matchFailed("[YN]");
+                                                                }
+                                                              }
+                                                              if (result1 !== null) {
+                                                                result0 = [result0, result1];
+                                                              } else {
+                                                                result0 = null;
+                                                                pos = pos1;
+                                                              }
+                                                            } else {
+                                                              result0 = null;
+                                                              pos = pos1;
+                                                            }
+                                                            if (result0 !== null) {
+                                                              result0 = (function(offset, qType, operator) {
+                                                                //this is MCC related field
+                                                                return processor.handleBoolean({code: qType, op: operator});
+                                                              })(pos0, result0[0], result0[1]);
+                                                            }
+                                                            if (result0 === null) {
+                                                              pos = pos0;
+                                                            }
+                                                            if (result0 === null) {
+                                                              pos0 = pos;
+                                                              pos1 = pos;
+                                                              if (input.substr(pos, 2) === "FL") {
+                                                                result0 = "FL";
+                                                                pos += 2;
+                                                              } else {
+                                                                result0 = null;
+                                                                if (reportFailures === 0) {
+                                                                  matchFailed("\"FL\"");
+                                                                }
+                                                              }
+                                                              if (result0 !== null) {
+                                                                if (/^[YN]/.test(input.charAt(pos))) {
+                                                                  result1 = input.charAt(pos);
+                                                                  pos++;
+                                                                } else {
+                                                                  result1 = null;
+                                                                  if (reportFailures === 0) {
+                                                                    matchFailed("[YN]");
+                                                                  }
+                                                                }
+                                                                if (result1 !== null) {
+                                                                  result0 = [result0, result1];
+                                                                } else {
+                                                                  result0 = null;
+                                                                  pos = pos1;
+                                                                }
+                                                              } else {
+                                                                result0 = null;
+                                                                pos = pos1;
+                                                              }
+                                                              if (result0 !== null) {
+                                                                result0 = (function(offset, qType, operator) {
+                                                                  return processor.handleCondition ({
+                                                                      op: (operator === 'Y')?"is":"greater than",
+                                                                      code: qType,
+                                                                      value: 0
+                                                                  });
+                                                                })(pos0, result0[0], result0[1]);
+                                                              }
+                                                              if (result0 === null) {
+                                                                pos = pos0;
+                                                              }
+                                                              if (result0 === null) {
+                                                                pos0 = pos;
+                                                                pos1 = pos;
+                                                                if (input.substr(pos, 2) === "HT") {
+                                                                  result0 = "HT";
+                                                                  pos += 2;
+                                                                } else {
+                                                                  result0 = null;
+                                                                  if (reportFailures === 0) {
+                                                                    matchFailed("\"HT\"");
+                                                                  }
+                                                                }
+                                                                if (result0 !== null) {
+                                                                  if (/^[YN]/.test(input.charAt(pos))) {
+                                                                    result1 = input.charAt(pos);
+                                                                    pos++;
+                                                                  } else {
+                                                                    result1 = null;
+                                                                    if (reportFailures === 0) {
+                                                                      matchFailed("[YN]");
+                                                                    }
+                                                                  }
+                                                                  if (result1 !== null) {
+                                                                    result0 = [result0, result1];
+                                                                  } else {
+                                                                    result0 = null;
+                                                                    pos = pos1;
+                                                                  }
+                                                                } else {
+                                                                  result0 = null;
+                                                                  pos = pos1;
+                                                                }
+                                                                if (result0 !== null) {
+                                                                  result0 = (function(offset, qType, operator) {
+                                                                    //this is MCC related field
+                                                                    return processor.handleBoolean({code: qType, op: operator});
+                                                                  })(pos0, result0[0], result0[1]);
+                                                                }
+                                                                if (result0 === null) {
+                                                                  pos = pos0;
+                                                                }
+                                                                if (result0 === null) {
+                                                                  pos0 = pos;
+                                                                  pos1 = pos;
+                                                                  if (input.substr(pos, 2) === "IT") {
+                                                                    result0 = "IT";
+                                                                    pos += 2;
+                                                                  } else {
+                                                                    result0 = null;
+                                                                    if (reportFailures === 0) {
+                                                                      matchFailed("\"IT\"");
+                                                                    }
+                                                                  }
+                                                                  if (result0 !== null) {
+                                                                    if (/^[YN]/.test(input.charAt(pos))) {
+                                                                      result1 = input.charAt(pos);
+                                                                      pos++;
+                                                                    } else {
+                                                                      result1 = null;
+                                                                      if (reportFailures === 0) {
+                                                                        matchFailed("[YN]");
+                                                                      }
+                                                                    }
+                                                                    if (result1 !== null) {
+                                                                      result0 = [result0, result1];
+                                                                    } else {
+                                                                      result0 = null;
+                                                                      pos = pos1;
+                                                                    }
+                                                                  } else {
+                                                                    result0 = null;
+                                                                    pos = pos1;
+                                                                  }
+                                                                  if (result0 !== null) {
+                                                                    result0 = (function(offset, qType, operator) {
+                                                                      // according to the documentation CP will be used instead
+                                                                      console.log('not supported');
+                                                                      return {fieldCode: qType, desc: "this field is not used according to the doc CP will be used instead"};
+                                                                    })(pos0, result0[0], result0[1]);
+                                                                  }
+                                                                  if (result0 === null) {
+                                                                    pos = pos0;
+                                                                  }
+                                                                  if (result0 === null) {
+                                                                    pos0 = pos;
+                                                                    pos1 = pos;
+                                                                    if (input.substr(pos, 2) === "LV") {
+                                                                      result0 = "LV";
+                                                                      pos += 2;
+                                                                    } else {
+                                                                      result0 = null;
+                                                                      if (reportFailures === 0) {
+                                                                        matchFailed("\"LV\"");
+                                                                      }
+                                                                    }
+                                                                    if (result0 !== null) {
+                                                                      if (input.charCodeAt(pos) === 89) {
+                                                                        result1 = "Y";
+                                                                        pos++;
+                                                                      } else {
+                                                                        result1 = null;
+                                                                        if (reportFailures === 0) {
+                                                                          matchFailed("\"Y\"");
+                                                                        }
+                                                                      }
+                                                                      if (result1 !== null) {
+                                                                        if (/^[0-9]/.test(input.charAt(pos))) {
+                                                                          result2 = input.charAt(pos);
+                                                                          pos++;
+                                                                        } else {
+                                                                          result2 = null;
+                                                                          if (reportFailures === 0) {
+                                                                            matchFailed("[0-9]");
+                                                                          }
+                                                                        }
+                                                                        if (result2 !== null) {
+                                                                          result0 = [result0, result1, result2];
+                                                                        } else {
+                                                                          result0 = null;
+                                                                          pos = pos1;
+                                                                        }
+                                                                      } else {
+                                                                        result0 = null;
+                                                                        pos = pos1;
+                                                                      }
+                                                                    } else {
+                                                                      result0 = null;
+                                                                      pos = pos1;
+                                                                    }
+                                                                    if (result0 !== null) {
+                                                                      result0 = (function(offset, qType, operator, param) {
+                                                                        return {fieldCode: qType, param: param, sentence: "Data Level (" + param +")"};
+                                                                      })(pos0, result0[0], result0[1], result0[2]);
+                                                                    }
+                                                                    if (result0 === null) {
+                                                                      pos = pos0;
+                                                                    }
+                                                                    if (result0 === null) {
+                                                                      pos0 = pos;
+                                                                      pos1 = pos;
+                                                                      if (input.substr(pos, 2) === "MC") {
+                                                                        result0 = "MC";
+                                                                        pos += 2;
+                                                                      } else {
+                                                                        result0 = null;
+                                                                        if (reportFailures === 0) {
+                                                                          matchFailed("\"MC\"");
+                                                                        }
+                                                                      }
+                                                                      if (result0 !== null) {
+                                                                        if (/^[YN]/.test(input.charAt(pos))) {
+                                                                          result1 = input.charAt(pos);
+                                                                          pos++;
+                                                                        } else {
+                                                                          result1 = null;
+                                                                          if (reportFailures === 0) {
+                                                                            matchFailed("[YN]");
+                                                                          }
+                                                                        }
+                                                                        if (result1 !== null) {
+                                                                          result3 = parse_MccRange();
+                                                                          if (result3 !== null) {
+                                                                            result2 = [];
+                                                                            while (result3 !== null) {
+                                                                              result2.push(result3);
+                                                                              result3 = parse_MccRange();
+                                                                            }
+                                                                          } else {
+                                                                            result2 = null;
+                                                                          }
+                                                                          if (result2 !== null) {
+                                                                            result0 = [result0, result1, result2];
+                                                                          } else {
+                                                                            result0 = null;
+                                                                            pos = pos1;
+                                                                          }
+                                                                        } else {
+                                                                          result0 = null;
+                                                                          pos = pos1;
+                                                                        }
+                                                                      } else {
+                                                                        result0 = null;
+                                                                        pos = pos1;
+                                                                      }
+                                                                      if (result0 !== null) {
+                                                                        result0 = (function(offset, qType, operator, mccRanges) {
+                                                                            return processor.handleRange({code: qType, op: operator, data: mccRanges});
+                                                                        })(pos0, result0[0], result0[1], result0[2]);
+                                                                      }
+                                                                      if (result0 === null) {
+                                                                        pos = pos0;
+                                                                      }
+                                                                      if (result0 === null) {
+                                                                        pos0 = pos;
+                                                                        pos1 = pos;
+                                                                        if (input.substr(pos, 2) === "MO") {
+                                                                          result0 = "MO";
+                                                                          pos += 2;
+                                                                        } else {
+                                                                          result0 = null;
+                                                                          if (reportFailures === 0) {
+                                                                            matchFailed("\"MO\"");
+                                                                          }
+                                                                        }
+                                                                        if (result0 !== null) {
+                                                                          if (/^[YN]/.test(input.charAt(pos))) {
+                                                                            result1 = input.charAt(pos);
+                                                                            pos++;
+                                                                          } else {
+                                                                            result1 = null;
+                                                                            if (reportFailures === 0) {
+                                                                              matchFailed("[YN]");
+                                                                            }
+                                                                          }
+                                                                          if (result1 !== null) {
+                                                                            result0 = [result0, result1];
+                                                                          } else {
+                                                                            result0 = null;
+                                                                            pos = pos1;
+                                                                          }
+                                                                        } else {
+                                                                          result0 = null;
+                                                                          pos = pos1;
+                                                                        }
+                                                                        if (result0 !== null) {
+                                                                          result0 = (function(offset, qType, operator) {
+                                                                            //this is MCC related field
+                                                                            return processor.handleBoolean({code: qType, op:operator});
+                                                                          })(pos0, result0[0], result0[1]);
+                                                                        }
+                                                                        if (result0 === null) {
+                                                                          pos = pos0;
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        return result0;
+      }
+      
+      function parse_AC() {
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        if (/^[ACEKMNPRVXUWS]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[ACEKMNPRVXUWS]");
+          }
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, char) {
+            return char;
+          })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_BIN() {
+        var result0, result1;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_Numeric3();
+        if (result0 !== null) {
+          result1 = parse_Numeric3();
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, seq) {
+            return seq.join("");
+          })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_AR() {
+        var result0, result1;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_AnyNoSpace();
+        if (result0 !== null) {
+          result1 = parse_AnyNoSpace();
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, seq) {
+            return seq.join("");
+          })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_Member() {
+        var result0;
+        
+        if (/^[IAM]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[IAM]");
+          }
+        }
+        return result0;
+      }
+      
+      function parse_PR() {
+        var result0, result1, result2;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_CapsChar();
+        if (result0 !== null) {
+          result1 = parse_CapsChar();
+          if (result1 !== null) {
+            result2 = parse_CapsChar();
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, seq) { return seq.join(""); })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        if (result0 === null) {
+          pos0 = pos;
+          pos1 = pos;
+          result0 = parse_CapsChar();
+          if (result0 !== null) {
+            result1 = parse_space();
+            if (result1 !== null) {
+              result2 = parse_space();
+              if (result2 !== null) {
+                result0 = [result0, result1, result2];
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+          if (result0 !== null) {
+            result0 = (function(offset, char) {return char;})(pos0, result0[0]);
+          }
+          if (result0 === null) {
+            pos = pos0;
+          }
+        }
+        return result0;
+      }
+      
+      function parse_RE() {
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        if (/^[1ABCDE]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[1ABCDE]");
+          }
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, char) { return {scheme: "MC", value: char};})(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        if (result0 === null) {
+          pos0 = pos;
+          if (/^[1234567]/.test(input.charAt(pos))) {
+            result0 = input.charAt(pos);
+            pos++;
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("[1234567]");
+            }
+          }
+          if (result0 !== null) {
+            result0 = (function(offset, char) {return {scheme: "VI", value: char};})(pos0, result0);
+          }
+          if (result0 === null) {
+            pos = pos0;
+          }
         }
         return result0;
       }
@@ -558,6 +2708,60 @@ module.exports = (function(){
           if (result0 === null) {
             pos = pos0;
           }
+          if (result0 === null) {
+            pos0 = pos;
+            if (input.substr(pos, 3) === "SUB") {
+              result0 = "SUB";
+              pos += 3;
+            } else {
+              result0 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"SUB\"");
+              }
+            }
+            if (result0 !== null) {
+              result0 = (function(offset, code) {return  getMasterCardCategoryCode(code);})(pos0, result0);
+            }
+            if (result0 === null) {
+              pos = pos0;
+            }
+            if (result0 === null) {
+              pos0 = pos;
+              if (input.substr(pos, 3) === "TER") {
+                result0 = "TER";
+                pos += 3;
+              } else {
+                result0 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"TER\"");
+                }
+              }
+              if (result0 !== null) {
+                result0 = (function(offset, code) {return  getMasterCardCategoryCode(code);})(pos0, result0);
+              }
+              if (result0 === null) {
+                pos = pos0;
+              }
+              if (result0 === null) {
+                pos0 = pos;
+                if (input.substr(pos, 3) === "TRA") {
+                  result0 = "TRA";
+                  pos += 3;
+                } else {
+                  result0 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"TRA\"");
+                  }
+                }
+                if (result0 !== null) {
+                  result0 = (function(offset, code) {return  getMasterCardCategoryCode(code);})(pos0, result0);
+                }
+                if (result0 === null) {
+                  pos = pos0;
+                }
+              }
+            }
+          }
         }
         return result0;
       }
@@ -598,6 +2802,60 @@ module.exports = (function(){
           }
           if (result0 === null) {
             pos = pos0;
+          }
+          if (result0 === null) {
+            pos0 = pos;
+            if (input.substr(pos, 3) === "EXP") {
+              result0 = "EXP";
+              pos += 3;
+            } else {
+              result0 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"EXP\"");
+              }
+            }
+            if (result0 !== null) {
+              result0 = (function(offset, code) {return  getVisaCategoryCode(code);})(pos0, result0);
+            }
+            if (result0 === null) {
+              pos = pos0;
+            }
+            if (result0 === null) {
+              pos0 = pos;
+              if (input.substr(pos, 3) === "TER") {
+                result0 = "TER";
+                pos += 3;
+              } else {
+                result0 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"TER\"");
+                }
+              }
+              if (result0 !== null) {
+                result0 = (function(offset, code) {return  getVisaCategoryCode(code);})(pos0, result0);
+              }
+              if (result0 === null) {
+                pos = pos0;
+              }
+              if (result0 === null) {
+                pos0 = pos;
+                if (input.substr(pos, 3) === "TRA") {
+                  result0 = "TRA";
+                  pos += 3;
+                } else {
+                  result0 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"TRA\"");
+                  }
+                }
+                if (result0 !== null) {
+                  result0 = (function(offset, code) {return  getVisaCategoryCode(code);})(pos0, result0);
+                }
+                if (result0 === null) {
+                  pos = pos0;
+                }
+              }
+            }
           }
         }
         return result0;
@@ -887,7 +3145,57 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, chars) {
+            //36 symbols
             return chars.join("");
+          })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_DataAttribute40() {
+        var result0, result1, result2, result3, result4;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_SchemeDescription();
+        if (result0 !== null) {
+          result1 = parse_Desc();
+          if (result1 !== null) {
+            result2 = parse_Desc();
+            if (result2 !== null) {
+              result3 = parse_Desc();
+              if (result3 !== null) {
+                result4 = parse_Desc();
+                if (result4 !== null) {
+                  result0 = [result0, result1, result2, result3, result4];
+                } else {
+                  result0 = null;
+                  pos = pos1;
+                }
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, chars) {
+            //40 symbols
+            return chars.join("").trim();
           })(pos0, result0);
         }
         if (result0 === null) {
@@ -901,13 +3209,13 @@ module.exports = (function(){
         var pos0;
         
         pos0 = pos;
-        if (/^[A-Z]/.test(input.charAt(pos))) {
+        if (/^[A-Z0-9]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
         } else {
           result0 = null;
           if (reportFailures === 0) {
-            matchFailed("[A-Z]");
+            matchFailed("[A-Z0-9]");
           }
         }
         if (result0 !== null) {
@@ -985,6 +3293,422 @@ module.exports = (function(){
           result0 = (function(offset, ch) {
             return ch;
           })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        if (result0 === null) {
+          if (input.charCodeAt(pos) === 36) {
+            result0 = "$";
+            pos++;
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"$\"");
+            }
+          }
+        }
+        return result0;
+      }
+      
+      function parse_DayIndicator() {
+        var result0;
+        
+        if (/^[TPSBNW]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[TPSBNW]");
+          }
+        }
+        return result0;
+      }
+      
+      function parse_FeePercentage() {
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        result0 = parse_Numeric4();
+        if (result0 !== null) {
+          result0 = (function(offset, val) {
+            return parseFloat(val)/100;
+          })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_FlatFee() {
+        var result0, result1;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        if (/^[ +\-]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[ +\\-]");
+          }
+        }
+        if (result0 !== null) {
+          result1 = parse_Numeric7();
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, sign, rate) {return {rate: rate, sign: sign, numeric: parseFloat(sign +rate)/10000 };})(pos0, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_FlatFeeCurrency() {
+        var result0, result1, result2;
+        var pos0, pos1;
+        
+        result0 = parse_Currency();
+        if (result0 === null) {
+          pos0 = pos;
+          pos1 = pos;
+          result0 = parse_space();
+          if (result0 !== null) {
+            result1 = parse_space();
+            if (result1 !== null) {
+              result2 = parse_space();
+              if (result2 !== null) {
+                result0 = [result0, result1, result2];
+              } else {
+                result0 = null;
+                pos = pos1;
+              }
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+          if (result0 !== null) {
+            result0 = (function(offset) {return undefined;})(pos0);
+          }
+          if (result0 === null) {
+            pos = pos0;
+          }
+        }
+        return result0;
+      }
+      
+      function parse_MinimumFee() {
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        result0 = parse_Numeric4();
+        if (result0 !== null) {
+          result0 = (function(offset, val) {
+            return parseFloat(val)/1000;
+          })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_MaximumFee() {
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        result0 = parse_Numeric6();
+        if (result0 !== null) {
+          result0 = (function(offset, val) {
+            return parseFloat(val)/1000;
+          })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_InternationalIndicator() {
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        result0 = parse_CharOrSpace();
+        if (result0 !== null) {
+          result0 = (function(offset, val) {
+            if(val != undefined && val.trim().length >0) {
+                console.log("international indicator " +val);
+            }
+            return val;
+          })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_FPIIndicator() {
+        var result0, result1, result2;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_AnyChar();
+        if (result0 !== null) {
+          result1 = parse_AnyChar();
+          if (result1 !== null) {
+            result2 = parse_AnyChar();
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = pos1;
+            }
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, seq) {
+            return seq.join("");
+          })(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_MccRange() {
+        var result0, result1;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_Numeric4();
+        if (result0 !== null) {
+          result1 = parse_Numeric4();
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, lowRange, topRange) {
+            return {
+                low: lowRange,
+                top: topRange
+            }
+          })(pos0, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_FileType() {
+        var result0;
+        
+        if (input.substr(pos, 2) === "C1") {
+          result0 = "C1";
+          pos += 2;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"C1\"");
+          }
+        }
+        if (result0 === null) {
+          if (input.substr(pos, 2) === "C2") {
+            result0 = "C2";
+            pos += 2;
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"C2\"");
+            }
+          }
+          if (result0 === null) {
+            if (input.substr(pos, 2) === "C4") {
+              result0 = "C4";
+              pos += 2;
+            } else {
+              result0 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"C4\"");
+              }
+            }
+            if (result0 === null) {
+              if (input.substr(pos, 2) === "IT") {
+                result0 = "IT";
+                pos += 2;
+              } else {
+                result0 = null;
+                if (reportFailures === 0) {
+                  matchFailed("\"IT\"");
+                }
+              }
+              if (result0 === null) {
+                if (input.substr(pos, 2) === "LO") {
+                  result0 = "LO";
+                  pos += 2;
+                } else {
+                  result0 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"LO\"");
+                  }
+                }
+                if (result0 === null) {
+                  if (input.substr(pos, 2) === "CR") {
+                    result0 = "CR";
+                    pos += 2;
+                  } else {
+                    result0 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\"CR\"");
+                    }
+                  }
+                  if (result0 === null) {
+                    if (input.substr(pos, 2) === "PA") {
+                      result0 = "PA";
+                      pos += 2;
+                    } else {
+                      result0 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\"PA\"");
+                      }
+                    }
+                    if (result0 === null) {
+                      if (input.substr(pos, 2) === "LI") {
+                        result0 = "LI";
+                        pos += 2;
+                      } else {
+                        result0 = null;
+                        if (reportFailures === 0) {
+                          matchFailed("\"LI\"");
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        return result0;
+      }
+      
+      function parse_CharOrSpace() {
+        var result0;
+        var pos0;
+        
+        pos0 = pos;
+        result0 = parse_AnyChar();
+        if (result0 !== null) {
+          result0 = (function(offset, char) {return char;})(pos0, result0);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        if (result0 === null) {
+          pos0 = pos;
+          result0 = parse_space();
+          if (result0 !== null) {
+            result0 = (function(offset) {return undefined;})(pos0);
+          }
+          if (result0 === null) {
+            pos = pos0;
+          }
+        }
+        return result0;
+      }
+      
+      function parse_Numeric7() {
+        var result0, result1;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_Numeric4();
+        if (result0 !== null) {
+          result1 = parse_Numeric3();
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, part1, part2) {
+            return part1 + part2;
+          })(pos0, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_Numeric6() {
+        var result0, result1;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_Numeric3();
+        if (result0 !== null) {
+          result1 = parse_Numeric3();
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, seq) {
+              return seq.join("");
+            })(pos0, result0);
         }
         if (result0 === null) {
           pos = pos0;
@@ -1116,9 +3840,9 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, seq1, seq2, seq3) {
-                    return seq1+seq2+seq3;
-          })(pos0, result0[0], result0[1], result0[2]);
+          result0 = (function(offset, seq) {
+            return seq.join("");
+          })(pos0, result0);
         }
         if (result0 === null) {
           pos = pos0;
@@ -1163,8 +3887,8 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, seq1, seq2) {
-                    return seq1+seq2;
-           })(pos0, result0[0], result0[1]);
+            return seq1+seq2;
+          })(pos0, result0[0], result0[1]);
         }
         if (result0 === null) {
           pos = pos0;
@@ -1178,43 +3902,43 @@ module.exports = (function(){
         
         pos0 = pos;
         pos1 = pos;
-        if (/^[a-z]/.test(input.charAt(pos))) {
+        if (/^[A-Za-z0-9 ]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
         } else {
           result0 = null;
           if (reportFailures === 0) {
-            matchFailed("[a-z]");
+            matchFailed("[A-Za-z0-9 ]");
           }
         }
         if (result0 !== null) {
-          if (/^[a-z]/.test(input.charAt(pos))) {
+          if (/^[A-Za-z0-9 ]/.test(input.charAt(pos))) {
             result1 = input.charAt(pos);
             pos++;
           } else {
             result1 = null;
             if (reportFailures === 0) {
-              matchFailed("[a-z]");
+              matchFailed("[A-Za-z0-9 ]");
             }
           }
           if (result1 !== null) {
-            if (/^[a-z]/.test(input.charAt(pos))) {
+            if (/^[A-Za-z0-9 ]/.test(input.charAt(pos))) {
               result2 = input.charAt(pos);
               pos++;
             } else {
               result2 = null;
               if (reportFailures === 0) {
-                matchFailed("[a-z]");
+                matchFailed("[A-Za-z0-9 ]");
               }
             }
             if (result2 !== null) {
-              if (/^[a-z]/.test(input.charAt(pos))) {
+              if (/^[A-Za-z0-9 ]/.test(input.charAt(pos))) {
                 result3 = input.charAt(pos);
                 pos++;
               } else {
                 result3 = null;
                 if (reportFailures === 0) {
-                  matchFailed("[a-z]");
+                  matchFailed("[A-Za-z0-9 ]");
                 }
               }
               if (result3 !== null) {
@@ -1252,9 +3976,9 @@ module.exports = (function(){
         
         pos0 = pos;
         pos1 = pos;
-        result0 = parse_AnyChar();
+        result0 = parse_AnyNoSpace();
         if (result0 !== null) {
-          result1 = parse_AnyChar();
+          result1 = parse_AnyNoSpace();
           if (result1 !== null) {
             result0 = [result0, result1];
           } else {
@@ -1276,16 +4000,46 @@ module.exports = (function(){
         return result0;
       }
       
-      function parse_AnyChar() {
+      function parse_CapsChar() {
         var result0;
         
-        if (/^[a-zA-Z]/.test(input.charAt(pos))) {
+        if (/^[A-Z]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
         } else {
           result0 = null;
           if (reportFailures === 0) {
-            matchFailed("[a-zA-Z]");
+            matchFailed("[A-Z]");
+          }
+        }
+        return result0;
+      }
+      
+      function parse_AnyChar() {
+        var result0;
+        
+        if (/^[a-zA-Z 0-9'=]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[a-zA-Z 0-9'=]");
+          }
+        }
+        return result0;
+      }
+      
+      function parse_AnyNoSpace() {
+        var result0;
+        
+        if (/^[a-zA-Z0-9'=]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[a-zA-Z0-9'=]");
           }
         }
         return result0;
@@ -1293,7 +4047,7 @@ module.exports = (function(){
       
       function parse_Comment() {
         var result0, result1, result2, result3;
-        var pos0, pos1;
+        var pos0, pos1, pos2, pos3;
         
         pos0 = pos;
         pos1 = pos;
@@ -1307,42 +4061,186 @@ module.exports = (function(){
           }
         }
         if (result0 !== null) {
-          if (input.charCodeAt(pos) === 32) {
-            result2 = " ";
-            pos++;
+          result1 = [];
+          pos2 = pos;
+          pos3 = pos;
+          reportFailures++;
+          result2 = parse_LineTerminator();
+          reportFailures--;
+          if (result2 === null) {
+            result2 = "";
           } else {
             result2 = null;
-            if (reportFailures === 0) {
-              matchFailed("\" \"");
-            }
+            pos = pos3;
           }
           if (result2 !== null) {
-            result1 = [];
-            while (result2 !== null) {
-              result1.push(result2);
-              if (input.charCodeAt(pos) === 32) {
-                result2 = " ";
-                pos++;
+            result3 = parse_SourceCharacter();
+            if (result3 !== null) {
+              result2 = [result2, result3];
+            } else {
+              result2 = null;
+              pos = pos2;
+            }
+          } else {
+            result2 = null;
+            pos = pos2;
+          }
+          while (result2 !== null) {
+            result1.push(result2);
+            pos2 = pos;
+            pos3 = pos;
+            reportFailures++;
+            result2 = parse_LineTerminator();
+            reportFailures--;
+            if (result2 === null) {
+              result2 = "";
+            } else {
+              result2 = null;
+              pos = pos3;
+            }
+            if (result2 !== null) {
+              result3 = parse_SourceCharacter();
+              if (result3 !== null) {
+                result2 = [result2, result3];
               } else {
                 result2 = null;
+                pos = pos2;
+              }
+            } else {
+              result2 = null;
+              pos = pos2;
+            }
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos1;
+          }
+        } else {
+          result0 = null;
+          pos = pos1;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, marker, details) {
+            var comment = (details !== undefined)?details.join("").trim():"";
+            console.log(comment);
+            return marker + comment;
+          })(pos0, result0[0], result0[1]);
+        }
+        if (result0 === null) {
+          pos = pos0;
+        }
+        return result0;
+      }
+      
+      function parse_LineTerminator() {
+        var result0;
+        
+        if (/^[\n\r\u2028\u2029]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("[\\n\\r\\u2028\\u2029]");
+          }
+        }
+        return result0;
+      }
+      
+      function parse_LineTerminatorSequence() {
+        var result0;
+        
+        reportFailures++;
+        if (input.charCodeAt(pos) === 10) {
+          result0 = "\n";
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"\\n\"");
+          }
+        }
+        if (result0 === null) {
+          if (input.substr(pos, 2) === "\r\n") {
+            result0 = "\r\n";
+            pos += 2;
+          } else {
+            result0 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"\\r\\n\"");
+            }
+          }
+          if (result0 === null) {
+            if (input.charCodeAt(pos) === 13) {
+              result0 = "\r";
+              pos++;
+            } else {
+              result0 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"\\r\"");
+              }
+            }
+            if (result0 === null) {
+              if (input.charCodeAt(pos) === 8232) {
+                result0 = "\u2028";
+                pos++;
+              } else {
+                result0 = null;
                 if (reportFailures === 0) {
-                  matchFailed("\" \"");
+                  matchFailed("\"\\u2028\"");
+                }
+              }
+              if (result0 === null) {
+                if (input.charCodeAt(pos) === 8233) {
+                  result0 = "\u2029";
+                  pos++;
+                } else {
+                  result0 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"\\u2029\"");
+                  }
                 }
               }
             }
-          } else {
-            result1 = null;
           }
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("end of line");
+        }
+        return result0;
+      }
+      
+      function parse_SourceCharacter() {
+        var result0;
+        
+        if (input.length > pos) {
+          result0 = input.charAt(pos);
+          pos++;
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("any character");
+          }
+        }
+        return result0;
+      }
+      
+      function parse_Currency() {
+        var result0, result1, result2;
+        var pos0, pos1;
+        
+        pos0 = pos;
+        pos1 = pos;
+        result0 = parse_CapsChar();
+        if (result0 !== null) {
+          result1 = parse_CapsChar();
           if (result1 !== null) {
-            result2 = parse_Characters();
+            result2 = parse_CapsChar();
             if (result2 !== null) {
-              result3 = parse_EndOfLine();
-              if (result3 !== null) {
-                result0 = [result0, result1, result2, result3];
-              } else {
-                result0 = null;
-                pos = pos1;
-              }
+              result0 = [result0, result1, result2];
             } else {
               result0 = null;
               pos = pos1;
@@ -1356,9 +4254,7 @@ module.exports = (function(){
           pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, comment, details) {
-            return comment + details;
-          })(pos0, result0[0], result0[2]);
+          result0 = (function(offset, chars) { return chars.join("");})(pos0, result0);
         }
         if (result0 === null) {
           pos = pos0;
@@ -1367,7 +4263,7 @@ module.exports = (function(){
       }
       
       function parse_EndOfLine() {
-        var result0, result1, result2, result3;
+        var result0, result1, result2;
         var pos0;
         
         pos0 = pos;
@@ -1395,56 +4291,29 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result1 = [];
-          if (input.charCodeAt(pos) === 36) {
-            result2 = "$";
+          if (input.charCodeAt(pos) === 10) {
+            result2 = "\n";
             pos++;
           } else {
             result2 = null;
             if (reportFailures === 0) {
-              matchFailed("\"$\"");
+              matchFailed("\"\\n\"");
             }
           }
           while (result2 !== null) {
             result1.push(result2);
-            if (input.charCodeAt(pos) === 36) {
-              result2 = "$";
+            if (input.charCodeAt(pos) === 10) {
+              result2 = "\n";
               pos++;
             } else {
               result2 = null;
               if (reportFailures === 0) {
-                matchFailed("\"$\"");
+                matchFailed("\"\\n\"");
               }
             }
           }
           if (result1 !== null) {
-            result2 = [];
-            if (input.charCodeAt(pos) === 10) {
-              result3 = "\n";
-              pos++;
-            } else {
-              result3 = null;
-              if (reportFailures === 0) {
-                matchFailed("\"\\n\"");
-              }
-            }
-            while (result3 !== null) {
-              result2.push(result3);
-              if (input.charCodeAt(pos) === 10) {
-                result3 = "\n";
-                pos++;
-              } else {
-                result3 = null;
-                if (reportFailures === 0) {
-                  matchFailed("\"\\n\"");
-                }
-              }
-            }
-            if (result2 !== null) {
-              result0 = [result0, result1, result2];
-            } else {
-              result0 = null;
-              pos = pos0;
-            }
+            result0 = [result0, result1];
           } else {
             result0 = null;
             pos = pos0;
@@ -1457,43 +4326,16 @@ module.exports = (function(){
       }
       
       function parse_Characters() {
-        var result0, result1;
-        var pos0;
+        var result0;
         
-        pos0 = pos;
-        if (/^[a-z ]/.test(input.charAt(pos))) {
-          result1 = input.charAt(pos);
+        if (/^[>=\/#.$w 0-9A-Za-z:\-]/.test(input.charAt(pos))) {
+          result0 = input.charAt(pos);
           pos++;
         } else {
-          result1 = null;
-          if (reportFailures === 0) {
-            matchFailed("[a-z ]");
-          }
-        }
-        if (result1 !== null) {
-          result0 = [];
-          while (result1 !== null) {
-            result0.push(result1);
-            if (/^[a-z ]/.test(input.charAt(pos))) {
-              result1 = input.charAt(pos);
-              pos++;
-            } else {
-              result1 = null;
-              if (reportFailures === 0) {
-                matchFailed("[a-z ]");
-              }
-            }
-          }
-        } else {
           result0 = null;
-        }
-        if (result0 !== null) {
-          result0 = (function(offset, text) {
-          	return text.join("");
-          })(pos0, result0);
-        }
-        if (result0 === null) {
-          pos = pos0;
+          if (reportFailures === 0) {
+            matchFailed("[>=\\/#.$w 0-9A-Za-z:\\-]");
+          }
         }
         return result0;
       }
@@ -1561,15 +4403,22 @@ module.exports = (function(){
       
       
        console.log('parser initialization');
-      
+        var processor = require("./processor.js");
         McCategoryCodes = {
           BIL: 'Bi-Lateral Settlement',
-          DOM: 'Domestic'
+          DOM: 'Domestic',
+          SUB: 'Sub-Regional',
+          TER: 'Inter-Regional',
+          TRA: 'Intra-Regional'
+      
         };
       
         ViCategoryCode = {
           DMB: 'UK Domestic',
-          DMN: 'Non UK Domestic'
+          DMN: 'Non UK Domestic',
+          EXP: 'Exported Domestic',
+          TER: 'Inter Regional',
+          TRA: 'Intra Regional'
         };
       
         function getMasterCardCategoryCode(id) {
@@ -1578,6 +4427,18 @@ module.exports = (function(){
       
         function getVisaCategoryCode(id) {
           return {code: id, description: ViCategoryCode[id]};
+        }
+      
+        var dataFields = [];
+      
+        function addDataFieldIfNotPresent(field) {
+          var fieldCount = dataFields.length;
+          for(var i=0; i<fieldCount; i++) {
+              if(field.code === dataFields[i].code) {
+                  return;
+              }
+          }
+          dataFields.push(field);
         }
       
       
