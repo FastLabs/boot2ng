@@ -3,6 +3,7 @@
 <head>
     <title>test the directives</title>
     <script src="./lib/angular-1.0.1.js" language="JavaScript"></script>
+    <script src="lib/angular-resource-1.0.1.js" type="text/javascript"></script>
     <script src="./lib/jquery-1.8.1.js"></script>
     <script src="./lib/bootstrap.js"></script>
     <script src="./directive.js" language="JavaScript"></script>
@@ -23,5 +24,19 @@
     <input type="text" data-provide="typeahead" data-source='["a", "aks", "b", "c"]'/>
     <typeahead typeahead-source="dataSource" typeahead-handler="handle"></typeahead>
 </div>
+<div>
+    <button class="btn btn-small" ng-click="send()">chick</button>
+    <button class="btn btn-small" ng-click="name()">name it</button>
+    {{current.name}}
+</div>
+
+<div>
+    <ul>
+        <li ng-repeat="rule in available">
+            <span>{{rule.id}} </span> <span>{{rule.name}}</span>
+        </li>
+    </ul>
+</div>
+
 </body>
 </html>

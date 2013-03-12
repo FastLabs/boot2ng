@@ -1,4 +1,6 @@
 //var parser = require('./parser.js');
+
+//TODO: i should remove this file as it was just a test for writing a regexp based abarser, used peg.js instead
 var toParse = '** ';
 
 var content = [

@@ -113,6 +113,7 @@ DetailRecord
     }
     value = processor.valuePresent(psi);
     if(value) {
+        console.log("!! payment service indicator " + value);
         record.paymentServiceIndicator = value;
     }
     value = processor.valuePresent(eci);
@@ -196,12 +197,15 @@ QualificationDetails
     return processor.handleCollection({code: qType, op: operator, data: values});
   }
   / qType: 'CT' operator: [YN] country: Country m1: Member theRest: (Member)* {
-    var rest = "";
+    var rest = "",
+        members = [];
+    members.push(m1);
     theRest.forEach(function(memberCode) {
         rest += (", " +memberCode);
+        members.push(memberCode);
     });
     var desc = processor.MemberMap[m1] + rest + ((rest.length ===0)?" is":" are ") + ((operator === 'Y')?"":" not ") +" located in " +country;
-    return {fieldCode: qType, sentence: desc, country: country};
+    return {fieldCode: qType, sentence: desc, country: country, members: members};
   }
   / qType: 'CV' operator: [YN] data: (CardholderValidation)+{
     return processor.handleCollection({code: qType, op: operator, data: data});
@@ -388,6 +392,10 @@ MaximumFee
   }
 InternationalIndicator
   = val: CharOrSpace {
+    if(val != undefined && val.trim().length >0) {
+        console.log("international indicator " +val);
+    }
+>>>>>>> f681fcdc1d4089ca0e928eaaeaabc25e9608ad56
     return val;
   }
 

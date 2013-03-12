@@ -40,6 +40,7 @@ angular.module("list", [])
                 //console.log(event);
             });
 
+
             inputElement.bind("keyup", function(ev) {
                 switch(ev.keyCode) {
                     case 27: //escape
@@ -67,7 +68,7 @@ angular.module("list", [])
 
             //listElement.
             scope.$watch("query", function(value) {
-                if(value && value.length >0) {
+                if(value && value.length > 0) {
                     scope.filteredItems = filter(scope.source, value);
                     show();
                 } else {
@@ -84,20 +85,63 @@ angular.module("list", [])
     }
 }]);
 
-angular.module("entry", ['list'])
+angular.module("entry", ['list', 'ngResource'])
     .config(function () {
         console.log("app configured");
     });
 
-function listController ($scope) {
+function listController ($scope, $resource) {
     $scope.onDelete = function(val) {
         console.log("delete" + val);
-    }
+    };
+
     $scope.dataSource = ["Oleg","Luca", "Ioana", "Lina"];
+
     $scope.handle = function () {
         console.log('handled');
-    }
+    };
+
     $scope.onUpdate = function (val) {
         console.log("update" + val);
+    };
+
+
+    var RuleResource = $resource("/rule");
+
+    $scope.current = {
+        id: 1,
+        name: "my first rule"
+    };
+
+    $scope.available = [
+        {
+            id: 1,
+            name: "first rule"
+        }, {
+            id: 2,
+            name: "second rule"
+        }
+    ];
+
+    $scope.send = function() {
+        var resource = new RuleResource($scope.current);
+        resource.$save();
+        $scope.current = resource;
+        //watching the scope property for changes
+        // the watch function will be called twice
+        $scope.$watch('current', function (changed) {
+            console.log(changed);
+            for(var i in $scope.available){
+                if(changed.id === $scope.available[i].id) {
+                    console.log('---');
+                    $scope.available[i] = changed;
+                }
+            }
+        });
+    }
+    // this will change the name of the current
+    // and the name of the particular element in the array
+    $scope.name = function () {
+        $scope.current.name = "changed name";
     }
 }
