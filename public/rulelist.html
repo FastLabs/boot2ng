@@ -112,7 +112,7 @@
 <div class="span4" style="position:absolute; right:0px;" ng-controller='listController'>
     <input style="margin-left: 23px;" type="text" ng-model='searchQuery'>
     <ul class='rules' ng-init='repoRules = rules.values()'>
-        <li class='thumbnail removable' ng-repeat='rule in repoRules | filter:searchQuery'>
+            <li class='thumbnail removable' ng-repeat='rule in repoRules | filter:searchQuery'>
             {{rule.name}}
            <!-- <a href="/rules/remove/{{rule.attributes.id}}">
                 <i class="icon-eye-open"></i>
