@@ -53,6 +53,7 @@ app.post('/transaction', function(req, res) {
         var x = JSON.parse(result);
         res.end( JSON.stringify(x[0]));
     });
+
 });
 
 var transactions = [

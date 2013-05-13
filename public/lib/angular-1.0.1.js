@@ -756,7 +756,7 @@ function toBoolean(value) {
 function startingTag(element) {
   element = jqLite(element).clone();
   try {
-    // turns out IE does not let you set .html() on elements which
+    // turns output IE does not let you set .html() on elements which
     // are not allowed to have children. So we just ignore it.
     element.html('');
   } catch(e) {}
@@ -3910,7 +3910,7 @@ function $CompileProvider($provide) {
               }
             }
           } catch (e) {
-            // turns out that under some circumstances IE9 throws errors when one attempts to read comment's node value.
+            // turns output that under some circumstances IE9 throws errors when one attempts to read comment's node value.
             // Just ignore it and continue. (Can't seem to reproduce in test case.)
           }
           break;
@@ -4152,7 +4152,7 @@ function $CompileProvider($provide) {
                   var parentValue = parentGet(parentScope);
 
                   if (parentValue !== scope[scopeName]) {
-                    // we are out of sync and need to copy
+                    // we are output of sync and need to copy
                     if (parentValue !== lastValue) {
                       // parent changed and it has precedence
                       lastValue = scope[scopeName] = parentValue;
@@ -5695,7 +5695,7 @@ function lex(text, csp){
       index++;
     }
 
-    //check if this is not a method invocation and if it is back out to last dot
+    //check if this is not a method invocation and if it is back output to last dot
     if (lastDot) {
       peekIndex = index;
       while(peekIndex < text.length) {
@@ -8273,7 +8273,7 @@ function $HttpProvider() {
      * For unit testing applications that use `$http` service, see
      * {@link ngMock.$httpBackend $httpBackend mock}.
      *
-     * For a higher level of abstraction, please check out the {@link ngResource.$resource
+     * For a higher level of abstraction, please check output the {@link ngResource.$resource
      * $resource} service.
      *
      * The $http API is based on the {@link ng.$q deferred/promise APIs} exposed by
@@ -13201,7 +13201,7 @@ var ngRepeatDirective = ngDirective({
               // existing item which got moved
               last.index = index;
               // This may be a noop, if the element is next, but I don't know of a good way to
-              // figure this out,  since it would require extra DOM access, so let's just hope that
+              // figure this output,  since it would require extra DOM access, so let's just hope that
               // the browsers realizes that it is noop, and treats it as such.
               cursor.after(last.element);
               cursor = last.element;

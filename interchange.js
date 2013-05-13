@@ -1,6 +1,7 @@
 var fs = require('fs'),
     parser = require('./parser.js'),
-    aggregator = require('./aggregator.js');
+    aggregator = require('./aggregator.js'),
+    processor = require('./processor.js');
 
 
 
@@ -28,11 +29,15 @@ function renderDecisionTable (req, res) {
         file = cardSchemeFiles[schemeName];
     loadData(file, function (rules) {
         var ag = aggregator.getAggregated(schemeName, rules);
+        for(var key in processor.extractedFields) {
+            console.log(key + "-" + processor.extractedFields[key]);
+        }
         res.render("interchange", {
             cardScheme: schemeName ,
             count: rules.length,
             aggregated: ag});
     });
+
 }
 function renderPurchaseDomestic(req, res) {
     var schemeName = "Visa",

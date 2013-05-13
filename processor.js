@@ -1,7 +1,9 @@
 var util = require('util');
+/*
 var VisaFields = {
 
 };
+*/
 
 var CatCodes =  McCategoryCodes = {
     BIL: 'Bi-Lateral Settlement',
@@ -155,7 +157,7 @@ var TemplateGenerators = {
       return util.format(template,members, structure.op);
     }
 };
-
+var extractedFields = {};
 function getField(fieldCode) {
     var result = CommonFields[fieldCode];
     if(!result) {
@@ -164,6 +166,7 @@ function getField(fieldCode) {
     if(!result) {
         result = MasterCardFields[fieldCode];
     }
+    extractedFields[fieldCode] = result;
     return result;
 }
 
@@ -274,6 +277,9 @@ module.exports = {
     handleProperty: propertyCheck,
     handleFunction: handleFunctionCall,
     valuePresent: presentAndNotEmpty,
-    handleCondition: handleCondition
+    handleCondition: handleCondition,
+    extractedFields: extractedFields,
+    getField: getField
+
 }
 

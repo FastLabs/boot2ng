@@ -1852,7 +1852,7 @@ jQuery.extend({
 			type = ( type || "fx" ) + "queue";
 			queue = jQuery._data( elem, type );
 
-			// Speed up dequeue by getting out quickly if this is just a lookup
+			// Speed up dequeue by getting output quickly if this is just a lookup
 			if ( data ) {
 				if ( !queue || jQuery.isArray(data) ) {
 					queue = jQuery._data( elem, type, jQuery.makeArray(data) );
@@ -2848,7 +2848,7 @@ jQuery.event = {
 			type = event.type || event,
 			namespaces = [];
 
-		// focus/blur morphs to focusin/out; ensure we're not firing them right now
+		// focus/blur morphs to focusin/output; ensure we're not firing them right now
 		if ( rfocusMorph.test( type + jQuery.event.triggered ) ) {
 			return;
 		}
@@ -3323,7 +3323,7 @@ jQuery.Event.prototype = {
 	isImmediatePropagationStopped: returnFalse
 };
 
-// Create mouseenter/leave events using mouseover/out and event-time checks
+// Create mouseenter/leave events using mouseover/output and event-time checks
 jQuery.each({
 	mouseenter: "mouseover",
 	mouseleave: "mouseout"
@@ -3613,7 +3613,7 @@ jQuery.fn.extend({
 			guid = fn.guid || jQuery.guid++,
 			i = 0,
 			toggler = function( event ) {
-				// Figure out which function to execute
+				// Figure output which function to execute
 				var lastToggle = ( jQuery._data( this, "lastToggle" + fn.guid ) || 0 ) % i;
 				jQuery._data( this, "lastToggle" + fn.guid, lastToggle + 1 );
 
@@ -4088,7 +4088,7 @@ Expr = Sizzle.selectors = {
 			function( tag, context ) {
 				var results = context.getElementsByTagName( tag );
 
-				// Filter out possible comments
+				// Filter output possible comments
 				if ( tag === "*" ) {
 					var elem,
 						tmp = [],
@@ -6205,7 +6205,7 @@ jQuery.extend({
 
 					elem = div.childNodes;
 
-					// Take out of fragment container (we need a fresh div each time)
+					// Take output of fragment container (we need a fresh div each time)
 					div.parentNode.removeChild( div );
 				}
 			}
@@ -6644,7 +6644,7 @@ jQuery.extend({
 		return val;
 	},
 
-	// A method for quickly swapping in/out CSS properties to get correct calculations
+	// A method for quickly swapping in/output CSS properties to get correct calculations
 	swap: function( elem, options, callback ) {
 		var ret, name,
 			old = {};
@@ -6726,7 +6726,7 @@ if ( window.getComputedStyle ) {
 			left = style.left;
 			rsLeft = elem.runtimeStyle && elem.runtimeStyle.left;
 
-			// Put in the new values to get a computed value out
+			// Put in the new values to get a computed value output
 			if ( rsLeft ) {
 				elem.runtimeStyle.left = elem.currentStyle.left;
 			}
@@ -8424,7 +8424,7 @@ var fxNow, timerId,
 					start = jQuery.css( tween.elem, prop, true ) || end || 1;
 
 					do {
-						// If previous iteration zeroed out, double until we get *something*
+						// If previous iteration zeroed output, double until we get *something*
 						// Use a string for doubling factor so we don't accidentally see scale as unchanged below
 						prevScale = scale = scale || ".5";
 
@@ -8670,7 +8670,7 @@ function defaultPrefilter( elem, props, opts ) {
 
 	// height/width overflow pass
 	if ( elem.nodeType === 1 && ( "height" in props || "width" in props ) ) {
-		// Make sure that nothing sneaks out
+		// Make sure that nothing sneaks output
 		// Record all 3 overflow attributes because IE does not
 		// change the overflow attribute when overflowX and
 		// overflowY are set to the same value

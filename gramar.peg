@@ -135,8 +135,11 @@ QualificationRecord
     var result = {};
     result.subSequence = subSequence;
     if(qualification) {
+        //console.log("****" + qualification.fieldCode + " -> " + (qualification.sentence?qualification.fieldName:""));
         result.qualification = qualification;
-    } else {console.log("!!!!!!!!!!!!!!!!!!!!!!!1")}
+    } else {
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!1")
+        }
     return result;
   }
 QualificationDetails
@@ -214,6 +217,7 @@ QualificationDetails
     var sentence = comment.join("").trim(),
         fieldCode = fileType +"" +position;// there are few columns with different length but i think it doesn't matter +""+length;
     addDataFieldIfNotPresent({code: fieldCode, fieldName: sentence});
+    processor.getField(fieldCode);
     return {fieldCode: fieldCode, fileType: fileType, position: position, length: length,
     fieldName: fieldCode, sentence: sentence, value: value};
   }

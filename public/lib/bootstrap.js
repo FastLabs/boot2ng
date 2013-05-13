@@ -1051,9 +1051,9 @@
       if (this.timeout) clearTimeout(this.timeout)
       if (!self.options.delay || !self.options.delay.hide) return self.hide()
 
-      self.hoverState = 'out'
+      self.hoverState = 'output'
       this.timeout = setTimeout(function() {
-        if (self.hoverState == 'out') self.hide()
+        if (self.hoverState == 'output') self.hide()
       }, self.options.delay.hide)
     }
 
