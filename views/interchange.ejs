@@ -51,8 +51,8 @@
                 <%}%>
                 <th class="action" title="Required Payment Service">RPS</th>
                 <th class="action" title="FeeProgramIndicator">FPI</th>
-                <th class="action" title="Not clear where this comes from" style="color: red">ECI</th>
-                <th class="action" title="not clear where it comes from" style="color: red">INT</th>
+                <th class="action" title="override ECI" >ECI</th>
+                <th class="action" title="International Fee Indicator" >INT</th>
                 <th>Description</th>
 
             </tr>
@@ -103,10 +103,10 @@
                     <td class="action">
                         <%=((rule.fpiIndicator)?rule.fpiIndicator:"")%>
                     </td>
-                    <td class="action" style="color: red">
+                    <td class="action">
                         <%=((rule.eciIndicator)?rule.eciIndicator:"")%>
                     </td>
-                    <td class="action" style="color: red">
+                    <td class="action" >
                         <%=((rule.intIndicator)?rule.intIndicator:"")%>
                     </td>
 
