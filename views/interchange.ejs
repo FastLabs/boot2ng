@@ -49,7 +49,12 @@
                 <%if(structure.isFieldVisible("maxFee")){%>
                     <th class="action">Max Fee</th>
                 <%}%>
+                <th class="action" title="Required Payment Service">RPS</th>
+                <th class="action" title="FeeProgramIndicator">FPI</th>
+                <th class="action" title="Not clear where this comes from" style="color: red">ECI</th>
+                <th class="action" title="not clear where it comes from" style="color: red">INT</th>
                 <th>Description</th>
+
             </tr>
             <tbody>
             <%
@@ -92,7 +97,18 @@
                     <%if(structure.isFieldVisible("maxFee")){%>
                         <td class="action"><%=rule.maxFee%></td>
                     <%}%>
-
+                    <td class="action">
+                        <%=((rule.paymentServiceIndicator)?rule.paymentServiceIndicator:"")%>
+                    </td>
+                    <td class="action">
+                        <%=((rule.fpiIndicator)?rule.fpiIndicator:"")%>
+                    </td>
+                    <td class="action" style="color: red">
+                        <%=((rule.eciIndicator)?rule.eciIndicator:"")%>
+                    </td>
+                    <td class="action" style="color: red">
+                        <%=((rule.intIndicator)?rule.intIndicator:"")%>
+                    </td>
 
                     <td>
                         <%=rule.description%>

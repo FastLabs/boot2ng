@@ -109,11 +109,12 @@ DetailRecord
     record.maxFee = maxFee;
     value = processor.valuePresent(intIndicator);
     if(value) {
+        console.log("international indicator '" + value + "'");
         record.intIndicator = value;
     }
     value = processor.valuePresent(psi);
     if(value) {
-        console.log("!! payment service indicator " + value);
+    if  (value && value.trim() )
         record.paymentServiceIndicator = value;
     }
     value = processor.valuePresent(eci);
@@ -396,9 +397,9 @@ MaximumFee
   }
 InternationalIndicator
   = val: CharOrSpace {
-    if(val != undefined && val.trim().length >0) {
-        console.log("international indicator " +val);
-    }
+    /*if(val != undefined && val.trim().length >0) {
+        console.log("international indicator " + val);
+    }*/
     return val;
   }
 

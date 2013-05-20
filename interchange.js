@@ -29,9 +29,10 @@ function renderDecisionTable (req, res) {
         file = cardSchemeFiles[schemeName];
     loadData(file, function (rules) {
         var ag = aggregator.getAggregated(schemeName, rules);
-        for(var key in processor.extractedFields) {
+        //lists all extracted fields
+        /*for(var key in processor.extractedFields) {
             console.log(key + "-" + processor.extractedFields[key]);
-        }
+        }*/
         res.render("interchange", {
             cardScheme: schemeName ,
             count: rules.length,
